@@ -129,7 +129,7 @@
 
   function renderDateOptions(){
     const dates = Array.from(new Set(allRows.map(r => r.date))).sort();
-    dateSelect.innerHTML = dates.map(d => `<option value="${d}">${d}</option>`).join('');
+    dateSelect.innerHTML = dates.map(d => `<option value="${d}">${d}</option>`).join('\n');
     currentDate = dates[dates.length - 1] || null;
     if(currentDate) dateSelect.value = currentDate;
   }
@@ -164,7 +164,7 @@
         <td class="p-3 text-slate-700">${r.theme || 'none'}</td>
         <td class="p-3"><button class="px-2 py-1 border rounded-lg" data-view-brand="${r.brand.replace(/"/g,'&quot;')}">View</button></td>
       </tr>`
-    }).join('');
+    }).join('\n');
     statusEl.textContent = `${currentRows.length} brands shown for ${currentDate}. ${selected.size} selected.`;
   }
 
@@ -200,7 +200,7 @@
                 <td class="p-2">${s.total}</td>
                 <td class="p-2">${s.theme || 'none'}</td>
                 <td class="p-2"><button data-i="${i}" class="text-rose-600 underline">Remove</button></td>
-              </tr>`).join('')}
+              </tr>`).join('\n')}
           </tbody>
         </table>
       </div>`;
@@ -233,8 +233,7 @@
     const header = ['date','brand','total','positive','neutral','negative','theme'];
     const csv = [header.join(',')].concat(rows.map(r=>[
       r.date, r.brand, r.total, r.positive, r.neutral, r.negative, `"${(r.theme||'').replaceAll('"','""')}"`
-    ].join(','))).join('
-');
+    ].join(','))).join('\n');
     const blob = new Blob([csv], {type:'text/csv'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = `selection_${currentDate}.csv`; a.click();
@@ -332,7 +331,7 @@
             </div>
             <a href="${r.url}" target="_blank" rel="noopener" class="block mt-1 font-medium underline">${escapeHtml(r.title)}</a>
             ${r.published ? `<div class="text-xs text-slate-500 mt-1">${r.published}</div>` : ''}
-          </div>`).join('')}
+          </div>`).join('\n')}
       </div>`;
   }
 
@@ -357,7 +356,34 @@
   function loadCountsCsv(){
     statusEl.textContent = 'Loading…';
     fetch(CSV_COUNTS + '?_=' + Date.now())
-      .then(r=>{ if(!r.ok) throw new Error('Failed to fetch '+CSV_COUNTS); return r.text(); })
+      .then(r=>{ if(!r.ok) throw new Error('Failed to fetch '+CSV_COUNTS+' ('+r.status+')'); return r.text(); })
+      .then(text=>{
+        const parsed = Papa.parse(text, { header: true, dynamicTyping: true });
+        const raw = parsed.data.map(normalizeRowKeys);
+        const good = raw.filter(r => r && r.date && r.brand);
+        allRows = good.map(r => ({
+          date: String(r.date),
+          brand: String(r.brand),
+          total: formatInt(r.total),
+          positive: formatInt(r.positive),
+          neutral: formatInt(r.neutral),
+          negative: formatInt(r.negative),
+          theme: r.theme ? String(r.theme) : 'none'
+        }));
+        if(!allRows.length){
+          statusEl.textContent = 'No rows parsed from data/daily_counts.csv. Open /data/daily_counts.csv to confirm the file is deployed.';
+          dateSelect.innerHTML = '';
+          tableBody.innerHTML = '';
+          return;
+        }
+        renderDateOptions();
+        computeRows();
+        renderTable(); attachTableHandlers();
+        renderSaved();
+        statusEl.textContent = `${currentRows.length} brands shown for ${currentDate}. ${selected.size} selected.`;
+      })
+      .catch(err=>{ console.error(err); statusEl.textContent = 'Error loading data. Check console.'; });
+  })
       .then(text=>{
         const parsed = Papa.parse(text, { header: true, dynamicTyping: true });
         allRows = parsed.data
