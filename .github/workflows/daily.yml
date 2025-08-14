@@ -1,208 +1,56 @@
-#!/usr/bin/env python3
-"""
-Daily Google News RSS -> sentiment counts (positive/neutral/negative) per brand.
+name: Daily News Sentiment
 
-How it works (high level):
-- Reads brand names from brands.txt (one per line). Falls back to a small default list.
-- For each brand, fetches Google News RSS for the PREVIOUS calendar day in US/Eastern,
-  using `after:` and `before:` date operators for a clean daily window.
-- Classifies sentiment on headline + snippet (VADER).
-- De-dupes by (domain, normalized title).
-- Writes:
-  - data/articles/YYYY-MM-DD.csv  (item-level rows)
-  - data/daily_counts.csv         (aggregated daily totals, updated idempotently)
-"""
+on:
+  schedule:
+    - cron: "0 12 * * *"   # 8am ET approx
+  workflow_dispatch: {}
+  push:
+    paths:
+      - 'news_sentiment.py'
+      - 'requirements.txt'
+      - 'aliases.csv'
+      - 'brands.txt'
+      - 'dashboard.html'
+      - '.github/workflows/daily.yml'
 
-import os
-import time
-import csv
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
-from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode, quote
+permissions:
+  contents: write
 
-import feedparser
-import pandas as pd
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-# --------- Configuration you can tweak ---------
-HL = "en-US"     # interface language
-GL = "US"        # geography
-CEID = "US:en"   # country:lang
-REQUEST_PAUSE_SEC = 0.3  # be polite between RSS requests
+      - name: Install dependencies (if requirements.txt exists)
+        if: ${{ hashFiles('requirements.txt') != '' }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-# Optional: domains you want to skip entirely (press releases, etc.)
-BLOCKED_DOMAINS = {
-    # "www.prnewswire.com",
-    # "www.businesswire.com",
-}
+      - name: Ensure data folders exist
+        run: mkdir -p data/articles
 
-# Default list (used only if brands.txt not present)
-DEFAULT_BRANDS = ["Apple", "Amazon", "Walmart", "Ford", "Disney"]
-# ----------------------------------------------
+      - name: Run daily sentiment (if script exists)
+        if: ${{ hashFiles('news_sentiment.py') != '' }}
+        run: python news_sentiment.py
 
-
-def read_brands():
-    """Read brand names from brands.txt (one per line). Ignore blank lines and comments."""
-    path = "brands.txt"
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            brands = [line.strip() for line in f if line.strip() and not line.strip().startswith("#")]
-        if brands:
-            return brands
-    return DEFAULT_BRANDS
-
-
-def normalize_url(u: str) -> str:
-    """Normalize URL (strip tracking params, fragments)."""
-    try:
-        p = urlparse(u)
-        # keep query params except trackers
-        keep = []
-        for k, v in parse_qsl(p.query, keep_blank_values=True):
-            lk = k.lower()
-            if lk.startswith("utm_") or lk in {"gclid", "fbclid"}:
-                continue
-            keep.append((k, v))
-        new_q = urlencode(keep, doseq=True)
-
-        # ensure http(s) stays as-is; drop fragment
-        p2 = p._replace(query=new_q, fragment="")
-        return urlunparse(p2)
-    except Exception:
-        return u
-
-
-def build_rss_url(brand: str, start_date: str, end_date: str) -> str:
-    """
-    Build a Google News RSS search for an exact brand phrase within a date window.
-    Example: "Acme" after:2025-08-13 before:2025-08-14
-    """
-    q = f"\"{brand}\" after:{start_date} before:{end_date}"
-    base = "https://news.google.com/rss/search"
-    return f"{base}?q={quote(q)}&hl={HL}&gl={GL}&ceid={CEID}"
-
-
-def classify_sentiment(text: str, analyzer: SentimentIntensityAnalyzer):
-    """
-    VADER thresholds:
-    >  0.05 => positive
-    < -0.05 => negative
-    else     neutral
-    """
-    s = analyzer.polarity_scores(text or "")
-    compound = s["compound"]
-    if compound > 0.05:
-        label = "positive"
-    elif compound < -0.05:
-        label = "negative"
-    else:
-        label = "neutral"
-    return label, compound, s
-
-
-def main():
-    tz = ZoneInfo("America/New_York")
-    now = datetime.now(tz)
-
-    # Target the previous calendar day in Eastern Time
-    target_day = (now.date() - timedelta(days=1))
-    start_str = target_day.strftime("%Y-%m-%d")
-    end_str = (target_day + timedelta(days=1)).strftime("%Y-%m-%d")
-
-    brands = read_brands()
-    print(f"Running sentiment for {start_str} (US/Eastern) across {len(brands)} brands")
-
-    analyzer = SentimentIntensityAnalyzer()
-    all_rows = []
-    seen = set()  # (domain, normalized_title)
-
-    for brand in brands:
-        url = build_rss_url(brand, start_str, end_str)
-        feed = feedparser.parse(url)
-
-        # gentle pause between requests
-        time.sleep(REQUEST_PAUSE_SEC)
-
-        for e in getattr(feed, "entries", []):
-            title = (e.get("title") or "").strip()
-            link = (e.get("link") or "").strip()
-            summary = (e.get("summary") or "").strip()
-
-            norm_url = normalize_url(link)
-            domain = urlparse(norm_url).netloc.lower()
-
-            # Blocklist if requested
-            if domain in BLOCKED_DOMAINS:
-                continue
-
-            # Deduplicate by (domain, title)
-            key = (domain, title.lower())
-            if key in seen:
-                continue
-            seen.add(key)
-
-            # Use title + snippet for a quick sentiment read
-            text_for_sent = f"{title} {summary}".strip()
-            label, compound, score = classify_sentiment(text_for_sent, analyzer)
-
-            published = e.get("published") or e.get("updated") or ""
-            row = {
-                "date": start_str,
-                "brand": brand,
-                "title": title,
-                "url": norm_url or link,
-                "domain": domain,
-                "published": published,
-                "sentiment": label,
-                "compound": round(compound, 4),
-                "pos": score["pos"],
-                "neu": score["neu"],
-                "neg": score["neg"],
-            }
-            all_rows.append(row)
-
-    # Ensure output folders exist
-    os.makedirs("data/articles", exist_ok=True)
-    detail_path = f"data/articles/{start_str}.csv"
-
-    columns = ["date", "brand", "title", "url", "domain", "published", "sentiment", "compound", "pos", "neu", "neg"]
-    pd.DataFrame(all_rows, columns=columns).to_csv(detail_path, index=False)
-
-    # Aggregate to daily counts and update data/daily_counts.csv idempotently
-    agg_path = "data/daily_counts.csv"
-    if all_rows:
-        df = pd.DataFrame(all_rows)
-        counts = (
-            df.groupby(["date", "brand", "sentiment"])
-              .size()
-              .unstack(fill_value=0)
-              .reset_index()
-        )
-        for col in ["positive", "neutral", "negative"]:
-            if col not in counts:
-                counts[col] = 0
-        counts["total"] = counts["positive"] + counts["neutral"] + counts["negative"]
-        counts = counts[["date", "brand", "total", "positive", "neutral", "negative"]].sort_values(["brand"])
-    else:
-        counts = pd.DataFrame(columns=["date", "brand", "total", "positive", "neutral", "negative"])
-
-    if os.path.exists(agg_path):
-        existing = pd.read_csv(agg_path)
-        # drop any rows for the run date before appending (idempotent if re-run)
-        existing = existing[existing["date"] != start_str]
-        daily_counts = pd.concat([existing, counts], ignore_index=True)
-    else:
-        daily_counts = counts
-
-    daily_counts = daily_counts.sort_values(["date", "brand"])
-    daily_counts.to_csv(agg_path, index=False)
-
-    print(f"Wrote {len(all_rows)} articles to {detail_path}")
-    if not all_rows:
-        print("No articles found for this window.")
-    print(f"Updated {agg_path}")
-
-
-if __name__ == "__main__":
-    main()
+      - name: Commit & push changes (if any)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [[ -n $(git status --porcelain) ]]; then
+            git add -A
+            git commit -m "chore(data): update daily news sentiment for $(date -u +%F)"
+            git push
+          else
+            echo "No changes to commit."
+          fi
