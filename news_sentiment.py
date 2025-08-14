@@ -30,6 +30,12 @@ GL = "US"        # geography
 CEID = "US:en"   # country:lang
 REQUEST_PAUSE_SEC = 0.3          # gentle delay between RSS fetches
 MIN_THEME_FREQ = 2               # min times a phrase must appear to count as a "theme"
+
+# Optional: domains to skip entirely (press-release wires, etc.)
+BLOCKED_DOMAINS = {
+    # "www.prnewswire.com",
+    # "www.businesswire.com",
+}
 # ------------------------------------------
 
 
@@ -120,7 +126,6 @@ def classify_sentiment(text: str, analyzer: SentimentIntensityAnalyzer):
         label = "positive"
     elif compound < -0.05:
         label = "negative"
-        # else neutral
     else:
         label = "neutral"
     return label, compound, s
