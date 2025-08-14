@@ -66,6 +66,10 @@
         <tbody id="tableBody"></tbody>
       </table>
       <p id="status" class="text-xs text-slate-500 mt-2"></p>
+      <details id="debugBox" class="mt-2 text-xs text-slate-500 hidden">
+        <summary class="cursor-pointer">Debug details</summary>
+        <pre id="debugText" class="whitespace-pre-wrap"></pre>
+      </details>
     </section>
 
     <!-- Saved (local) -->
@@ -99,6 +103,10 @@
 <script>
 (function(){
   const CSV_COUNTS = 'data/daily_counts.csv'; // counts table
+  // Absolute fallback (helps when this HTML is opened from a different origin/frame)
+  const GH_USER = 'jonas-sickler';
+  const GH_REPO = 'news-sentiment-dashboard';
+  const GH_PAGES_BASE = `https://${GH_USER}.github.io/${GH_REPO}/`;
   const CSV_ARTICLES = (date) => `data/articles/${date}.csv`; // per-day detail
   const ROWS_TO_SHOW = 25; // top by negative
   const tableBody = document.getElementById('tableBody');
@@ -111,6 +119,8 @@
   const webhookUrl = document.getElementById('webhookUrl');
   const sendWebhookBtn = document.getElementById('sendWebhookBtn');
   const savedContainer = document.getElementById('savedContainer');
+  const debugBox = document.getElementById('debugBox');
+  const debugText = document.getElementById('debugText');
 
   // Modal
   const modalBackdrop = document.getElementById('modalBackdrop');
@@ -125,7 +135,27 @@
   let selected = new Set(); // brand names selected (for current date)
   const articlesCache = {}; // date -> [article rows]
 
+  function logDebug(msg, extra){
+    const params = new URLSearchParams(location.search);
+    const DEBUG = params.get('debug') === '1';
+    if(DEBUG){
+      debugBox.classList.remove('hidden');
+      debugText.textContent += `\n${msg}` + (extra ? `\n${extra}` : '');
+      console.log('[dashboard]', msg, extra || '');
+    }
+  }
+
   function formatInt(x){ return Number(x || 0); }
+
+  // Normalize CSV header keys: trim, lowercase, and strip BOM (\ufeff) if present
+  function normalizeRowKeys(row){
+    const out = {};
+    for(const k in row){
+      const nk = String(k || '').replace(/^\ufeff/, '').trim().toLowerCase();
+      out[nk] = row[k];
+    }
+    return out;
+  }
 
   function renderDateOptions(){
     const dates = Array.from(new Set(allRows.map(r => r.date))).sort();
@@ -154,15 +184,15 @@
     tableBody.innerHTML = currentRows.map((r, idx)=>{
       const isSel = selected.has(r.brand);
       return `<tr class="border-t hover:bg-slate-50">
-        <td class="p-3"><input type="checkbox" data-brand="${r.brand.replace(/"/g,'&quot;')}" ${isSel?'checked':''}></td>
+        <td class="p-3"><input type="checkbox" data-brand="${r.brand.replace(/\"/g,'&quot;')}" ${isSel?'checked':''}></td>
         <td class="p-3">${idx+1}</td>
-        <td class="p-3 font-medium"><button class="underline" data-view-brand="${r.brand.replace(/"/g,'&quot;')}">${r.brand}</button></td>
+        <td class="p-3 font-medium"><button class="underline" data-view-brand="${r.brand.replace(/\"/g,'&quot;')}">${r.brand}</button></td>
         <td class="p-3">${r.negative}</td>
         <td class="p-3">${r.neutral}</td>
         <td class="p-3">${r.positive}</td>
         <td class="p-3">${r.total}</td>
         <td class="p-3 text-slate-700">${r.theme || 'none'}</td>
-        <td class="p-3"><button class="px-2 py-1 border rounded-lg" data-view-brand="${r.brand.replace(/"/g,'&quot;')}">View</button></td>
+        <td class="p-3"><button class="px-2 py-1 border rounded-lg" data-view-brand="${r.brand.replace(/\"/g,'&quot;')}">View</button></td>
       </tr>`
     }).join('\n');
     statusEl.textContent = `${currentRows.length} brands shown for ${currentDate}. ${selected.size} selected.`;
@@ -232,7 +262,7 @@
     if(!rows.length){ alert('No rows selected.'); return; }
     const header = ['date','brand','total','positive','neutral','negative','theme'];
     const csv = [header.join(',')].concat(rows.map(r=>[
-      r.date, r.brand, r.total, r.positive, r.neutral, r.negative, `"${(r.theme||'').replaceAll('"','""')}"`
+      r.date, r.brand, r.total, r.positive, r.neutral, r.negative, `"${(r.theme||'').replace(/"/g,'""')}"`
     ].join(','))).join('\n');
     const blob = new Blob([csv], {type:'text/csv'});
     const url = URL.createObjectURL(blob);
@@ -242,8 +272,8 @@
 
   async function sendSelectionToWebhook(){
     const url = (webhookUrl.value || '').trim();
-    if(!url){ alert('Please paste your Google Apps Script Webhook URL.'); return; }
     const rows = currentRows.filter(r => selected.has(r.brand));
+    if(!url){ alert('Please paste your Google Apps Script Webhook URL.'); return; }
     if(!rows.length){ alert('No rows selected.'); return; }
     try{
       const resp = await fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ rows }) });
@@ -281,9 +311,10 @@
     if(articlesCache[date]) return articlesCache[date];
     const path = CSV_ARTICLES(date) + '?_=' + Date.now();
     try{
-      const resp = await fetch(path);
-      if(!resp.ok){ articlesCache[date] = []; return []; }
+      const resp = await fetch(path, {cache:'no-store'});
+      if(!resp.ok){ logDebug(`Articles ${date} fetch failed`, `HTTP ${resp.status}`); articlesCache[date] = []; return []; }
       const text = await resp.text();
+      if(typeof Papa === 'undefined'){ throw new Error('Papa Parse not loaded'); }
       const parsed = Papa.parse(text, { header: true });
       const rows = parsed.data.filter(r=> r && r.brand && r.title && r.url).map(r=>({
         brand: String(r.brand),
@@ -295,7 +326,7 @@
       }));
       articlesCache[date] = rows;
       return rows;
-    }catch(err){ console.error(err); articlesCache[date] = []; return []; }
+    }catch(err){ console.error(err); logDebug('Articles parse error', String(err)); articlesCache[date] = []; return []; }
   }
 
   function parseDateMaybe(s){ const t = Date.parse(s); return isNaN(t) ? 0 : t; }
@@ -354,36 +385,89 @@
 
   // Load CSVs
   function loadCountsCsv(){
+    // Build candidate URLs (relative, then absolute GH Pages)
+    const rel = new URL(CSV_COUNTS, location.href).href + (CSV_COUNTS.includes('?') ? '&' : '?') + '_=' + Date.now();
+    const abs = GH_PAGES_BASE + CSV_COUNTS + (CSV_COUNTS.includes('?') ? '&' : '?') + '_=' + Date.now();
+    const candidates = [rel];
+    if(!rel.startsWith(GH_PAGES_BASE)) candidates.push(abs);
+
     statusEl.textContent = 'Loading…';
-    fetch(CSV_COUNTS + '?_=' + Date.now())
-      .then(r=>{ if(!r.ok) throw new Error('Failed to fetch '+CSV_COUNTS+' ('+r.status+')'); return r.text(); })
-      .then(text=>{
-        const parsed = Papa.parse(text, { header: true, dynamicTyping: true });
-        const raw = parsed.data.map(normalizeRowKeys);
-        const good = raw.filter(r => r && r.date && r.brand);
-        allRows = good.map(r => ({
-          date: String(r.date),
-          brand: String(r.brand),
-          total: formatInt(r.total),
-          positive: formatInt(r.positive),
-          neutral: formatInt(r.neutral),
-          negative: formatInt(r.negative),
-          theme: r.theme ? String(r.theme) : 'none'
-        }));
-        if(!allRows.length){
-          statusEl.textContent = 'No rows parsed from data/daily_counts.csv. Open /data/daily_counts.csv to confirm the file is deployed.';
-          dateSelect.innerHTML = '';
-          tableBody.innerHTML = '';
-          return;
-        }
-        renderDateOptions();
-        computeRows();
-        renderTable(); attachTableHandlers();
-        renderSaved();
-        statusEl.textContent = `${currentRows.length} brands shown for ${currentDate}. ${selected.size} selected.`;
-      })
-      .catch(err=>{ console.error('loadCountsCsv error', err); statusEl.textContent = 'Error loading data. See console.'; });
+    logDebug('Counts candidates', JSON.stringify(candidates));
+
+    // Try each candidate until one succeeds
+    (async () => {
+      let lastErr = null, okText = null, okUrl = null;
+      for(const url of candidates){
+        try{
+          const r = await fetch(url, {cache:'no-store', mode: 'cors'});
+          if(!r.ok) throw new Error('HTTP '+r.status);
+          const t = await r.text();
+          if(t && t.length > 0){ okText = t; okUrl = url; break; }
+          lastErr = new Error('Empty response body');
+        }catch(e){ lastErr = e; logDebug('Fetch failed', url + ' :: ' + e); }
+      }
+
+      if(!okText){
+        console.error('loadCountsCsv error', lastErr);
+        const link = document.createElement('a'); link.href = candidates[candidates.length-1]; link.textContent = 'Open CSV'; link.className = 'underline'; link.target = '_blank'; link.rel = 'noopener';
+        statusEl.innerHTML = 'Error loading data. ';
+        statusEl.appendChild(link);
+        statusEl.innerHTML += ' (check it exists).';
+        logDebug('Counts fetch/parse error', String(lastErr));
+        return;
+      }
+
+      logDebug('Counts OK from', okUrl);
+      if(typeof Papa === 'undefined'){
+        statusEl.textContent = 'Parser not loaded.'; return;
+      }
+      let parsed;
+      try{ parsed = Papa.parse(okText, { header: true, dynamicTyping: true }); }
+      catch(pErr){ console.error(pErr); statusEl.textContent = 'Parse error.'; return; }
+
+      const raw = (Array.isArray(parsed.data) ? parsed.data : []).map(normalizeRowKeys);
+      const good = raw.filter(r => r && r.date && r.brand);
+      allRows = good.map(r => ({
+        date: String(r.date),
+        brand: String(r.brand),
+        total: formatInt(r.total),
+        positive: formatInt(r.positive),
+        neutral: formatInt(r.neutral),
+        negative: formatInt(r.negative),
+        theme: r.theme ? String(r.theme) : 'none'
+      }));
+
+      if(!allRows.length){
+        statusEl.textContent = 'No rows parsed from data/daily_counts.csv. Open the CSV to confirm headers are present (date,brand,positive,neutral,negative,total,theme).';
+        dateSelect.innerHTML = '';
+        tableBody.innerHTML = '';
+        logDebug('Parsed header keys example', JSON.stringify(Object.keys(raw[0] || {})));
+        return;
+      }
+
+      renderDateOptions();
+      computeRows();
+      renderTable(); attachTableHandlers();
+      renderSaved();
+      statusEl.textContent = `${currentRows.length} brands shown for ${currentDate}. ${selected.size} selected.`;
+    })();
   }
+
+  // Optional tiny self-tests (open with ?test=1&debug=1)
+  (function tests(){
+    const params = new URLSearchParams(location.search);
+    if(params.get('test') !== '1') return;
+    const bom = "\ufeff"; // simulated BOM
+    const sample = bom + "Date,Brand,Total,Positive,Neutral,Negative,Theme\n"+
+                   "2025-08-13,Apple,10,3,5,2,earnings call\n";
+    const parsed = Papa.parse(sample, {header:true});
+    const row = normalizeRowKeys(parsed.data[0]);
+    if(row.date !== '2025-08-13' || row.brand !== 'Apple'){
+      logDebug('TEST FAILED: header normalization', JSON.stringify(row));
+    } else {
+      logDebug('TEST PASSED: header normalization ✓');
+    }
+  })();
 
   loadCountsCsv();
 })();
