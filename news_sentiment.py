@@ -41,8 +41,12 @@ BLOCKED_DOMAINS = {
 
 
 def read_brands_txt():
-    """Return a set of brands from brands.txt if present."""
     path = "brands.txt"
     brands = []
     if os.path.exists(path):
-        with open(path, "r", enc
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                s = line.strip()
+                if s and not s.startswith("#"):
+                    brands.append(s)
+    return set(brands)
