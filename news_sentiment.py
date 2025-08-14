@@ -50,3 +50,18 @@ def read_brands_txt():
                 if s and not s.startswith("#"):
                     brands.append(s)
     return set(brands)
+
+
+def read_aliases_csv():
+    path = "aliases.csv"
+    mapping = {}
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                brand = (row.get("brand") or "").strip()
+                alias = (row.get("alias") or "").strip()
+                if not brand or not alias:
+                    continue
+                mapping.setdefault(brand, []).append(alias)
+    return mapping
