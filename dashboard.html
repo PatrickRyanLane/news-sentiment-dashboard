@@ -382,28 +382,7 @@
         renderSaved();
         statusEl.textContent = `${currentRows.length} brands shown for ${currentDate}. ${selected.size} selected.`;
       })
-      .catch(err=>{ console.error(err); statusEl.textContent = 'Error loading data. Check console.'; });
-  })
-      .then(text=>{
-        const parsed = Papa.parse(text, { header: true, dynamicTyping: true });
-        allRows = parsed.data
-          .filter(r => r && r.date && r.brand)
-          .map(r => ({
-            date: String(r.date),
-            brand: String(r.brand),
-            total: formatInt(r.total),
-            positive: formatInt(r.positive),
-            neutral: formatInt(r.neutral),
-            negative: formatInt(r.negative),
-            theme: r.theme ? String(r.theme) : 'none'
-          }));
-        renderDateOptions();
-        computeRows();
-        renderTable(); attachTableHandlers();
-        renderSaved();
-        statusEl.textContent = `${currentRows.length} brands shown for ${currentDate}. ${selected.size} selected.`;
-      })
-      .catch(err=>{ console.error(err); statusEl.textContent = 'Error loading data. Check console.'; });
+      .catch(err=>{ console.error('loadCountsCsv error', err); statusEl.textContent = 'Error loading data. See console.'; });
   }
 
   loadCountsCsv();
