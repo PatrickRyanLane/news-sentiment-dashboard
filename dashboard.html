@@ -8,6 +8,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Papa Parse (CSV parser) -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- Chart.js for stacked bar trend -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-900">
   <div class="max-w-7xl mx-auto p-6">
@@ -51,6 +53,18 @@
           <p class="text-xs text-slate-500 mt-1">Paste the URL of your deployed Apps Script web app (POST). We include date, brand, total, positive, neutral, negative, theme.</p>
         </div>
         <button id="sendWebhookBtn" class="px-3 py-2 rounded-lg bg-blue-600 text-white">Export selection → Google Sheet</button>
+      </div>
+    </section>
+
+    <!-- Brand trend (stacked bar) -->
+    <section class="mb-6 p-4 border rounded-xl bg-white">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-lg font-semibold">Sentiment trend</h2>
+        <div id="trendInfo" class="text-xs text-slate-500"></div>
+      </div>
+      <p id="trendHint" class="text-sm text-slate-500 mb-2 hidden">Select exactly <span class="font-semibold">1</span> brand to display a trend. When none is selected, the top negative brand is shown by default.</p>
+      <div class="h-64">
+        <canvas id="trendChart"></canvas>
       </div>
     </section>
 
@@ -130,6 +144,13 @@
   const savedContainer = document.getElementById('savedContainer');
   const debugBox = document.getElementById('debugBox');
   const debugText = document.getElementById('debugText');
+
+  // Trend elements
+  const trendCanvas = document.getElementById('trendChart');
+  const trendInfo = document.getElementById('trendInfo');
+  const trendHint = document.getElementById('trendHint');
+  let trendChart = null;
+  let trendBrand = null;
 
   // Modal
   const modalBackdrop = document.getElementById('modalBackdrop');
@@ -261,6 +282,7 @@
       </tr>`
     }).join('\n');
     statusEl.textContent = `${currentRows.length} brands shown for ${currentDate}. ${selected.size} selected.`;
+        updateTrend();
   }
 
   function renderSaved(){
@@ -506,7 +528,7 @@ Troubleshoot:
   }
 
   // Event bindings
-  dateSelect.addEventListener('change', ()=>{ currentDate = dateSelect.value; computeRows(); renderTable(); attachTableHandlers(); });
+  dateSelect.addEventListener('change', ()=>{ currentDate = dateSelect.value; computeRows(); renderTable(); attachTableHandlers(); updateTrend(); });
   brandFilter.addEventListener('input', ()=>{ computeRows(); renderTable(); attachTableHandlers(); });
   document.getElementById('refreshBtn').addEventListener('click', ()=>{ loadCountsCsv(); });
   saveLocalBtn.addEventListener('click', saveSelectionLocal);
@@ -515,10 +537,81 @@ Troubleshoot:
   selectAll.addEventListener('change', ()=>{
     if(selectAll.checked){ currentRows.forEach(r=>selected.add(r.brand)); }
     else { selected.clear(); }
-    renderTable(); attachTableHandlers();
+    renderTable(); attachTableHandlers(); updateTrend();
   });
-  modeCountsBtn.addEventListener('click', ()=>{ viewMode = 'counts'; localStorage.setItem('view_mode','counts'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); attachTableHandlers(); });
-  modePercentBtn.addEventListener('click', ()=>{ viewMode = 'percent'; localStorage.setItem('view_mode','percent'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); attachTableHandlers(); });
+  modeCountsBtn.addEventListener('click', ()=>{ viewMode = 'counts'; localStorage.setItem('view_mode','counts'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); attachTableHandlers(); updateTrend(); });
+  modePercentBtn.addEventListener('click', ()=>{ viewMode = 'percent'; localStorage.setItem('view_mode','percent'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); attachTableHandlers(); updateTrend(); });
+
+  // ==== Trend helpers ====
+  function allDatesSorted(){ return Array.from(new Set(allRows.map(r=>r.date))).sort(); }
+
+  function seriesForBrand(brand){
+    const dates = allDatesSorted();
+    const byDate = new Map();
+    for(const r of allRows){ if(r.brand === brand) byDate.set(r.date, r); }
+    const pos = [], neu = [], neg = [];
+    for(const d of dates){
+      const r = byDate.get(d) || {total:0,positive:0,neutral:0,negative:0};
+      if(viewMode === 'percent'){
+        const t = r.total || 0; const f = (x)=> t? (x/t*100) : 0;
+        pos.push(+f(r.positive).toFixed(1));
+        neu.push(+f(r.neutral).toFixed(1));
+        neg.push(+f(r.negative).toFixed(1));
+      }else{
+        pos.push(r.positive||0); neu.push(r.neutral||0); neg.push(r.negative||0);
+      }
+    }
+    return { dates, pos, neu, neg };
+  }
+
+  function updateTrend(){
+    const selCount = selected.size;
+    let brand = null; let auto = false;
+    if(selCount === 1){ brand = Array.from(selected)[0]; }
+    else if(selCount === 0 && currentRows.length){ brand = currentRows[0].brand; auto = true; }
+    else {
+      trendHint.classList.remove('hidden');
+      trendInfo.textContent = '';
+      if(trendChart){ trendChart.destroy(); trendChart = null; }
+      return;
+    }
+    trendHint.classList.add('hidden');
+    trendBrand = brand;
+    const s = seriesForBrand(brand);
+    const yLabel = (viewMode==='percent') ? '% of articles' : 'Headline count';
+    trendInfo.textContent = auto ? `Showing trend for top negative brand: ${brand}` : `Trend for ${brand}`;
+
+    const data = {
+      labels: s.dates,
+      datasets: [
+        { label: 'Positive', data: s.pos, backgroundColor: '#10b981', stack: 'sent' },
+        { label: 'Neutral',  data: s.neu, backgroundColor: '#9ca3af', stack: 'sent' },
+        { label: 'Negative', data: s.neg, backgroundColor: '#ef4444', stack: 'sent' },
+      ]
+    };
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.parsed.y;
+              return (viewMode==='percent') ? `${ctx.dataset.label}: ${v}%` : `${ctx.dataset.label}: ${v}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true, beginAtZero: true, ticks: { callback: (v)=> viewMode==='percent' ? v+"%" : v } }
+      }
+    };
+
+    if(trendChart){ trendChart.destroy(); }
+    if(trendCanvas){ trendChart = new Chart(trendCanvas.getContext('2d'), { type: 'bar', data, options }); }
+  }
 
   // Load CSVs
   function loadCountsCsv(){
