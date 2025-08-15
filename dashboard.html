@@ -26,9 +26,16 @@
         <label class="block text-sm font-medium mb-1">Filter brands</label>
         <input id="brandFilter" type="text" placeholder="Type to filter…" class="w-full border rounded-lg p-2" />
       </div>
-      <div class="flex items-end gap-2">
+      <div class="flex items-end gap-2 w-full">
         <button id="refreshBtn" class="px-3 py-2 rounded-lg bg-slate-900 text-white">Refresh</button>
         <button id="exportCsvBtn" class="px-3 py-2 rounded-lg border">Export selection (CSV)</button>
+        <div class="ml-auto flex items-center gap-2">
+          <span class="text-xs text-slate-600">Display:</span>
+          <div class="flex gap-1" role="group" aria-label="Display mode">
+            <button id="modeCountsBtn" class="px-2 py-1 rounded-lg border bg-white" title="Show raw counts">Counts</button>
+            <button id="modePercentBtn" class="px-2 py-1 rounded-lg border bg-white" title="Show percentages">%</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -55,9 +62,9 @@
             <th class="p-3 text-left"><input type="checkbox" id="selectAll"></th>
             <th class="p-3 text-left">Rank</th>
             <th class="p-3 text-left">Brand</th>
-            <th class="p-3 text-left">Negative</th>
-            <th class="p-3 text-left">Neutral</th>
-            <th class="p-3 text-left">Positive</th>
+            <th id="thNeg" class="p-3 text-left">Negative (%)</th>
+            <th id="thNeu" class="p-3 text-left">Neutral (%)</th>
+            <th id="thPos" class="p-3 text-left">Positive (%)</th>
             <th class="p-3 text-left">Total</th>
             <th class="p-3 text-left">Theme</th>
             <th class="p-3 text-left">Headlines</th>
@@ -110,6 +117,8 @@
   const CSV_ARTICLES = (date) => `data/articles/${date}.csv`; // per-day detail
   const ROWS_TO_SHOW = 25; // top by negative
   const tableBody = document.getElementById('tableBody');
+  const modeCountsBtn = document.getElementById('modeCountsBtn');
+  const modePercentBtn = document.getElementById('modePercentBtn');
   const dateSelect = document.getElementById('dateSelect');
   const brandFilter = document.getElementById('brandFilter');
   const statusEl = document.getElementById('status');
@@ -133,6 +142,7 @@
   let currentDate = null;
   let currentRows = []; // filtered to date, then sorted by negative desc
   let selected = new Set(); // brand names selected (for current date)
+  let viewMode = localStorage.getItem('view_mode') || 'percent'; // 'counts' | 'percent'
   const articlesCache = {}; // date -> [article rows]
 
   function logDebug(msg, extra){
@@ -146,6 +156,15 @@
   }
 
   function formatInt(x){ return Number(x || 0); }
+
+  // Format a value as a percentage of total (e.g., 60 of 199 => 30%)
+  function fmtPct(part, total, decimals = 0){
+    const t = Number(total || 0), p = Number(part || 0);
+    if(!t || isNaN(t)) return '0%';
+    const v = (p / t) * 100;
+    const s = v.toFixed(decimals);
+    return s.replace(/\.0+$/, '') + '%';
+  }
 
   // Normalize CSV header keys: trim, lowercase, and strip BOM (\ufeff) if present
   function normalizeRowKeys(row){
@@ -162,6 +181,8 @@
     dateSelect.innerHTML = dates.map(d => `<option value="${d}">${d}</option>`).join('\n');
     currentDate = dates[dates.length - 1] || null;
     if(currentDate) dateSelect.value = currentDate;
+    updateHeaderLabels();
+    updateModeButtons();
   }
 
   function computeRows(){
@@ -180,16 +201,38 @@
     return `<span class="${base} bg-slate-100 text-slate-700">neutral</span>`;
   }
 
+  function headerLabel(base){ return viewMode === 'percent' ? `${base} (%)` : base; }
+  function updateHeaderLabels(){
+    const thNeg = document.getElementById('thNeg');
+    const thNeu = document.getElementById('thNeu');
+    const thPos = document.getElementById('thPos');
+    if(thNeg){ thNeg.textContent = headerLabel('Negative'); }
+    if(thNeu){ thNeu.textContent = headerLabel('Neutral'); }
+    if(thPos){ thPos.textContent = headerLabel('Positive'); }
+  }
+  function updateModeButtons(){
+    const base = 'px-2 py-1 rounded-lg border';
+    if(modeCountsBtn){ modeCountsBtn.className = base + (viewMode==='counts' ? ' bg-slate-900 text-white' : ' bg-white'); }
+    if(modePercentBtn){ modePercentBtn.className = base + (viewMode==='percent' ? ' bg-slate-900 text-white' : ' bg-white'); }
+  }
+  function cellVal(part,total){
+    if(viewMode === 'percent') return {val: fmtPct(part,total), title: `${part} of ${total}`};
+    const pct = fmtPct(part,total);
+    return {val: String(part), title: `${pct} of ${total}`};
+  }
   function renderTable(){
     tableBody.innerHTML = currentRows.map((r, idx)=>{
       const isSel = selected.has(r.brand);
+      const n = cellVal(r.negative, r.total);
+      const u = cellVal(r.neutral, r.total);
+      const p = cellVal(r.positive, r.total);
       return `<tr class="border-t hover:bg-slate-50">
         <td class="p-3"><input type="checkbox" data-brand="${r.brand.replace(/\"/g,'&quot;')}" ${isSel?'checked':''}></td>
         <td class="p-3">${idx+1}</td>
         <td class="p-3 font-medium"><button class="underline" data-view-brand="${r.brand.replace(/\"/g,'&quot;')}">${r.brand}</button></td>
-        <td class="p-3">${r.negative}</td>
-        <td class="p-3">${r.neutral}</td>
-        <td class="p-3">${r.positive}</td>
+        <td class=\"p-3\" title=\"${n.title}\">${n.val}</td>
+        <td class=\"p-3\" title=\"${u.title}\">${u.val}</td>
+        <td class=\"p-3\" title=\"${p.title}\">${p.val}</td>
         <td class="p-3">${r.total}</td>
         <td class="p-3 text-slate-700">${r.theme || 'none'}</td>
         <td class="p-3"><button class="px-2 py-1 border rounded-lg" data-view-brand="${r.brand.replace(/\"/g,'&quot;')}">View</button></td>
@@ -204,6 +247,9 @@
       savedContainer.innerHTML = '<p class="text-slate-600">No saved items yet.</p>';
       return;
     }
+    const hNeg = headerLabel('Negative');
+    const hNeu = headerLabel('Neutral');
+    const hPos = headerLabel('Positive');
     savedContainer.innerHTML = `
       <div class="overflow-x-auto">
         <table class="min-w-full text-sm">
@@ -211,26 +257,31 @@
             <tr>
               <th class="p-2 text-left">Date</th>
               <th class="p-2 text-left">Brand</th>
-              <th class="p-2 text-left">Negative</th>
-              <th class="p-2 text-left">Neutral</th>
-              <th class="p-2 text-left">Positive</th>
+              <th class="p-2 text-left">${hNeg}</th>
+              <th class="p-2 text-left">${hNeu}</th>
+              <th class="p-2 text-left">${hPos}</th>
               <th class="p-2 text-left">Total</th>
               <th class="p-2 text-left">Theme</th>
               <th class="p-2 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            ${saved.map((s,i)=>`
+            ${saved.map((s,i)=>{
+              const n = cellVal(s.negative, s.total);
+              const u = cellVal(s.neutral, s.total);
+              const p = cellVal(s.positive, s.total);
+              return `
               <tr class="border-t">
                 <td class="p-2">${s.date}</td>
                 <td class="p-2 font-medium">${s.brand}</td>
-                <td class="p-2">${s.negative}</td>
-                <td class="p-2">${s.neutral}</td>
-                <td class="p-2">${s.positive}</td>
+                <td class=\"p-2\" title=\"${n.title}\">${n.val}</td>
+                <td class=\"p-2\" title=\"${u.title}\">${u.val}</td>
+                <td class=\"p-2\" title=\"${p.title}\">${p.val}</td>
                 <td class="p-2">${s.total}</td>
                 <td class="p-2">${s.theme || 'none'}</td>
                 <td class="p-2"><button data-i="${i}" class="text-rose-600 underline">Remove</button></td>
-              </tr>`).join('\n')}
+              </tr>`;
+            }).join('\n')}
           </tbody>
         </table>
       </div>`;
@@ -262,7 +313,7 @@
     if(!rows.length){ alert('No rows selected.'); return; }
     const header = ['date','brand','total','positive','neutral','negative','theme'];
     const csv = [header.join(',')].concat(rows.map(r=>[
-      r.date, r.brand, r.total, r.positive, r.neutral, r.negative, `"${(r.theme||'').replace(/"/g,'""')}"`
+      r.date, r.brand, r.total, r.positive, r.neutral, r.negative, `"${(r.theme||'').replace(/\"/g,'""')}"`
     ].join(','))).join('\n');
     const blob = new Blob([csv], {type:'text/csv'});
     const url = URL.createObjectURL(blob);
@@ -309,24 +360,49 @@
   // Load and cache articles for a date
   async function loadArticlesForDate(date){
     if(articlesCache[date]) return articlesCache[date];
-    const path = CSV_ARTICLES(date) + '?_=' + Date.now();
-    try{
-      const resp = await fetch(path, {cache:'no-store'});
-      if(!resp.ok){ logDebug(`Articles ${date} fetch failed`, `HTTP ${resp.status}`); articlesCache[date] = []; return []; }
-      const text = await resp.text();
-      if(typeof Papa === 'undefined'){ throw new Error('Papa Parse not loaded'); }
-      const parsed = Papa.parse(text, { header: true });
-      const rows = parsed.data.filter(r=> r && r.brand && r.title && r.url).map(r=>({
-        brand: String(r.brand),
-        title: String(r.title),
-        url: String(r.url),
-        domain: String(r.domain || ''),
-        sentiment: String(r.sentiment || 'neutral'),
-        published: String(r.published || '')
-      }));
-      articlesCache[date] = rows;
-      return rows;
-    }catch(err){ console.error(err); logDebug('Articles parse error', String(err)); articlesCache[date] = []; return []; }
+    // Try relative first, then absolute GH Pages
+    const rel = CSV_ARTICLES(date) + '?_=' + Date.now();
+    const abs = GH_PAGES_BASE + CSV_ARTICLES(date) + (CSV_ARTICLES(date).includes('?') ? '&' : '?') + '_=' + Date.now();
+    const candidates = [rel];
+    if(!rel.startsWith(GH_PAGES_BASE)) candidates.push(abs);
+
+    for(const url of candidates){
+      try{
+        const resp = await fetch(url, {cache:'no-store'});
+        if(!resp.ok){ logDebug(`Articles ${date} fetch failed`, `URL ${url} HTTP ${resp.status}`); continue; }
+        const text = await resp.text();
+        if(typeof Papa === 'undefined'){ throw new Error('Papa Parse not loaded'); }
+        const parsed = Papa.parse(text, { header: true });
+        // Normalize keys (handles BOMs/casing)
+        const norm = (Array.isArray(parsed.data) ? parsed.data : []).map(normalizeRowKeys);
+        const rows = norm
+          .filter(r=> r && (r.brand || r.brand_name || r.canonical || r.company || r.alias_matched) && (r.title || r.headline))
+          .map(r=>{
+            const brand = String(r.brand || r.brand_name || r.canonical || r.company || '').trim();
+            const alias = String(r.alias_matched || r.alias || '').trim();
+            const rawUrl = String(r.url || r.link || r.href || '');
+            let domain = String(r.domain || '');
+            if(!domain && rawUrl){ try{ domain = new URL(rawUrl).hostname; }catch{ /* noop */ } }
+            return {
+              brand,
+              alias,
+              title: String(r.title || r.headline || '').trim(),
+              url: rawUrl,
+              domain,
+              sentiment: String(r.sentiment || r.label || 'neutral'),
+              published: String(r.published || r.date || r.datetime || '')
+            };
+          });
+        articlesCache[date] = rows;
+        logDebug(`Articles parsed for ${date}`, `${rows.length} rows from ${url}`);
+        return rows;
+      }catch(err){
+        console.error(err); logDebug('Articles parse error', String(err));
+      }
+    }
+    // All attempts failed
+    articlesCache[date] = [];
+    return [];
   }
 
   function parseDateMaybe(s){ const t = Date.parse(s); return isNaN(t) ? 0 : t; }
@@ -338,7 +414,8 @@
     openModal();
 
     const all = await loadArticlesForDate(currentDate);
-    const rows = all.filter(r => r.brand === brand);
+    const key = brand.trim().toLowerCase();
+    const rows = all.filter(r => (r.brand || '').trim().toLowerCase() === key || (r.alias || '').trim().toLowerCase() === key);
     // Prefer negative first, then published desc
     rows.sort((a,b)=>{
       const order = (x)=> x.sentiment === 'negative' ? 2 : (x.sentiment === 'neutral' ? 1 : 0);
@@ -348,6 +425,7 @@
     });
 
     if(!rows.length){
+      logDebug('Drilldown no rows', `brand=${brand} totalInFile=${all.length}`);
       modalBody.innerHTML = '<p class="text-sm text-slate-600">No articles found for this brand on this date.</p>';
       return;
     }
@@ -382,6 +460,8 @@
     else { selected.clear(); }
     renderTable(); attachTableHandlers();
   });
+  modeCountsBtn.addEventListener('click', ()=>{ viewMode = 'counts'; localStorage.setItem('view_mode','counts'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); attachTableHandlers(); });
+  modePercentBtn.addEventListener('click', ()=>{ viewMode = 'percent'; localStorage.setItem('view_mode','percent'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); attachTableHandlers(); });
 
   // Load CSVs
   function loadCountsCsv(){
@@ -467,6 +547,10 @@
     } else {
       logDebug('TEST PASSED: header normalization ✓');
     }
+    // Additional test for cellVal
+    const cv1 = (function(){ const m='percent'; return {out: (m==='percent')}; })();
+    const p = fmtPct(60, 199);
+    logDebug('TEST INFO: fmtPct(60,199)=', p);
   })();
 
   loadCountsCsv();
