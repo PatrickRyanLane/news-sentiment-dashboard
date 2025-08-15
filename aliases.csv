@@ -1,12 +1,328 @@
-brand,alias
-Procter & Gamble,"Procter & Gamble"
-Procter & Gamble,"P&G"
-Alphabet,"Alphabet"
-Alphabet,"Google"
-Meta,"Meta"
-Meta,"Facebook"
-Apple,"Apple"
-Amazon,"Amazon"
-Walmart,"Walmart"
-Ford,"Ford"
-Disney,"Disney"
+brand	alias
+Exxon Mobil	EM
+UnitedHealth Group	UG
+CVS Health	CH
+Berkshire Hathaway	BH
+Costco Wholesale	CW
+Cardinal Health	CH
+Cigna Group	CG
+Marathon Petroleum	MP
+Valero Energy	VE
+General Motors	GM
+Ford Motor	FM
+AT&T	ATandT
+Verizon Communications	VC
+Bank of America	BA
+Home Depot	HD
+Elevance Health	EH
+General Electric	GE
+Archer Daniels Midland	ADM
+Procter & Gamble	Procter and Gamble
+Procter & Gamble	PG
+Johnson & Johnson	Johnson and Johnson
+Johnson & Johnson	JJ
+Dell Technologies	DT
+State Farm Insurance	SFI
+Kaiser Permanente	KP
+T-Mobile US	TMobile US
+Lockheed Martin	LM
+American International Group	AIG
+Walgreens Boots Alliance	WBA
+Tyson Foods	TF
+Liberty Mutual Insurance Group	LMIG
+U.S. Postal Service	UPS
+General Dynamics	GD
+Delta Air Lines	DAL
+Best Buy	BB
+Prudential Financial	PF
+Charter Communications	CC
+United Airlines Holdings	UAH
+American Express	AE
+Coca-Cola	CocaCola
+Coca-Cola	CC
+New York Life Insurance	NYLI
+Northrop Grumman	NG
+Gilead Sciences	GS
+Morgan Stanley	MS
+Publix Super Markets	PSM
+Goldman Sachs Group	GSG
+Cisco Systems	CS
+Hewlett Packard Enterprise	HPE
+Bristol-Myers Squibb	BristolMyers Squibb
+Bristol-Myers Squibb	BMS
+Massachusetts Mutual Life Insurance	MMLI
+PNC Financial Services Group	PFSG
+Thermo Fisher Scientific	TFS
+Abbott Laboratories	AL
+HCA Healthcare	HH
+Philip Morris International	PMI
+Micron Technology	MT
+Honeywell International	HI
+Capital One Financial	COF
+Tenet Healthcare	TH
+US Foods Holding	FH
+Plains GP Holdings	PH
+Applied Materials	AM
+StoneX Group	SG
+EOG Resources	ER
+Reinsurance Group of America	RGA
+Hartford Financial Services Group	HFSG
+Warner Bros. Discovery	WBD
+Mondelez International	MI
+Eli Lilly	EL
+Lincoln National	LN
+Duke Energy	DE
+Northwestern Mutual	NM
+PBF Energy	PE
+General Mills	GM
+Kraft Heinz	KH
+Arrow Electronics	AE
+Dollar General	DG
+Automatic Data Processing	ADP
+Occidental Petroleum	OP
+Enterprise Products Partners	EPP
+Southwest Airlines	SA
+Molina Healthcare	MH
+CBRE Group	CG
+DISH Network	DN
+Sherwin-Williams	SherwinWilliams
+Sherwin-Williams	SW
+Dominion Energy	DE
+American Airlines Group	AAG
+Pacific Gas and Electric	Pacific Gas & Electric
+Pacific Gas and Electric	PGAE
+DXC Technology	DT
+Freeport-McMoRan	FreeportMcMoRan
+Freeport-McMoRan	FM
+Boston Scientific	BS
+NextEra Energy	NE
+Kimberly-Clark	KimberlyClark
+Kimberly-Clark	KC
+Penske Automotive Group	PAG
+D.R. Horton	DH
+Group 1 Automotive	GA
+Becton Dickinson	BD
+Cognizant Technology Solutions	CTS
+Stanley Black & Decker	Stanley Black and Decker
+Stanley Black & Decker	SBD
+Marriott International	MI
+Bank of New York Mellon	BNYM
+Xcel Energy	XE
+Edison International	EI
+Truist Financial	TF
+Norfolk Southern	NS
+Union Pacific	UP
+GXO Logistics	GL
+Parker-Hannifin	ParkerHannifin
+Parker-Hannifin	PH
+Public Service Enterprise Group	PSEG
+Waste Management	WM
+Consolidated Edison	CE
+Synchrony Financial	SF
+Illinois Tool Works	ITW
+Fidelity National Financial	FNF
+Lam Research	LR
+PayPal Holdings	PH
+U.S. Bancorp	UB
+Booking Holdings	BH
+Emerson Electric	EE
+Hilton Worldwide Holdings	HWH
+Genuine Parts	GP
+Kinder Morgan	KM
+Ross Stores	RS
+State Street	SS
+Colgate-Palmolive	ColgatePalmolive
+Colgate-Palmolive	CP
+Advanced Micro Devices	AMD
+Estee Lauder	EL
+Marsh & McLennan	Marsh and McLennan
+Marsh & McLennan	MM
+Tractor Supply	TS
+C.H. Robinson	CR
+NRG Energy	NE
+O'Reilly Automotive	OA
+DTE Energy	DE
+PPG Industries	PI
+Las Vegas Sands	LVS
+W.W. Grainger	WG
+Jacobs Engineering Group	JEG
+Devon Energy	DE
+Cheniere Energy	CE
+WESCO International	WI
+Quanta Services	QS
+L3Harris Technologies	LT
+Leidos Holdings	LH
+Pioneer Natural Resources	PNR
+Crown Holdings	CH
+Simon Property Group	SPG
+Baker Hughes	BH
+J.B. Hunt Transport Services	JHTS
+International Paper	IP
+Regeneron Pharmaceuticals	RP
+Yum Brands	YB
+S&P Global	SandP Global
+Antero Resources	AR
+Ameriprise Financial	AF
+Jones Lang LaSalle	JLL
+Constellation Energy	CE
+Texas Instruments	TI
+Dollar Tree	DT
+Coterra Energy	CE
+Intercontinental Exchange	IE
+Franklin Resources	FR
+CF Industries Holdings	IH
+Athene Holding	AH
+Republic Services	RS
+PG&E	PGandE
+Air Products & Chemicals	Air Products and Chemicals
+Air Products & Chemicals	APC
+Altria Group	AG
+Omnicom Group	OG
+Huntington Ingalls Industries	HII
+CenterPoint Energy	CE
+Principal Financial Group	PFG
+Targa Resources	TR
+Rockwell Automation	RA
+Raymond James Financial	RJF
+Otis Worldwide	OW
+Atmos Energy	AE
+Boston Properties	BP
+Howmet Aerospace	HA
+Discover Financial Services	DFS
+Quest Diagnostics	QD
+Guardian Life Ins. Co. of America	GLICA
+Interpublic Group	IG
+Fifth Third Bancorp	FTB
+Westinghouse Air Brake Technologies	WABT
+Icahn Enterprises	IE
+C.H. Robinson Worldwide	CRW
+Southwestern Energy	SE
+Robert Half International	RHI
+Northern Trust	NT
+Kimco Realty	KR
+Eversource Energy	EE
+Universal Health Services	UHS
+Advance Auto Parts	AAP
+Citizens Financial Group	CFG
+Iron Mountain	IM
+Insight Enterprises	IE
+Harley-Davidson	HarleyDavidson
+Harley-Davidson	HD
+Ryder System	RS
+Mohawk Industries	MI
+United Rentals	UR
+A-Mark Precious Metals	AMark Precious Metals
+A-Mark Precious Metals	MPM
+Darden Restaurants	DR
+Erie Insurance Group	EIG
+XPO Logistics	XL
+Regions Financial	RF
+Avis Budget Group	ABG
+J.M. Smucker	JS
+Campbell Soup	CS
+Alaska Air Group	AAG
+Old Dominion Freight Line	ODFL
+Ally Financial	AF
+Eastman Chemical	EC
+Western Digital	WD
+Fortune Brands Innovations	FBI
+Realty Income	RI
+Newell Brands	NB
+Jefferies Financial Group	JFG
+Sonoco Products	SP
+Unum Group	UG
+Expeditors Intl. of Washington	EIW
+Asbury Automotive Group	AAG
+Sonic Automotive	SA
+Lithia Motors	LM
+D.R. Horton	DH
+Toll Brothers	TB
+Meritage Homes	MH
+Taylor Morrison Home	TMH
+Century Communities	CC
+Simon Property Group	SPG
+Baker Hughes	BH
+J.B. Hunt Transport Services	JHTS
+International Paper	IP
+Regeneron Pharmaceuticals	RP
+Yum Brands	YB
+S&P Global	SandP Global
+Antero Resources	AR
+Ameriprise Financial	AF
+Jones Lang LaSalle	JLL
+Constellation Energy	CE
+Texas Instruments	TI
+Dollar Tree	DT
+Coterra Energy	CE
+Intercontinental Exchange	IE
+Franklin Resources	FR
+CF Industries Holdings	IH
+Athene Holding	AH
+Republic Services	RS
+PG&E	PGandE
+Air Products & Chemicals	Air Products and Chemicals
+Air Products & Chemicals	APC
+Altria Group	AG
+Omnicom Group	OG
+Huntington Ingalls Industries	HII
+CenterPoint Energy	CE
+Principal Financial Group	PFG
+Targa Resources	TR
+Rockwell Automation	RA
+Raymond James Financial	RJF
+Otis Worldwide	OW
+Atmos Energy	AE
+Boston Properties	BP
+Howmet Aerospace	HA
+Discover Financial Services	DFS
+Quest Diagnostics	QD
+Guardian Life Ins. Co. of America	GLICA
+Interpublic Group	IG
+Fifth Third Bancorp	FTB
+Westinghouse Air Brake Technologies	WABT
+Icahn Enterprises	IE
+C.H. Robinson Worldwide	CRW
+Southwestern Energy	SE
+Robert Half International	RHI
+Northern Trust	NT
+Kimco Realty	KR
+Eversource Energy	EE
+Universal Health Services	UHS
+Advance Auto Parts	AAP
+Citizens Financial Group	CFG
+Iron Mountain	IM
+Insight Enterprises	IE
+Harley-Davidson	HarleyDavidson
+Harley-Davidson	HD
+Ryder System	RS
+Mohawk Industries	MI
+United Rentals	UR
+A-Mark Precious Metals	AMark Precious Metals
+A-Mark Precious Metals	MPM
+Darden Restaurants	DR
+Erie Insurance Group	EIG
+XPO Logistics	XL
+Regions Financial	RF
+Avis Budget Group	ABG
+J.M. Smucker	JS
+Campbell Soup	CS
+Alaska Air Group	AAG
+Old Dominion Freight Line	ODFL
+Ally Financial	AF
+Eastman Chemical	EC
+Western Digital	WD
+Fortune Brands Innovations	FBI
+Realty Income	RI
+Newell Brands	NB
+Jefferies Financial Group	JFG
+Sonoco Products	SP
+Unum Group	UG
+Expeditors Intl. of Washington	EIW
+Asbury Automotive Group	AAG
+Sonic Automotive	SA
+Lithia Motors	LM
+D.R. Horton	DH
+Toll Brothers	TB
+Meritage Homes	MH
+Taylor Morrison Home	TMH
+Century Communities	CC
