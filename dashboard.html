@@ -282,7 +282,7 @@
       </tr>`
     }).join('\n');
     statusEl.textContent = `${currentRows.length} brands shown for ${currentDate}. ${selected.size} selected.`;
-        updateTrend();
+    updateTrend();
   }
 
   function renderSaved(){
@@ -414,13 +414,16 @@ Troubleshoot:
   }
 
   function attachTableHandlers(){
+    // Checkbox changes should update the trend immediately
     tableBody.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
       cb.addEventListener('change', ()=>{
         const brand = cb.getAttribute('data-brand');
         if(cb.checked) selected.add(brand); else selected.delete(brand);
         statusEl.textContent = `${currentRows.length} brands shown for ${currentDate}. ${selected.size} selected.`;
+        updateTrend();
       });
     });
+    // Brand link / View button opens the drilldown
     tableBody.querySelectorAll('[data-view-brand]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const brand = btn.getAttribute('data-view-brand');
