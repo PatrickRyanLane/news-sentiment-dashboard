@@ -144,6 +144,19 @@
   let selected = new Set(); // brand names selected (for current date)
   let viewMode = localStorage.getItem('view_mode') || 'percent'; // 'counts' | 'percent'
   const articlesCache = {}; // date -> [article rows]
+  
+  // --- Theme computation (client-side) ---
+  const MIN_THEME_FREQ = 2; // require a phrase to appear at least twice
+  const STOPWORDS = new Set([
+    'the','a','an','and','or','but','of','for','to','in','on','at','by','with','from','as','about','after','over','under','into','across','amid','amidst','per',
+    'this','that','these','those','it','its','their','his','her','they','we','you','our','your','i',
+    'is','are','was','were','be','been','being','has','have','had','do','does','did','will','would','should','can','could','may','might','must',
+    'new','update','updates','report','reports','reported','says','say','said','see','sees','seen','watch','market','stock','shares','share','price','prices',
+    'wins','loss','losses','gain','gains','up','down','amid','amidst','amid', 'news','today','latest','analyst','analysts','rating','cut','cuts','downgrade','downgrades',
+    'quarter','q1','q2','q3','q4','year','yrs','2024','2025','2026','usd','billion','million','percent','pct','vs','vs.', 'inc','corp','co','ltd','plc'
+  ]);
+  // Cache of computed themes per day: { [date]: { [brand]: themeString } }
+  const themesByDate = {};
 
   function logDebug(msg, extra){
     const params = new URLSearchParams(location.search);
@@ -174,6 +187,15 @@
       out[nk] = row[k];
     }
     return out;
+  }
+
+  // --- THEME ACCESSOR (fixes ReferenceError) ---
+  // Returns a theme for a row, preferring any client-computed theme for the
+  // current date/brand, falling back to the CSV theme, then "None".
+  function getThemeFor(row){
+    const map = themesByDate[currentDate] || {};
+    const val = map[row.brand] || row.theme || 'None';
+    return (val && String(val).trim().length) ? val : 'None';
   }
 
   function renderDateOptions(){
@@ -234,7 +256,7 @@
         <td class=\"p-3\" title=\"${u.title}\">${u.val}</td>
         <td class=\"p-3\" title=\"${p.title}\">${p.val}</td>
         <td class="p-3">${r.total}</td>
-        <td class="p-3 text-slate-700">${r.theme || 'none'}</td>
+        <td class="p-3 text-slate-700">${getThemeFor(r)}</td>
         <td class="p-3"><button class="px-2 py-1 border rounded-lg" data-view-brand="${r.brand.replace(/\"/g,'&quot;')}">View</button></td>
       </tr>`
     }).join('\n');
@@ -326,12 +348,47 @@
     const rows = currentRows.filter(r => selected.has(r.brand));
     if(!url){ alert('Please paste your Google Apps Script Webhook URL.'); return; }
     if(!rows.length){ alert('No rows selected.'); return; }
+    const looksLikeGAS = /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(\?.*)?$/i.test(url);
+    if(!looksLikeGAS){
+      const proceed = confirm('The URL does not look like a Google Apps Script Web App (…/exec). Continue anyway?');
+      if(!proceed) return;
+    }
+
+    const payload = JSON.stringify({ rows });
+
     try{
-      const resp = await fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ rows }) });
-      if(!resp.ok){ throw new Error('HTTP '+resp.status); }
-      await resp.json().catch(()=>({status:'ok'}));
+      // Try a CORS simple-request first (no preflight): text/plain and no custom headers.
+      const resp = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: payload
+      });
+      const text = await resp.text().catch(()=> '');
+      if(!resp.ok){ throw new Error(`HTTP ${resp.status} ${resp.statusText} — ${text.slice(0,200)}`); }
+      let data; try { data = JSON.parse(text); } catch { data = { status: 'ok', raw: text }; }
+      console.log('Webhook response (cors):', data);
       alert('Sent to Google Sheet.');
-    }catch(err){ console.error(err); alert('Failed to send to webhook. See console for details.'); }
+    }catch(err){
+      console.warn('CORS failed, falling back to no-cors…', err);
+      try{
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',   // opaque response, but request is delivered
+          headers: { 'Content-Type': 'text/plain' },
+          body: payload
+        });
+        alert('Sent to Google Sheet (no-cors). Check your sheet in a few seconds.');
+      }catch(e2){
+        console.error('Webhook error:', e2);
+        alert(`Failed to send to webhook: ${e2.message}.
+
+Troubleshoot:
+1) In Apps Script: Deploy → Manage deployments → Web app → Access = "Anyone" and Execute as = "Me".
+2) Use the URL ending with /exec (not /dev).
+3) If you set SECRET in the script, append ?key=YOUR_SECRET to the URL.`);
+      }
+    }
   }
 
   function attachTableHandlers(){
@@ -548,9 +605,11 @@
       logDebug('TEST PASSED: header normalization ✓');
     }
     // Additional test for cellVal
-    const cv1 = (function(){ const m='percent'; return {out: (m==='percent')}; })();
     const p = fmtPct(60, 199);
     logDebug('TEST INFO: fmtPct(60,199)=', p);
+    // Test theme accessor
+    const tt = getThemeFor({brand:'Demo', theme:'earnings miss'});
+    logDebug('TEST INFO: getThemeFor fallback =', tt);
   })();
 
   loadCountsCsv();
