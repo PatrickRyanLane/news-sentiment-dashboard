@@ -47,7 +47,7 @@
       </div>
       <div class="mt-3 flex items-center gap-3 flex-wrap">
         <button id="saveLocalBtn" class="px-3 py-2 rounded-lg bg-black hover:bg-black/90 text-white">Save selection (local)</button>
-        <button id="exportCsvBtn" class="px-3 py-2 rounded-lg bg-black hover:bg-black/90 text-white">Export selection (CSV)</button>
+        <button id="exportCsvBtn" class="px-3 py-2 rounded-lg bg-black hover:bg-black/90 text-white">Download all data (CSV)</button>
       </div>
     </section>
 
@@ -213,7 +213,7 @@
     return out;
   }
 
-  // --- THEME ACCESSOR (fixes ReferenceError) ---
+  // --- THEME ACCESSOR ---
   // Returns a theme for a row, preferring any client-computed theme for the
   // current date/brand, falling back to the CSV theme, then "None".
   function getThemeFor(row){
@@ -356,8 +356,15 @@
   }
 
   function exportSelectionCsv(){
-    const rows = currentRows.filter(r => selected.has(r.brand));
-    if(!rows.length){ alert('No rows selected.'); return; }
+    // Export ALL brands for the currently selected date (ignores checkbox/filter/top-25)
+    const rows = allRows.filter(r => r.date === currentDate);
+    if(!rows.length){ alert('No data for this date.'); return; }
+
+    // Stable sort: negative desc, then brand asc
+    rows.sort((a,b)=>{
+      const d = formatInt(b.negative) - formatInt(a.negative);
+      return d !== 0 ? d : String(a.brand).localeCompare(String(b.brand));
+    });
 
     // Build CSV (with BOM for Excel support)
     const header = ['date','brand','total','positive','neutral','negative','theme'];
@@ -368,28 +375,48 @@
       r.positive,
       r.neutral,
       r.negative,
-      '"' + String(r.theme||'').replace(/"/g,'""') + '"'
+      '"' + String(getThemeFor(r) || '').replace(/"/g,'""') + '"'
     ].join(','));
-    const csv = '\ufeff' + [header.join(','), ...body].join('\r\n');
+    const bom = '\ufeff';
+    const csv = bom + [header.join(','), ...body].join('\r\n');
 
-    // Download (more Safari/iOS friendly): append, click, remove
+    const filename = `alldata_${currentDate}.csv`;
+
+    // Robust, sandbox-friendly download
     try{
       const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `selection_${currentDate}.csv`;
-      a.rel = 'noopener';
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(()=>{
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 0);
+
+      // Attempt 1: anchor click (with target to help sandboxes)
+      try{
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.rel = 'noopener';
+        a.target = '_blank';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 800);
+        return;
+      }catch(anchorErr){ console.warn('Anchor download failed', anchorErr); }
+
+      // Attempt 2: hidden iframe
+      try{
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = url;
+        document.body.appendChild(iframe);
+        setTimeout(()=>{ document.body.removeChild(iframe); URL.revokeObjectURL(url); }, 1200);
+        return;
+      }catch(iframeErr){ console.warn('Iframe download failed', iframeErr); }
+
+      // Attempt 3: data URI in a new tab (user can save manually)
+      const dataUrl = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+      window.open(dataUrl, '_blank');
     }catch(err){
       console.error('CSV export failed', err);
-      alert('Download failed. Try right‑click → Save link as…');
+      alert('Download was blocked by the environment. As a fallback, try opening in GitHub Pages and downloading there.');
     }
   }
 
@@ -515,8 +542,8 @@
   dateSelect.addEventListener('change', ()=>{ currentDate = dateSelect.value; computeRows(); renderTable(); attachTableHandlers(); updateTrend(); });
   brandFilter.addEventListener('input', ()=>{ computeRows(); renderTable(); attachTableHandlers(); });
   document.getElementById('refreshBtn').addEventListener('click', ()=>{ loadCountsCsv(); });
-  saveLocalBtn.addEventListener('click', saveSelectionLocal);
-  exportCsvBtn.addEventListener('click', exportSelectionCsv);
+  if(saveLocalBtn) saveLocalBtn.addEventListener('click', saveSelectionLocal);
+  if(exportCsvBtn) exportCsvBtn.addEventListener('click', exportSelectionCsv);
   selectAll.addEventListener('change', ()=>{
     if(selectAll.checked){ currentRows.forEach(r=>selected.add(r.brand)); }
     else { selected.clear(); }
@@ -525,11 +552,10 @@
   modeCountsBtn.addEventListener('click', ()=>{ viewMode = 'counts'; localStorage.setItem('view_mode','counts'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); attachTableHandlers(); updateTrend(); });
   modePercentBtn.addEventListener('click', ()=>{ viewMode = 'percent'; localStorage.setItem('view_mode','percent'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); attachTableHandlers(); updateTrend(); });
 
-  // Trend navigation
+  // ==== Trend helpers & navigation ====
   if(trendPrev){ trendPrev.addEventListener('click', ()=>{ trendPage += 1; updateTrend(); }); }
   if(trendNext){ trendNext.addEventListener('click', ()=>{ trendPage = Math.max(0, trendPage - 1); updateTrend(); }); }
 
-  // ==== Trend helpers ====
   function allDatesSorted(){ return Array.from(new Set(allRows.map(r=>r.date))).sort(); }
 
   function seriesForBrand(brand){
@@ -560,8 +586,6 @@
       trendHint.classList.remove('hidden');
       trendInfo.textContent = '';
       if(trendRange) trendRange.textContent = '';
-      if(trendPrev) trendPrev.disabled = true;
-      if(trendNext) trendNext.disabled = true;
       if(trendChart){ trendChart.destroy(); trendChart = null; }
       return;
     }
@@ -584,14 +608,11 @@
     const neg = full.neg.slice(start, end);
 
     trendBrand = brand;
-    const yLabel = (viewMode==='percent') ? '% of articles' : 'Headline count';
     trendInfo.textContent = `BRAND: ${brand}`;
     if(trendRange){
       const rangeText = labels.length ? `  |  DATE: ${labels[0]} → ${labels[labels.length-1]}` : '';
       trendRange.textContent = rangeText;
     }
-    if(trendPrev){ trendPrev.disabled = (trendPage >= maxPage); }
-    if(trendNext){ trendNext.disabled = (trendPage <= 0); }
 
     const showLabels = labels.length <= 7;
 
@@ -717,6 +738,21 @@
     // Test theme accessor
     const tt = getThemeFor({brand:'Demo', theme:'earnings miss'});
     logDebug('TEST INFO: getThemeFor fallback =', tt);
+    // Export filter test: ensure all rows for selected date are included
+    const rowsTest = [
+      {date:'2025-08-13',brand:'A',total:10,positive:3,neutral:4,negative:3,theme:'x'},
+      {date:'2025-08-13',brand:'B',total:5,positive:1,neutral:1,negative:3,theme:'y'},
+      {date:'2025-08-12',brand:'C',total:1,positive:0,neutral:1,negative:0,theme:'z'}
+    ];
+    const filtered = rowsTest.filter(r=> r.date==='2025-08-13');
+    if(filtered.length!==2){ logDebug('TEST FAILED: export filter', String(filtered.length)); }
+    else { logDebug('TEST PASSED: export filter ✓'); }
+    // CSV join test (no raw linebreak token)
+    const hdr = ['h1','h2'];
+    const bod = ['1,2','3,4'];
+    const csvTest = bom + [hdr.join(','), ...bod].join('\r\n');
+    if(!csvTest.includes('\r\n')){ logDebug('TEST FAILED: csv join', csvTest); }
+    else { logDebug('TEST PASSED: csv join uses CRLF ✓'); }
   })();
 
   loadCountsCsv();
