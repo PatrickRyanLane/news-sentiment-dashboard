@@ -7,11 +7,361 @@ date,brand,total,positive,neutral,negative,theme
 2025-08-13,Meta,199,81,61,57,meta platforms
 2025-08-13,Procter & Gamble,55,27,21,7,procter gamble
 2025-08-13,Walmart,93,36,28,29,yahoo finance
-2025-08-14,Walmart,40,19,12,9,fight naugatuck parking
-2025-08-14,Disney,40,22,10,8,more app blog webtoon
-2025-08-14,Ford,40,10,22,8,mustang mach-e
-2025-08-14,Meta,40,14,18,8,confusion facebook dead long
-2025-08-14,Apple,40,8,26,6,accidentally leaked
+2025-08-14,Waste Management,40,10,2,28,outlook wall street
+2025-08-14,Eastman Chemical,40,5,12,23,federal lawsuit filed
+2025-08-14,Home Depot,40,7,13,20,ladders sold recalled
+2025-08-14,Republic Services,40,10,10,20,local trash troubles
+2025-08-14,Robert Half International,40,9,12,19,hits 52-week low
+2025-08-14,Celanese,40,6,16,18,earnings sales beat
+2025-08-14,AutoZone,40,14,10,16,outside bedford cleveland
+2025-08-14,Centene,40,13,11,16,yahoo finance
+2025-08-14,Kroger,40,14,11,15,failed albertsons merger
+2025-08-14,Stellantis,40,9,16,15,toledo jeep plant
+2025-08-14,Union Pacific,40,8,17,15,train cars derail
+2025-08-14,Aon,40,9,17,14,vesttoo bankruptcy creditors
+2025-08-14,Blackstone,40,12,14,14,goldman lead private
+2025-08-14,Hess,40,16,10,14,rudd funeral home
+2025-08-14,AmerisourceBergen,40,12,15,13,lobbying 000 cencora
+2025-08-14,APA,40,18,9,13,austin pets alive
+2025-08-14,Elevance Health,40,10,17,13,when healthcare giant
+2025-08-14,Eli Lilly,40,11,16,13,yahoo finance
+2025-08-14,Harley-Davidson,40,11,16,13,moore county
+2025-08-14,Icahn Enterprises,40,7,20,13,nasdaq iep seeking
+2025-08-14,Molina Healthcare,40,14,13,13,medical cost pressures
+2025-08-14,News,40,8,19,13,bbc abc trump warns
+2025-08-14,Advance Auto Parts,40,11,17,12,outlook takes debt
+2025-08-14,Applied Materials,40,9,19,12,forecast hit china
+2025-08-14,Delta Air Lines,40,9,19,12,aircraft during pushback
+2025-08-14,Merck,40,12,16,12,keytruda bladder cancer
+2025-08-14,Moody's,40,16,12,12,physical transition risk
+2025-08-14,Salesforce,40,16,12,12,activist starboard buys
+2025-08-14,Aflac,40,16,13,11,data breach
+2025-08-14,CenterPoint Energy,40,23,6,11,monitoring tropical disturbance
+2025-08-14,Deere,40,13,16,11,john sales suffer
+2025-08-14,Kraft Heinz,40,8,21,11,factories lose immigrant
+2025-08-14,Microsoft,40,12,17,11,patch tuesday
+2025-08-14,Pfizer,40,11,18,11,bladder cancer
+2025-08-14,Sherwin-Williams,40,11,18,11,construction site cleveland
+2025-08-14,Southern,40,7,22,11,california cbs miss what
+2025-08-14,Starbucks,40,9,20,11,stop bringing
+2025-08-14,State Street,40,12,17,11,fatal fiesta stabbing
+2025-08-14,Target,40,17,12,11,austin shooting suspect
+2025-08-14,Albertsons,40,15,15,10,kroger settles wholesale
+2025-08-14,Carlisle,40,12,18,10,city install hawk
+2025-08-14,Charter Communications,40,14,16,10,worst day ever
+2025-08-14,Fluor,40,16,14,10,gladstone lng dispute
+2025-08-14,Oracle,40,8,22,10,google cloud units
+2025-08-14,Phillips 66,40,16,14,10,reduces gasoline output
+2025-08-14,Texas Instruments,40,15,15,10,motley fool
+2025-08-14,Travelers,40,19,11,10,air canada flight
+2025-08-14,Walmart,40,20,10,10,settlement overcharging customers
+2025-08-14,Boeing,40,16,15,9,second week
+2025-08-14,Cargill,40,7,24,9,fire crews respond
+2025-08-14,Dow,40,10,21,9,fed rate bets
+2025-08-14,Erie Insurance Group,40,20,11,9,cyber cyberattack baltimore maryland
+2025-08-14,FirstEnergy,40,14,17,9,power outages wkyc
+2025-08-14,General Mills,40,15,16,9,wicked cereals gis weak
+2025-08-14,HCA Healthcare,40,19,12,9,mission health settle
+2025-08-14,Lockheed Martin,40,20,11,9,lmt investors opportunity
+2025-08-14,Lowe's,40,20,11,9,yahoo finance
+2025-08-14,Massachusetts Mutual Life Insurance,40,13,18,9,massmutual haven jobs business
+2025-08-14,Northwestern Mutual,40,21,10,9,tariffs tariff uncertainty 000
+2025-08-14,RTX,40,13,18,9,tom hardware
+2025-08-14,Stryker,40,17,14,9,medtech dive
+2025-08-14,W. R. Berkley,40,16,15,9,business overweight cantor profit
+2025-08-14,American International Group,40,7,25,8,target lowered kbw
+2025-08-14,Amgen,40,18,14,8,cancer treatment tipranks
+2025-08-14,AT&T,40,6,26,8,pay off stadium
+2025-08-14,Avis Budget Group,40,10,22,8,why falling
+2025-08-14,BlackRock,40,11,21,8,yahoo finance
+2025-08-14,Broadcom,40,14,18,8,avgo nvidia risk put
+2025-08-14,Campbell Soup,40,12,20,8,lowered bernstein socgen
+2025-08-14,Cardinal Health,40,11,21,8,misses revenue
+2025-08-14,CarMax,40,10,22,8,yahoo finance
+2025-08-14,Costco Wholesale,40,15,17,8,stop selling abortion
+2025-08-14,KKR,40,11,21,8,private debt deal
+2025-08-14,PepsiCo,40,13,19,8,yahoo finance
+2025-08-14,Pioneer Natural Resources,40,20,12,8,exxon board
+2025-08-14,Prudential Financial,40,11,21,8,analysis outlook
+2025-08-14,Quanta Services,40,14,18,8,day streak return
+2025-08-14,U.S. Postal Service,40,11,21,8,pleads guilty stealing
+2025-08-14,Walgreens Boots Alliance,40,9,23,8,motley fool
+2025-08-14,WestRock,40,7,25,8,estimates yahoo finance
+2025-08-14,Amphenol,40,12,21,7,patent infringement disputes
+2025-08-14,Baker Hughes,40,16,17,7,bets lng data
+2025-08-14,Bank of America,40,20,13,7,fed rates bucks trend
+2025-08-14,Boston Scientific,40,18,15,7,signals ainvest
+2025-08-14,Bristol-Myers Squibb,40,15,18,7,karxt study potential
+2025-08-14,Bunge,40,12,21,7,recall 800 lbs
+2025-08-14,Caterpillar,40,10,23,7,hit tariffs
+2025-08-14,CDW,40,18,15,7,lowers holdings corporation
+2025-08-14,Cigna Group,40,21,12,7,second earnings revenues
+2025-08-14,CSX,40,11,22,7,carolina training juveniles com
+2025-08-14,DaVita,40,21,12,7,despite earnings beat
+2025-08-14,DISH Network,40,8,25,7,thedesk net
+2025-08-14,Dollar General,40,16,17,7,instant coffee
+2025-08-14,Duke Energy,40,30,3,7,hospitalized pinellas county
+2025-08-14,Enterprise Products Partners,40,19,14,7,oil leak houston
+2025-08-14,Equifax,40,25,8,7,consumer pay errors credit
+2025-08-14,Exxon Mobil,40,15,18,7,corporation nyse xom
+2025-08-14,Gilead Sciences,40,17,16,7,cancer treatment tipranks
+2025-08-14,Iron Mountain,40,12,21,7,union contracts terminated
+2025-08-14,J.B. Hunt Transport Services,40,15,18,7,yahoo finance
+2025-08-14,J.M. Smucker,40,14,19,7,yahoo finance
+2025-08-14,Lincoln National,40,17,16,7,ruidoso-nm gov
+2025-08-14,Morgan Stanley,40,13,20,7,yahoo finance
+2025-08-14,Newell Brands,40,11,22,7,fy25 outlook incorporate
+2025-08-14,NextEra Energy,40,29,4,7,xplr infrastructure partners
+2025-08-14,Nvidia,40,20,13,7,china chip
+2025-08-14,Oneok,40,12,21,7,target lowered rbc
+2025-08-14,PBF Energy,40,32,1,7,yahoo finance
+2025-08-14,Realty Income,40,18,15,7,buying set life
+2025-08-14,Stanley Black & Decker,40,8,25,7,jim cramer expresses
+2025-08-14,State Farm Insurance,40,11,22,7,los angeles times
+2025-08-14,UnitedHealth Group,40,8,25,7,cybersecurity exposure ainvest david
+2025-08-14,Xcel Energy,40,31,2,7,denver solar minnesota com
+2025-08-14,XPO Logistics,40,10,23,7,how pepsico emissions com
+2025-08-14,Yum Brands,40,19,14,7,pizza hut
+2025-08-14,Apple,40,7,27,6,accidentally leaked
+2025-08-14,Aramark,40,18,16,6,fenway park workers
+2025-08-14,Capital One Financial,40,18,16,6,savings account
+2025-08-14,CF Industries Holdings,40,22,12,6,yahoo finance
+2025-08-14,Chevron,40,21,13,6,phillips chemical
+2025-08-14,Chubb,40,22,12,6,holdings limited nyse
+2025-08-14,Cisco Systems,40,15,19,6,demand revenue earnings thursday
+2025-08-14,Colgate-Palmolive,40,18,16,6,company nyse
+2025-08-14,Corning,40,14,20,6,action now
+2025-08-14,Danaher,40,14,20,6,corporation nyse dhr
+2025-08-14,Dominion Energy,40,25,9,6,loudoun county neighbors
+2025-08-14,Edison International,40,10,24,6,eaton fire
+2025-08-14,Ford Motor,40,13,21,6,recalls 312k vehicles power
+2025-08-14,Freeport-McMoRan,40,19,15,6,former phoenix tower
+2025-08-14,HF Sinclair,40,15,19,6,issues million-dollar penalties
+2025-08-14,Ingredion,40,17,17,6,ingr loses weeks
+2025-08-14,Insight Enterprises,40,14,20,6,revenue estimates yahoo
+2025-08-14,Lear,40,15,19,6,funeral home
+2025-08-14,Liberty Mutual Insurance Group,40,31,3,6,business america
+2025-08-14,LKQ,40,18,16,6,hits 52-week low
+2025-08-14,Meritage Homes,40,16,18,6,nyse mth target
+2025-08-14,Mosaic,40,19,15,6,world war returned
+2025-08-14,O'Reilly Automotive,40,22,12,6,motley fool
+2025-08-14,Paccar,40,18,16,6,marketbeat analysis outlook cautious
+2025-08-14,Penske,40,17,17,6,federal agents
+2025-08-14,PG&E,40,14,20,6,wildfire risks
+2025-08-14,Procter & Gamble,40,20,14,6,tariffs pampers maker 000
+2025-08-14,Simon Property Group,40,14,20,6,debt refinancing
+2025-08-14,Tenet Healthcare,40,15,19,6,yahoo finance
+2025-08-14,Universal Health Services,40,17,17,6,faces revenue uncertainty
+2025-08-14,Unum Group,40,15,19,6,yahoo finance
+2025-08-14,USAUSA,40,16,18,6,usa usa
+2025-08-14,V.F.,40,17,17,6,yahoo finance
+2025-08-14,VF,40,16,18,6,vanity fair
+2025-08-14,Weyerhaeuser,40,14,20,6,analysis outlook cautious
+2025-08-14,Whirlpool,40,15,19,6,motley fool
+2025-08-14,Williams,40,13,21,6,funeral home
+2025-08-14,Advanced Micro Devices,40,33,2,5,motley fool
+2025-08-14,AES,40,26,9,5,analysis outlook mixed signals
+2025-08-14,Air Products & Chemicals,40,17,18,5,motley fool
 2025-08-14,Alphabet,40,14,21,5,bitcoin googl gets buy
-2025-08-14,Procter & Gamble,40,22,13,5,pampers maker 000 jobs
+2025-08-14,Archer Daniels Midland,40,19,16,5,adm archer-daniels-midland company epa
+2025-08-14,AutoNation,40,16,19,5,target 228 guggenheim ainvest
+2025-08-14,Boston Properties,40,8,27,5,investing com
+2025-08-14,Eversource Energy,40,32,3,5,second earnings revenues
+2025-08-14,Exelon,40,18,17,5,potential data center
+2025-08-14,FedEx,40,20,15,5,driver charged
+2025-08-14,Fidelity National Financial,40,13,22,5,yahoo finance
+2025-08-14,Fiserv,40,16,19,5,class action lawsuit
+2025-08-14,FMC,40,14,21,5,target lowered barclays investing
+2025-08-14,General Motors,40,18,17,5,company nyse
+2025-08-14,Goldman Sachs Group,40,11,24,5,trump mocks
+2025-08-14,Halliburton,40,22,13,5,ceo demand sobering outlook
+2025-08-14,Howmet Aerospace,40,19,16,5,analysis outlook
+2025-08-14,Humana,40,23,12,5,vfw uniting veterans analysis
+2025-08-14,Illinois Tool Works,40,17,18,5,limited upside
+2025-08-14,Jefferies Financial Group,40,20,15,5,lowers holdings
+2025-08-14,Kaiser Permanente,40,14,21,5,sacramento policy vacaville screening
+2025-08-14,Lithia Motors,40,21,14,5,nyse lad marketbeat
+2025-08-14,Mondelez International,40,23,12,5,nasdaq mdlz marketbeat
+2025-08-14,Netflix,40,15,20,5,big how struck gold
+2025-08-14,Northern Trust,40,34,1,5,potential bny merger
+2025-08-14,Nucor,40,13,22,5,yahoo finance
+2025-08-14,Old Dominion Freight Line,40,21,14,5,hits 52-week low
+2025-08-14,Pacific Gas and Electric,40,25,10,5,dam removal
+2025-08-14,Progressive,40,19,16,5,khanna deficit sanctuary fights
+2025-08-14,Ross Stores,40,17,18,5,nasdaq rost marketbeat
+2025-08-14,Southwest Airlines,40,18,17,5,video pilot blind left
+2025-08-14,Sysco,40,21,14,5,teamsters digital minnesota unanimously
+2025-08-14,T-Mobile US,40,17,18,5,savings claims
+2025-08-14,Targa Resources,40,16,19,5,earnings beat estimates
+2025-08-14,Veritiv,40,14,21,5,rigid containers business
+2025-08-14,Abbott Laboratories,40,20,16,4,yahoo finance
+2025-08-14,Allstate,40,17,19,4,labor day
+2025-08-14,Altria Group,40,16,20,4,motley fool
+2025-08-14,Asbury Automotive Group,40,12,24,4,nyse abg marketbeat
+2025-08-14,Automatic Data Processing,40,18,18,4,adp why computer technology
+2025-08-14,Berkshire Hathaway,40,9,27,4,motley fool
+2025-08-14,Cerner,40,16,20,4,health union system almost
+2025-08-14,Cummins,40,15,21,4,funeral demand gloria jean
+2025-08-14,DTE Energy,40,33,3,4,resists trump push delay
+2025-08-14,eBay,40,16,20,4,judge rules
+2025-08-14,Emerson Electric,40,22,14,4,nyse emr marketbeat
+2025-08-14,Fortune Brands Innovations,40,15,21,4,visible weaknesses
+2025-08-14,Group 1,40,12,24,4,automotive moves overbought range
+2025-08-14,Interpublic Group,40,14,22,4,analysis companies outlook
+2025-08-14,Jacobs Engineering Group,40,16,20,4,pensacola why solutions falling
+2025-08-14,Johnson & Johnson,40,20,16,4,rest wicked hit verdict
+2025-08-14,KB Home,40,20,16,4,lags behind sector benchmarks
+2025-08-14,Kimco Realty,40,20,16,4,weak technical picture
+2025-08-14,Markel,40,11,25,4,dan murder donna adelson
+2025-08-14,Marsh & McLennan,40,16,20,4,mmc brokersafe companies facility
+2025-08-14,Mohawk Industries,40,21,15,4,outlook second earnings revenues
+2025-08-14,Newmont,40,19,17,4,resigns chief nem cfo
+2025-08-14,NRG Energy,40,33,3,4,msn plunges 295 deals
+2025-08-14,NVR,40,19,17,4,nyse analysis outlook mixed
+2025-08-14,Omnicom Group,40,19,17,4,debt ainvest offers bondholders
+2025-08-14,Philip Morris International,40,17,19,4,sales miss
+2025-08-14,Principal Financial Group,40,15,21,4,nyse pfg marketbeat
+2025-08-14,Publix Super Markets,40,18,18,4,lakeland ledger
+2025-08-14,Raymond James Financial,40,17,19,4,marketbeat eps estimates wsp
+2025-08-14,Regeneron Pharmaceuticals,40,17,19,4,nasdaq regn
+2025-08-14,S&P Global,40,18,18,4,central bank policy less
+2025-08-14,Sonic Automotive,40,5,31,4,net second earnings eps
+2025-08-14,Sonoco Products,40,17,19,4,nyse son
+2025-08-14,StoneX Group,40,20,16,4,nasdaq snex
+2025-08-14,Synchrony Financial,40,19,17,4,nyse syf marketbeat
+2025-08-14,TJX,40,15,21,4,companies nyse marketbeat
+2025-08-14,Truist Financial,40,17,19,4,nasdaq marketbeat target nerdwallet
+2025-08-14,Viatris,40,19,17,4,yahoo finance
+2025-08-14,3M,40,18,19,3,insurance sir payments rejected
+2025-08-14,American Airlines Group,40,17,20,3,aal flies higher
+2025-08-14,American Express,40,17,20,3,amex forget platinum favorite
+2025-08-14,Ball,40,14,23,3,drop beat not trump
+2025-08-14,Becton Dickinson,40,19,18,3,waters buy unit
+2025-08-14,Booking Holdings,40,23,14,3,ainvest pity competitors nasdaq
+2025-08-14,C.H. Robinson,40,14,23,3,air cargo
+2025-08-14,C.H. Robinson Worldwide,40,16,21,3,returns nasdaq chrw aren
+2025-08-14,CBRE Group,40,15,22,3,analysis outlook
+2025-08-14,Century Communities,40,15,22,3,marketbeat even though things
+2025-08-14,Citizens Financial Group,40,19,18,3,analysis outlook cautious
+2025-08-14,Coca-Cola,40,17,20,3,all permanent coke flavor
+2025-08-14,Cognizant Technology Solutions,40,33,4,3,hike wages employees november
+2025-08-14,Comcast,40,12,25,3,bumping monumental sports network
+2025-08-14,Consolidated Edison,40,10,27,3,earnings analysis outlook technical
+2025-08-14,CVS Health,40,21,16,3,major blow millions walmart
+2025-08-14,D.R. Horton,40,14,23,3,city concord residents fight
+2025-08-14,Discover Financial Services,40,14,23,3,week years never managed
+2025-08-14,Dollar Tree,40,19,18,3,store downey shoplifters start
+2025-08-14,Ecolab,40,15,22,3,ovivo water acquire unit
+2025-08-14,EOG Resources,40,13,24,3,stake nyse marketbeat
+2025-08-14,General Electric,40,11,26,3,company lobbying how debt
+2025-08-14,Genuine Parts,40,13,24,3,analysis outlook
+2025-08-14,Group 1 Automotive,40,13,24,3,moves overbought range cautious
+2025-08-14,GXO Logistics,40,14,23,3,comment end pump dump
+2025-08-14,Hartford Financial Services Group,40,18,19,3,lobbying 000 just disclosed
+2025-08-14,Hershey,40,17,20,3,inside chocolate marketing trends
+2025-08-14,Honeywell International,40,15,22,3,nasdaq hon
+2025-08-14,HP,40,20,17,3,bmw announces updated set
+2025-08-14,Huntington Ingalls Industries,40,22,15,3,motley fool
+2025-08-14,Intercontinental Exchange,40,15,22,3,holdings nyse ice
+2025-08-14,KeyCorp,40,19,18,3,target lowered marketbeat
+2025-08-14,L3Harris Technologies,40,21,16,3,zones space force gps
+2025-08-14,Lam Research,40,17,20,3,stifel affirms buy lrcx
+2025-08-14,Leidos Holdings,40,25,12,3,nyse ldos marketbeat
+2025-08-14,Lennar,40,13,24,3,county homes public charles
+2025-08-14,Loews,40,18,19,3,corporation nyse
+2025-08-14,Masco,40,14,23,3,analysis outlook
+2025-08-14,MetLife,40,20,17,3,chemical romance gives belleville
+2025-08-14,New York Life Insurance,40,13,24,3,investments unpacks sovereign risk
+2025-08-14,Otis Worldwide,40,16,21,3,corporation tough china horrible
+2025-08-14,Parker-Hannifin,40,20,17,3,parker lgt group foundation
+2025-08-14,Plains GP Holdings,40,17,20,3,investing com
+2025-08-14,PulteGroup,40,18,19,3,community results weaken housing
+2025-08-14,Ryder System,40,23,14,3,investors nyse aren entirely
+2025-08-14,Teleflex,40,10,27,3,nyse tfx
+2025-08-14,TIAA,40,17,20,3,lawsuit filed against alleging
+2025-08-14,Valero Energy,40,36,1,3,why investors shouldn panic
+2025-08-14,W.W. Grainger,40,12,25,3,digital analysis outlook technical
+2025-08-14,Zoetis,40,22,15,3,zts invested 000 years
+2025-08-14,AGCO,40,17,21,2,farm deep dive margin
+2025-08-14,Alaska Air Group,40,13,25,2,alk suffers larger drop
+2025-08-14,Ally Financial,40,15,23,2,dei earnings miss lower
+2025-08-14,Ameriprise Financial,40,22,16,2,lpl advisors
+2025-08-14,Antero Resources,40,14,24,2,yahoo finance
+2025-08-14,Arrow Electronics,40,17,21,2,unpacking contradictions inventory lead
+2025-08-14,Athene Holding,40,19,19,2,plan sponsor guide pension
+2025-08-14,Bank of New York Mellon,40,21,17,2,hawaii court hands bny
+2025-08-14,Citigroup,40,14,24,2,maker nio falls weekly
+2025-08-14,Constellation Energy,40,34,4,2,ceg what before investing
+2025-08-14,Crown Holdings,40,19,19,2,second earnings revenues beat
+2025-08-14,Darden Restaurants,40,21,17,2,bank nova scotia position
+2025-08-14,Discover,40,17,21,2,authorities nearly 000 pounds
+2025-08-14,Entergy,40,25,13,2,fire prevention smoke alarm
+2025-08-14,Franklin Resources,40,19,19,2,earnings ben ongoing buyback
+2025-08-14,General Dynamics,40,35,3,2,pro-palestinian group protests front
+2025-08-14,Hewlett Packard Enterprise,40,8,30,2,hpe warns hardcoded passwords
+2025-08-14,Hilton Worldwide Holdings,40,22,16,2,swiss national bank lowers
+2025-08-14,Intel,40,14,24,2,trump ohio ceo amazing
+2025-08-14,Kimberly-Clark,40,18,20,2,leadership weak reshape kmb
+2025-08-14,Las Vegas Sands,40,11,27,2,lvs precision trading risk
+2025-08-14,Marathon Petroleum,40,22,16,2,analysis outlook weak technicals
+2025-08-14,Marriott International,40,18,20,2,white lighthouse investment management
+2025-08-14,MasTec,40,20,18,2,rising tariffs trade
+2025-08-14,McKesson,40,15,23,2,mck lower earnings shift
+2025-08-14,Medtronic,40,25,13,2,things need know buy
+2025-08-14,Norfolk Southern,40,13,25,2,rail customers urge regulators
+2025-08-14,Occidental Petroleum,40,27,11,2,buy dip motley fool
+2025-08-14,Ovintiv,40,19,19,2,utah tribe loses bid
+2025-08-14,PayPal Holdings,40,24,14,2,nasdaq pypl marketbeat
+2025-08-14,PPG Industries,40,19,19,2,seaport res ptn forecasts
+2025-08-14,Quest Diagnostics,40,16,22,2,what learned jaxson dart
+2025-08-14,Reinsurance Group of America,40,22,16,2,incorporated nyse rga
+2025-08-14,ServiceNow,40,18,20,2,agentic marketing tenon ceo
+2025-08-14,Southwestern Energy,40,35,3,2,trespass claim district court
+2025-08-14,Toll Brothers,40,7,31,2,wedbush marketscreener long-term outlook
+2025-08-14,Tractor Supply,40,19,19,2,analysis outlook cautious balancing
+2025-08-14,Tyson Foods,40,10,28,2,sen ossoff releases statement
+2025-08-14,U.S. Bancorp,40,25,13,2,futu usb debt offerings
+2025-08-14,US Foods Holding,40,19,19,2,calls talks performance food
+2025-08-14,Ventas,40,20,18,2,nyse vtr marketbeat
+2025-08-14,Warner Bros. Discovery,40,16,22,2,box office record exactly
+2025-08-14,Western Digital,40,18,20,2,focus buoyed cloud buyers
+2025-08-14,Westinghouse Air Brake Technologies,40,20,18,2,second earnings eps beats
 2025-08-14,Amazon,40,35,4,1,shop hot early labor
+2025-08-14,Assurant,40,20,19,1,key contradictions tariffs auto
+2025-08-14,Atmos Energy,40,39,0,1,earnings lag estimates revenues
+2025-08-14,Autoliv,40,25,14,1,how investors respond alv
+2025-08-14,Best Buy,40,37,2,1,duo works together steal
+2025-08-14,Biogen,40,14,25,1,vital signs stoke ing
+2025-08-14,BorgWarner,40,25,14,1,close battery parts plants
+2025-08-14,Cheniere Energy,40,37,2,1,warns lng surge choke
+2025-08-14,Coterra Energy,40,37,2,1,reverses rig reduction plans
+2025-08-14,Dell Technologies,40,14,25,1,world leaks just leaked
+2025-08-14,DXC Technology,40,11,28,1,business continuity disaster recovery
+2025-08-14,Estee Lauder,40,9,30,1,analysis outlook navigating weak
+2025-08-14,Guardian Life Ins. Co. of America,9,3,5,1,look which fortune 500
+2025-08-14,International Paper,40,17,22,1,extends 4-day drop earnings
+2025-08-14,Jones Lang LaSalle,40,16,23,1,swiss national bank lowers
+2025-08-14,Micron Technology,40,17,22,1,why upgrading guidance dram
+2025-08-14,Northrop Grumman,40,18,21,1,a-xx next generation naval
+2025-08-14,Penske Automotive Group,40,12,27,1,nyse pag pay larger
+2025-08-14,PNC Financial Services Group,40,23,16,1,announces leadership changes risk
+2025-08-14,PPL,40,17,22,1,workers paycheck problems persist
+2025-08-14,Public Service Enterprise Group,40,20,19,1,pse large load pipeline
+2025-08-14,Sempra,40,26,13,1,tumble earnings miss gaap
+2025-08-14,Taylor Morrison Home,40,14,25,1,why tmhc trading lower
+2025-08-14,Textron,40,17,22,1,why slumped motley fool
+2025-08-14,Thermo Fisher Scientific,40,19,20,1,receives fda approval ngs-based
+2025-08-14,Verizon Communications,40,24,15,1,past five-year earnings decline
+2025-08-14,Wayfair,40,12,27,1,shop 72-hour clearout sale
+2025-08-14,WESCO International,40,18,21,1,note nyse wcc roe
+2025-08-14,A-Mark Precious Metals,40,37,3,0,None
+2025-08-14,AbbVie,40,24,16,0,None
+2025-08-14,Devon Energy,40,37,3,0,None
+2025-08-14,Expeditors Intl. of Washington,6,2,4,0,None
+2025-08-14,Fifth Third Bancorp,40,18,22,0,None
+2025-08-14,Kinder Morgan,40,39,1,0,None
+2025-08-14,Regions Financial,40,20,20,0,None
+2025-08-14,Rockwell Automation,40,17,23,0,None
+2025-08-14,TD Synnex,40,19,21,0,None
+2025-08-14,United Airlines Holdings,40,39,1,0,None
+2025-08-14,United Rentals,40,37,3,0,None
