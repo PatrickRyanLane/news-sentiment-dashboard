@@ -60,7 +60,12 @@
     <section class="mb-6 p-4 border rounded-xl bg-white">
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-lg font-semibold">Sentiment trend</h2>
-        <div id="trendInfo" class="text-xs text-slate-500"></div>
+        <div class="flex items-center gap-2">
+          <span id="trendInfo" class="text-xs text-slate-500"></span>
+          <span id="trendRange" class="text-xs text-slate-500"></span>
+          <button id="trendPrev" class="px-2 py-1 border rounded disabled:opacity-40" title="Older 30 days">←</button>
+          <button id="trendNext" class="px-2 py-1 border rounded disabled:opacity-40" title="Newer 30 days">→</button>
+        </div>
       </div>
       <p id="trendHint" class="text-sm text-slate-500 mb-2 hidden">Select exactly <span class="font-semibold">1</span> brand to display a trend. When none is selected, the top negative brand is shown by default.</p>
       <div class="h-64">
@@ -149,8 +154,13 @@
   const trendCanvas = document.getElementById('trendChart');
   const trendInfo = document.getElementById('trendInfo');
   const trendHint = document.getElementById('trendHint');
+  const trendPrev = document.getElementById('trendPrev');
+  const trendNext = document.getElementById('trendNext');
+  const trendRange = document.getElementById('trendRange');
+  const TREND_WINDOW = 30; // days per page
   let trendChart = null;
   let trendBrand = null;
+  let trendPage = 0; // 0 = most recent window
 
   // Modal
   const modalBackdrop = document.getElementById('modalBackdrop');
@@ -545,6 +555,10 @@ Troubleshoot:
   modeCountsBtn.addEventListener('click', ()=>{ viewMode = 'counts'; localStorage.setItem('view_mode','counts'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); attachTableHandlers(); updateTrend(); });
   modePercentBtn.addEventListener('click', ()=>{ viewMode = 'percent'; localStorage.setItem('view_mode','percent'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); attachTableHandlers(); updateTrend(); });
 
+  // Trend navigation
+  if(trendPrev){ trendPrev.addEventListener('click', ()=>{ trendPage += 1; updateTrend(); }); }
+  if(trendNext){ trendNext.addEventListener('click', ()=>{ trendPage = Math.max(0, trendPage - 1); updateTrend(); }); }
+
   // ==== Trend helpers ====
   function allDatesSorted(){ return Array.from(new Set(allRows.map(r=>r.date))).sort(); }
 
@@ -575,21 +589,48 @@ Troubleshoot:
     else {
       trendHint.classList.remove('hidden');
       trendInfo.textContent = '';
+      if(trendRange) trendRange.textContent = '';
+      if(trendPrev) trendPrev.disabled = true;
+      if(trendNext) trendNext.disabled = true;
       if(trendChart){ trendChart.destroy(); trendChart = null; }
       return;
     }
+
+    // Reset paging if the brand changed
+    if(brand !== trendBrand){ trendPage = 0; }
     trendHint.classList.add('hidden');
+    const full = seriesForBrand(brand);
+
+    const total = full.dates.length;
+    const W = TREND_WINDOW;
+    const maxPage = Math.max(0, Math.ceil(total / W) - 1);
+    if(trendPage > maxPage) trendPage = maxPage;
+    const end = Math.max(0, total - W * trendPage);
+    const start = Math.max(0, end - W);
+
+    const labels = full.dates.slice(start, end);
+    const pos = full.pos.slice(start, end);
+    const neu = full.neu.slice(start, end);
+    const neg = full.neg.slice(start, end);
+
     trendBrand = brand;
-    const s = seriesForBrand(brand);
     const yLabel = (viewMode==='percent') ? '% of articles' : 'Headline count';
-    trendInfo.textContent = auto ? `Showing trend for top negative brand: ${brand}` : `Trend for ${brand}`;
+    trendInfo.textContent = auto ? `Top negative brand: ${brand}` : `Trend for ${brand}`;
+    if(trendRange){
+      const rangeText = labels.length ? ` — ${labels[0]} → ${labels[labels.length-1]} (${labels.length} days)` : '';
+      trendRange.textContent = rangeText;
+    }
+    if(trendPrev){ trendPrev.disabled = (trendPage >= maxPage); }
+    if(trendNext){ trendNext.disabled = (trendPage <= 0); }
+
+    const showLabels = labels.length <= 7;
 
     const data = {
-      labels: s.dates,
+      labels,
       datasets: [
-        { label: 'Positive', data: s.pos, backgroundColor: '#10b981', stack: 'sent' },
-        { label: 'Neutral',  data: s.neu, backgroundColor: '#9ca3af', stack: 'sent' },
-        { label: 'Negative', data: s.neg, backgroundColor: '#ef4444', stack: 'sent' },
+        { label: 'Positive', data: pos, backgroundColor: '#10b981', stack: 'sent' },
+        { label: 'Neutral',  data: neu, backgroundColor: '#9ca3af', stack: 'sent' },
+        { label: 'Negative', data: neg, backgroundColor: '#ef4444', stack: 'sent' },
       ]
     };
     const options = {
@@ -607,7 +648,7 @@ Troubleshoot:
         }
       },
       scales: {
-        x: { stacked: true },
+        x: { stacked: true, ticks: { display: showLabels } },
         y: { stacked: true, beginAtZero: true, ticks: { callback: (v)=> viewMode==='percent' ? v+"%" : v } }
       }
     };
