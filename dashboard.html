@@ -30,29 +30,24 @@
       </div>
       <div class="flex items-end gap-2 w-full">
         <button id="refreshBtn" class="px-3 py-2 rounded-lg bg-slate-900 text-white">Refresh</button>
-        <button id="exportCsvBtn" class="px-3 py-2 rounded-lg border">Export selection (CSV)</button>
-        <div class="ml-auto flex items-center gap-2">
-          <span class="text-xs text-slate-600">Display:</span>
+      </div>
+    </section>
+
+    <!-- Save options -->
+    <section class="mb-6 p-4 border rounded-xl bg-white">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <h2 class="text-lg font-semibold">Save highlighted brands</h2>
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-slate-600">Display</span>
           <div class="flex gap-1" role="group" aria-label="Display mode">
             <button id="modeCountsBtn" class="px-2 py-1 rounded-lg border bg-white" title="Show raw counts">Counts</button>
             <button id="modePercentBtn" class="px-2 py-1 rounded-lg border bg-white" title="Show percentages">%</button>
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- Save options -->
-    <section class="mb-6 p-4 border rounded-xl bg-white">
-      <h2 class="text-lg font-semibold mb-2">Save highlighted brands</h2>
-      <p class="text-sm text-slate-600 mb-3">Selections are stored locally in your browser, and optionally sent to a Google Sheet (via a webhook you control).</p>
-      <div class="flex flex-col gap-3 md:flex-row md:items-end">
-        <button id="saveLocalBtn" class="px-3 py-2 rounded-lg bg-emerald-600 text-white">Save selection (local)</button>
-        <div class="flex-1">
-          <label class="block text-sm font-medium mb-1">Google Apps Script Webhook URL (optional)</label>
-          <input id="webhookUrl" type="url" placeholder="https://script.google.com/macros/s/XXXXX/exec" class="w-full border rounded-lg p-2" />
-          <p class="text-xs text-slate-500 mt-1">Paste the URL of your deployed Apps Script web app (POST). We include date, brand, total, positive, neutral, negative, theme.</p>
-        </div>
-        <button id="sendWebhookBtn" class="px-3 py-2 rounded-lg bg-blue-600 text-white">Export selection → Google Sheet</button>
+      <div class="mt-3 flex items-center gap-3 flex-wrap">
+        <button id="saveLocalBtn" class="px-3 py-2 rounded-lg bg-black hover:bg-black/90 text-white">Save selection (local)</button>
+        <button id="exportCsvBtn" class="px-3 py-2 rounded-lg bg-black hover:bg-black/90 text-white">Export selection (CSV)</button>
       </div>
     </section>
 
@@ -144,8 +139,6 @@
   const selectAll = document.getElementById('selectAll');
   const saveLocalBtn = document.getElementById('saveLocalBtn');
   const exportCsvBtn = document.getElementById('exportCsvBtn');
-  const webhookUrl = document.getElementById('webhookUrl');
-  const sendWebhookBtn = document.getElementById('sendWebhookBtn');
   const savedContainer = document.getElementById('savedContainer');
   const debugBox = document.getElementById('debugBox');
   const debugText = document.getElementById('debugText');
@@ -365,64 +358,42 @@
   function exportSelectionCsv(){
     const rows = currentRows.filter(r => selected.has(r.brand));
     if(!rows.length){ alert('No rows selected.'); return; }
+
+    // Build CSV (with BOM for Excel support)
     const header = ['date','brand','total','positive','neutral','negative','theme'];
-    const csv = [header.join(',')].concat(rows.map(r=>[
-      r.date, r.brand, r.total, r.positive, r.neutral, r.negative, `"${(r.theme||'').replace(/\"/g,'""')}"`
-    ].join(','))).join('\n');
-    const blob = new Blob([csv], {type:'text/csv'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = `selection_${currentDate}.csv`; a.click();
-    URL.revokeObjectURL(url);
-  }
+    const body = rows.map(r=>[
+      r.date,
+      r.brand,
+      r.total,
+      r.positive,
+      r.neutral,
+      r.negative,
+      '"' + String(r.theme||'').replace(/"/g,'""') + '"'
+    ].join(','));
+    const csv = '\ufeff' + [header.join(','), ...body].join('\r\n');
 
-  async function sendSelectionToWebhook(){
-    const url = (webhookUrl.value || '').trim();
-    const rows = currentRows.filter(r => selected.has(r.brand));
-    if(!url){ alert('Please paste your Google Apps Script Webhook URL.'); return; }
-    if(!rows.length){ alert('No rows selected.'); return; }
-    const looksLikeGAS = /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(\?.*)?$/i.test(url);
-    if(!looksLikeGAS){
-      const proceed = confirm('The URL does not look like a Google Apps Script Web App (…/exec). Continue anyway?');
-      if(!proceed) return;
-    }
-
-    const payload = JSON.stringify({ rows });
-
+    // Download (more Safari/iOS friendly): append, click, remove
     try{
-      // Try a CORS simple-request first (no preflight): text/plain and no custom headers.
-      const resp = await fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: payload
-      });
-      const text = await resp.text().catch(()=> '');
-      if(!resp.ok){ throw new Error(`HTTP ${resp.status} ${resp.statusText} — ${text.slice(0,200)}`); }
-      let data; try { data = JSON.parse(text); } catch { data = { status: 'ok', raw: text }; }
-      console.log('Webhook response (cors):', data);
-      alert('Sent to Google Sheet.');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `selection_${currentDate}.csv`;
+      a.rel = 'noopener';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>{
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 0);
     }catch(err){
-      console.warn('CORS failed, falling back to no-cors…', err);
-      try{
-        await fetch(url, {
-          method: 'POST',
-          mode: 'no-cors',   // opaque response, but request is delivered
-          headers: { 'Content-Type': 'text/plain' },
-          body: payload
-        });
-        alert('Sent to Google Sheet (no-cors). Check your sheet in a few seconds.');
-      }catch(e2){
-        console.error('Webhook error:', e2);
-        alert(`Failed to send to webhook: ${e2.message}.
-
-Troubleshoot:
-1) In Apps Script: Deploy → Manage deployments → Web app → Access = "Anyone" and Execute as = "Me".
-2) Use the URL ending with /exec (not /dev).
-3) If you set SECRET in the script, append ?key=YOUR_SECRET to the URL.`);
-      }
+      console.error('CSV export failed', err);
+      alert('Download failed. Try right‑click → Save link as…');
     }
   }
 
+  // Handlers for table row controls (checkbox & view button)
   function attachTableHandlers(){
     // Checkbox changes should update the trend immediately
     tableBody.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
@@ -546,7 +517,6 @@ Troubleshoot:
   document.getElementById('refreshBtn').addEventListener('click', ()=>{ loadCountsCsv(); });
   saveLocalBtn.addEventListener('click', saveSelectionLocal);
   exportCsvBtn.addEventListener('click', exportSelectionCsv);
-  sendWebhookBtn.addEventListener('click', sendSelectionToWebhook);
   selectAll.addEventListener('change', ()=>{
     if(selectAll.checked){ currentRows.forEach(r=>selected.add(r.brand)); }
     else { selected.clear(); }
@@ -615,9 +585,9 @@ Troubleshoot:
 
     trendBrand = brand;
     const yLabel = (viewMode==='percent') ? '% of articles' : 'Headline count';
-    trendInfo.textContent = auto ? `Top negative brand: ${brand}` : `Trend for ${brand}`;
+    trendInfo.textContent = `BRAND: ${brand}`;
     if(trendRange){
-      const rangeText = labels.length ? ` — ${labels[0]} → ${labels[labels.length-1]} (${labels.length} days)` : '';
+      const rangeText = labels.length ? `  |  DATE: ${labels[0]} → ${labels[labels.length-1]}` : '';
       trendRange.textContent = rangeText;
     }
     if(trendPrev){ trendPrev.disabled = (trendPage >= maxPage); }
@@ -628,9 +598,9 @@ Troubleshoot:
     const data = {
       labels,
       datasets: [
-        { label: 'Positive', data: pos, backgroundColor: '#10b981', stack: 'sent' },
-        { label: 'Neutral',  data: neu, backgroundColor: '#9ca3af', stack: 'sent' },
-        { label: 'Negative', data: neg, backgroundColor: '#ef4444', stack: 'sent' },
+        { label: 'Positive', data: pos, backgroundColor: '#b8e276', stack: 'sent' },
+        { label: 'Neutral',  data: neu, backgroundColor: '#cedcdd', stack: 'sent' },
+        { label: 'Negative', data: neg, backgroundColor: '#ffb199', stack: 'sent' },
       ]
     };
     const options = {
