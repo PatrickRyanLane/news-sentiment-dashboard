@@ -17,12 +17,11 @@ import re
 import csv
 import time
 import html
-import math
 import feedparser
 from collections import Counter, defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-from urllib.parse import urlparse, parse_qsl, unquote
+from urllib.parse import urlparse, parse_qsl, unquote, urlencode  # <-- urlencode added
 
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
@@ -145,22 +144,33 @@ def merged_brand_map() -> dict[str, list[str]]:
         base.setdefault(b, [])
     return base
 
-# --------- Google News helpers ----------
+# --------- Google News helpers (URL-safe) ----------
 def google_news_rss_url(query: str) -> str:
-    # Official GN RSS base (q must be URL-encoded by feedparser internally)
-    return f"https://news.google.com/rss/search?q={query}&hl={HL}&gl={GL}&ceid={CEID}"
+    """
+    Build a fully URL-encoded Google News RSS URL. This avoids errors like
+    'InvalidURL: URL can't contain control characters' for aliases such as 'P&G'.
+    """
+    params = {"q": query, "hl": HL, "gl": GL, "ceid": CEID}
+    return "https://news.google.com/rss/search?" + urlencode(params)
+
+_NON_ALNUM = re.compile(r"[^A-Za-z0-9-]")
 
 def quoted_term(term: str) -> str:
-    # Quote multi-word terms for better matching on Google News
-    t = term.strip()
-    if " " in t:
+    """
+    Quote the term if it contains spaces OR any non-alphanumeric/hyphen character.
+    This ensures tokens like 'P&G' are treated as a single phrase.
+    """
+    t = (term or "").strip()
+    if not t:
+        return t
+    if " " in t or _NON_ALNUM.search(t):
         return f'"{t}"'
     return t
 
 def build_query(brand: str, aliases: list[str]) -> str:
     terms = [quoted_term(brand)] + [quoted_term(a) for a in aliases]
     # Use OR group so at least one synonym hits
-    return "(" + " OR ".join(terms) + ")"
+    return "(" + " OR ".join([t for t in terms if t]) + ")"
 
 def extract_final_url(url: str) -> str:
     """
@@ -202,7 +212,7 @@ def fetch_brand_articles(for_date: str, brand: str, aliases: list[str]) -> list[
      downstream we still aggregate per selected 'for_date'.)
     """
     q = build_query(brand, aliases)
-    feed_url = google_news_rss_url(q)
+    feed_url = google_news_rss_url(q)  # <-- now URL-encoded
     d = feedparser.parse(feed_url)
 
     out: list[dict] = []
