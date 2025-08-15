@@ -10,6 +10,9 @@ Outputs (repo-relative):
 Inputs (repo root):
 - brands.txt    (one brand per line; optional if aliases.csv already covers all)
 - aliases.csv   (CSV with columns: brand,alias)  # optional
+
+Housekeeping:
+- Deletes article files and daily_counts rows older than RETENTION_DAYS.
 """
 
 import os
@@ -21,7 +24,7 @@ import feedparser
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-from urllib.parse import urlparse, parse_qsl, unquote, urlencode  # <-- urlencode added
+from urllib.parse import urlparse, parse_qsl, unquote, urlencode
 
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
@@ -29,7 +32,9 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 HL   = "en-US"          # Google News interface language
 GL   = "US"             # geography
 CEID = "US:en"          # country:lang
-REQUEST_PAUSE_SEC = 0.35         # gentle delay between brand queries
+
+REQUEST_PAUSE_SEC   = 1.0   # ← gentler to Google News
+MAX_ITEMS_PER_BRAND = 40    # ← cap headlines per brand
 
 # Negative-theme extraction
 MIN_THEME_FREQ = 2               # min occurrences for a phrase to count
@@ -38,6 +43,9 @@ MAX_THEME_WORDS = 10             # cap theme length
 # Soft time-shift so very-early runs still write "yesterday"
 EASTERN = ZoneInfo("US/Eastern")
 SOFT_SHIFT_HOURS = 6             # if before 6am ET, use previous date
+
+# Data retention (days)
+RETENTION_DAYS = 90              # ← purge older than this
 
 # Skip press-release wires etc. (you can add more)
 BLOCKED_DOMAINS = {
@@ -100,7 +108,7 @@ def top_ngram_from_titles(brand: str, titles: list[str], min_freq: int = MIN_THE
         if bag:
             phrase, freq = bag.most_common(1)[0]
             if freq >= min_freq:
-                return " ".join(phrase.split()[:MAX_THEME_WORDS])  # ≤ 10 words
+                return " ".join(phrase.split()[:MAX_THEME_WORDS])
 
     # Fallback: top 2–4 individual words
     words = [w for w, _ in uni.most_common(4)]
@@ -145,14 +153,6 @@ def merged_brand_map() -> dict[str, list[str]]:
     return base
 
 # --------- Google News helpers (URL-safe) ----------
-def google_news_rss_url(query: str) -> str:
-    """
-    Build a fully URL-encoded Google News RSS URL. This avoids errors like
-    'InvalidURL: URL can't contain control characters' for aliases such as 'P&G'.
-    """
-    params = {"q": query, "hl": HL, "gl": GL, "ceid": CEID}
-    return "https://news.google.com/rss/search?" + urlencode(params)
-
 _NON_ALNUM = re.compile(r"[^A-Za-z0-9-]")
 
 def quoted_term(term: str) -> str:
@@ -169,8 +169,12 @@ def quoted_term(term: str) -> str:
 
 def build_query(brand: str, aliases: list[str]) -> str:
     terms = [quoted_term(brand)] + [quoted_term(a) for a in aliases]
-    # Use OR group so at least one synonym hits
     return "(" + " OR ".join([t for t in terms if t]) + ")"
+
+def google_news_rss_url(query: str) -> str:
+    """Build a fully URL-encoded Google News RSS URL."""
+    params = {"q": query, "hl": HL, "gl": GL, "ceid": CEID}
+    return "https://news.google.com/rss/search?" + urlencode(params)
 
 def extract_final_url(url: str) -> str:
     """
@@ -208,22 +212,19 @@ def fetch_brand_articles(for_date: str, brand: str, aliases: list[str]) -> list[
     """
     Query Google News RSS for (brand OR aliases).
     Return list of dicts with: date, brand, alias_matched, title, url, domain, sentiment, published
-    (We don't enforce 'for_date' strictly; Google News provides recent items; we include all, and
-     downstream we still aggregate per selected 'for_date'.)
     """
     q = build_query(brand, aliases)
-    feed_url = google_news_rss_url(q)  # <-- now URL-encoded
+    feed_url = google_news_rss_url(q)
     d = feedparser.parse(feed_url)
 
     out: list[dict] = []
     if getattr(d, "entries", None) is None:
         return out
 
-    # Greedy alias matcher for annotation
     alias_lc = [a.lower() for a in aliases]
     brand_lc = brand.lower()
 
-    for e in d.entries:
+    for e in d.entries[:MAX_ITEMS_PER_BRAND]:   # ← cap to 40
         title = html.unescape(getattr(e, "title", "") or "")
         link = getattr(e, "link", "") or ""
         link = extract_final_url(link)
@@ -234,7 +235,6 @@ def fetch_brand_articles(for_date: str, brand: str, aliases: list[str]) -> list[
         if dom in BLOCKED_DOMAINS:
             continue
 
-        # Which alias matched? (best-effort)
         t_lc = title.lower()
         matched = ""
         for a in alias_lc:
@@ -244,13 +244,11 @@ def fetch_brand_articles(for_date: str, brand: str, aliases: list[str]) -> list[
         if not matched and brand_lc in t_lc:
             matched = brand
 
-        # Published (string best-effort)
         published = getattr(e, "published", "") or getattr(e, "updated", "") or ""
-
         sent = classify_sentiment(title)
 
         out.append({
-            "date": for_date,                 # normalized run date
+            "date": for_date,
             "brand": brand,
             "alias_matched": matched,
             "title": title,
@@ -260,13 +258,12 @@ def fetch_brand_articles(for_date: str, brand: str, aliases: list[str]) -> list[
             "published": published,
         })
 
-    time.sleep(REQUEST_PAUSE_SEC)
+    time.sleep(REQUEST_PAUSE_SEC)  # ← slower pace
     return out
 
 def write_articles_csv(for_date: str, rows: list[dict]) -> None:
     os.makedirs("data/articles", exist_ok=True)
     path = os.path.join("data", "articles", f"{for_date}.csv")
-    # Always overwrite daily articles file for idempotency
     with open(path, "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
         w.writerow(["date","brand","alias_matched","title","url","domain","sentiment","published"])
@@ -290,7 +287,6 @@ def compute_counts_and_themes(for_date: str, article_rows: list[dict]) -> list[d
     """
     by_brand = defaultdict(list)
     for r in article_rows:
-        # Keep only this 'for_date' in case your feed returns older items
         if (r.get("date") or "") != for_date:
             continue
         b = (r.get("brand") or "").strip()
@@ -320,13 +316,12 @@ def compute_counts_and_themes(for_date: str, article_rows: list[dict]) -> list[d
             "theme": theme,
         })
 
-    # Stable order: highest negative first, then brand name
     out_rows.sort(key=lambda r: (-int(r["negative"]), r["brand"].lower()))
     return out_rows
 
 def update_daily_counts_csv(new_rows: list[dict]) -> None:
     """
-    Upsert: remove existing rows for 'date' (the one in new_rows) then append new_rows.
+    Upsert: remove existing rows for 'date' then append new_rows.
     """
     os.makedirs("data", exist_ok=True)
     path = os.path.join("data", "daily_counts.csv")
@@ -338,16 +333,14 @@ def update_daily_counts_csv(new_rows: list[dict]) -> None:
             reader = csv.DictReader(f)
             for row in reader:
                 if date and (row.get("date") == date):
-                    continue  # drop rows for this date; we will replace
+                    continue
                 existing.append(row)
 
-    # Write fresh file with header
     with open(path, "w", encoding="utf-8", newline="") as f:
         fieldnames = ["date","brand","total","positive","neutral","negative","theme"]
         w = csv.DictWriter(f, fieldnames=fieldnames)
         w.writeheader()
 
-        # keep the older rows first (sorted by date asc then brand)
         existing.sort(key=lambda r: (r.get("date",""), r.get("brand","").lower()))
         for r in existing:
             w.writerow({
@@ -360,9 +353,58 @@ def update_daily_counts_csv(new_rows: list[dict]) -> None:
                 "theme": r.get("theme",""),
             })
 
-        # then append today's rows
         for r in new_rows:
             w.writerow(r)
+
+def purge_old_data(retention_days: int = RETENTION_DAYS) -> None:
+    """
+    Delete article CSVs and prune daily_counts rows older than the cutoff date.
+    """
+    cutoff = (datetime.now(EASTERN).date() - timedelta(days=retention_days)).isoformat()
+
+    # Purge article files older than cutoff
+    articles_dir = os.path.join("data", "articles")
+    if os.path.isdir(articles_dir):
+        for name in os.listdir(articles_dir):
+            if not name.endswith(".csv"):
+                continue
+            date_part = name[:-4]  # strip .csv
+            # Expect YYYY-MM-DD
+            if len(date_part) == 10 and date_part <= cutoff:
+                try:
+                    os.remove(os.path.join(articles_dir, name))
+                    print(f"Purged articles file: {name}")
+                except Exception as e:
+                    print(f"Warning: could not delete {name}: {e}")
+
+    # Prune daily_counts.csv
+    path = os.path.join("data", "daily_counts.csv")
+    if not os.path.exists(path):
+        return
+
+    kept: list[dict] = []
+    with open(path, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            d = (row.get("date") or "")
+            if d >= cutoff:
+                kept.append(row)
+
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        fieldnames = ["date","brand","total","positive","neutral","negative","theme"]
+        w = csv.DictWriter(f, fieldnames=fieldnames)
+        w.writeheader()
+        for r in kept:
+            w.writerow({
+                "date": r.get("date",""),
+                "brand": r.get("brand",""),
+                "total": r.get("total",""),
+                "positive": r.get("positive",""),
+                "neutral": r.get("neutral",""),
+                "negative": r.get("negative",""),
+                "theme": r.get("theme",""),
+            })
+    print(f"Purged daily_counts rows older than {cutoff}. Kept rows: {len(kept)}")
 
 def main():
     # Which date are we writing under?
@@ -385,13 +427,12 @@ def main():
     counts = compute_counts_and_themes(run_date, all_articles)
 
     # Upsert into daily_counts.csv
-    if counts:
-        update_daily_counts_csv(counts)
-    else:
-        # Ensure file exists even if empty for the day
-        update_daily_counts_csv([])
+    update_daily_counts_csv(counts if counts else [])
 
-    print(f"Done. Brands processed: {len(set(r['brand'] for r in counts))}. Articles: {len(all_articles)}")
+    # Purge old data
+    purge_old_data(RETENTION_DAYS)
+
+    print(f"Done. Brands processed: {len(set(r['brand'] for r in counts)) if counts else 0}. Articles: {len(all_articles)}")
 
 if __name__ == "__main__":
     main()
