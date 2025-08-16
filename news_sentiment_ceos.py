@@ -325,3 +325,12 @@ def main():
         df = df[~( (df["date"] == fresh.iloc[0]["date"]) & (df["brand"].isin(list(fresh["brand"]))) )]
         df = pd.concat([df, fresh], ignore_index=True)
         df = df[COLS]
+        df.sort_values(["date", "brand"], inplace=True)
+        df.to_csv(COUNTS_CSV, index=False)
+    else:
+        pd.DataFrame(daily_rows, columns=COLS).to_csv(COUNTS_CSV, index=False)
+
+    print("=== CEO Sentiment: done ===")
+
+if __name__ == "__main__":
+    main()
