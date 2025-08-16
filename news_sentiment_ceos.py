@@ -84,14 +84,34 @@ def read_aliases() -> dict[str, list[str]]:
     return mapping
 
 def all_queries_for(brand: str, alias_map: dict[str, list[str]]):
-    q = [brand]
+    """
+    Build a stricter query that requires the name together with company/CEO context,
+    plus a couple of CEO-only fallbacks. This prevents 'name-only' matches.
+    """
+    name = f'"{brand}"' if " " in brand else brand
+
+    # Pull context terms directly from aliases (e.g., 'Apple CEO', 'Tim Cook Apple', 'GM')
+    contexts = set()
+    ceo_fallbacks = set()
     for a in alias_map.get(brand, []):
-        if a.lower() != brand.lower():
-            q.append(a)
-    # Combine aliases into OR query (quoted) and add negative company name (CEO only)
-    # e.g. ("Tim Cook" OR "Apple CEO")
-    parts = [f'"{x}"' if " " in x else x for x in q]
-    return "(" + " OR ".join(parts) + ")"
+        a = (a or "").strip()
+        if not a:
+            continue
+        contexts.add(f'"{a}"' if " " in a else a)
+        # If alias includes a company, keep a CEO fallback too
+        if "ceo" in a.lower():
+            ceo_fallbacks.add(f'"{a}"')  # e.g., "Apple CEO"
+
+    # Always include the generic CEO context
+    contexts.add("CEO")
+
+    # Core requirement: "Name" AND (any of the contexts)
+    core = f'({name} AND ({ " OR ".join(sorted(contexts)) }))'
+
+    # Keep a couple of CEO-only fallbacks for headlines that omit the name
+    fallbacks = sorted(ceo_fallbacks)
+
+    return "(" + " OR ".join([core] + fallbacks) + ")"
 
 def google_news_rss_url(query: str):
     base = "https://news.google.com/rss/search"
