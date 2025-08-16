@@ -2,15 +2,13 @@ name: Daily CEO News Sentiment
 
 on:
   schedule:
-    - cron: "0 12 * * *"   # ~8am ET
+    - cron: "0 12 * * *"     # ~8am ET
   workflow_dispatch: {}
   push:
     paths:
       - 'news_sentiment_ceos.py'
-      - 'requirements.txt'
-      - 'ceos.txt'
       - 'ceo_aliases.csv'
-      - 'ceo-dashboard.html'
+      - 'ceos.txt'
       - '.github/workflows/daily_ceos.yml'
 
 permissions:
@@ -22,15 +20,14 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: { fetch-depth: 0 }
 
       - name: Set up Python
         uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+        with: { python-version: "3.11" }
 
-      - name: Install dependencies
+      - name: Install dependencies (if requirements.txt exists)
+        if: ${{ hashFiles('requirements.txt') != '' }}
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -47,7 +44,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if [[ -n $(git status --porcelain) ]]; then
             git add -A
-            git commit -m "chore(data_ceos): update daily CEO news sentiment for $(date -u +%F)"
+            git commit -m "chore(data_ceos): update CEO news sentiment for $(date -u +%F)"
             git push
           else
             echo "No changes to commit."
