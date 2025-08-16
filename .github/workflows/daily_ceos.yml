@@ -14,17 +14,24 @@ on:
 permissions:
   contents: write
 
+# Prevent overlapping runs from racing on pushes
+concurrency:
+  group: ceo-data
+  cancel-in-progress: true
+
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
+        with:
+          python-version: "3.11"
 
       - name: Install dependencies (if requirements.txt exists)
         if: ${{ hashFiles('requirements.txt') != '' }}
@@ -38,14 +45,26 @@ jobs:
       - name: Run daily CEO sentiment
         run: python news_sentiment_ceos.py
 
-      - name: Commit & push changes (if any)
+      - name: Commit & push changes (safe rebase)
         run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [[ -n $(git status --porcelain) ]]; then
+
+          # Stage changes if any
+          if [[ -n "$(git status --porcelain)" ]]; then
             git add -A
             git commit -m "chore(data_ceos): update CEO news sentiment for $(date -u +%F)"
-            git push
+
+            # Make sure we're up-to-date before pushing
+            git fetch origin main
+            git pull --rebase origin main
+
+            # First push attempt
+            if ! git push origin HEAD:main; then
+              echo "First push failed, retrying with --force-with-lease..."
+              git push --force-with-lease origin HEAD:main
+            fi
           else
             echo "No changes to commit."
           fi
