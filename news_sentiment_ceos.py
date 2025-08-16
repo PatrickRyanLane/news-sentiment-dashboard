@@ -180,32 +180,38 @@ def today_eastern() -> str:
     return now.strftime("%Y-%m-%d")
 
 def purge_old_files():
-    cutoff = datetime.now(ZoneInfo("US/Eastern")) - timedelta(days=PURGE_OLDER_THAN_DAYS)
-    # delete old per-day articles files
-    for name in os.listdir(ARTICLES_DIR):
-        if not name.endswith(".csv"): 
-            continue
-        path = os.path.join(ARTICLES_DIR, name)
-        try:
-            dt = datetime.strptime(name.replace(".csv",""), "%Y-%m-%d")
-        except Exception:
-            continue
-        if dt < cutoff:
-            try: os.remove(path)
-            except Exception: pass
-    # trim daily_counts.csv rows older than cutoff
-    if os.path.exists(COUNTS_CSV):
-        df = pd.read_csv(COUNTS_CSV)
-        def ok(row):
+    """Delete old article-day CSVs and trim daily_counts by date (date-only, no tz)."""
+    keep_from = (datetime.now(ZoneInfo("US/Eastern")).date()
+                 - timedelta(days=PURGE_OLDER_THAN_DAYS))
+
+    # Delete old per-article files
+    if os.path.isdir(ARTICLES_DIR):
+        for fname in os.listdir(ARTICLES_DIR):
+            if not fname.endswith(".csv"):
+                continue
             try:
-                d = datetime.strptime(str(row["date"]), "%Y-%m-%d")
-                return d >= cutoff
+                d = datetime.strptime(fname[:-4], "%Y-%m-%d").date()
             except Exception:
-                return True
-        if not df.empty:
-            df2 = df[df.apply(ok, axis=1)]
-            if len(df2) != len(df):
-                df2.to_csv(COUNTS_CSV, index=False)
+                continue
+            if d < keep_from:
+                try:
+                    os.remove(os.path.join(ARTICLES_DIR, fname))
+                except Exception:
+                    pass
+
+    # Trim daily_counts.csv
+    if os.path.exists(COUNTS_CSV):
+        try:
+            df = pd.read_csv(COUNTS_CSV)
+            if "date" in df.columns:
+                df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.date
+                df = df[df["date"].notna()]
+                df = df[df["date"] >= keep_from]
+                df.sort_values(["date", "brand"], inplace=True)
+                df["date"] = df["date"].astype(str)
+                df.to_csv(COUNTS_CSV, index=False)
+        except Exception:
+            pass
 
 def write_articles_csv(date: str, rows: list[dict]):
     path = os.path.join(ARTICLES_DIR, f"{date}.csv")
