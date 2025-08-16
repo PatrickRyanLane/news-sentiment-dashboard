@@ -54,4 +54,9 @@ MAX_THEME_WORDS = 10          # safety cap for theme length
 
 # Optional: domains to skip (press releases / noise)
 BLOCKED_DOMAINS = {
-    "www.prnewswire.c
+    "www.prnewswire.com",
+    "www.businesswire.com",
+    "www.globenewswire.com",
+    "investorplace.com",
+    "seekingalpha.com",
+}
