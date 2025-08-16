@@ -176,7 +176,6 @@ GXO Logistics
 Parker-Hannifin
 Textron
 Public Service Enterprise Group
-Waste Management
 Consolidated Edison
 Synchrony Financial
 Salesforce
