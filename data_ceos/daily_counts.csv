@@ -1,490 +1,497 @@
-date,brand,total,positive,neutral,negative,theme
-2025-08-16,Bob Pragada,28,9,19,0,None
-2025-08-16,Peter Jackson,40,17,19,4,None
-2025-08-16,James Burke,40,7,25,8,None
-2025-08-16,Joaquin Duato,40,12,21,7,fierce pharma
-2025-08-16,William McDermott,12,4,7,1,None
-2025-08-16,Andrés Gluski,40,22,18,0,None
-2025-08-16,Avigal Soreq,16,2,9,5,csp daily
-2025-08-16,Vincent Roche,40,11,24,5,analog devices
-2025-08-16,Kathleen Mazzarella,10,3,7,0,None
-2025-08-16,Charles Magro,10,3,7,0,None
-2025-08-16,Walker Martin,8,2,5,1,None
-2025-08-16,Jure Sola,16,4,12,0,None
-2025-08-16,Niraj Shah,40,11,20,9,wayfair ceo
-2025-08-16,Michael Dell,40,18,20,2,dell ceo
-2025-08-16,Joseph Ferraro,10,3,6,1,None
-2025-08-16,Joseph Hinrichs,17,8,8,1,None
-2025-08-16,Haviv Ilan,39,14,23,2,None
-2025-08-16,Mark Costa,39,8,26,5,eastman chemical
-2025-08-16,Brian Tierney,40,10,24,6,news bureau
-2025-08-16,Shantanu Narayen,40,18,20,2,adobe ceo
-2025-08-16,Patrick Gallagher Jr.,40,15,24,1,None
-2025-08-16,Ricardo Cardenas,9,3,6,0,None
-2025-08-16,Stephanie Ferris,40,13,24,3,None
-2025-08-16,David Ricks,40,14,14,12,eli lilly
-2025-08-16,Benjamin Tisch,8,1,7,0,None
-2025-08-16,Daniel Wall,10,4,6,0,None
-2025-08-16,Ron Vachris,40,6,34,0,None
-2025-08-16,William Westrate,2,1,1,0,None
-2025-08-16,Anthony Guzzi,8,3,4,1,None
-2025-08-16,Rush,40,4,19,17,oceangate ceo
-2025-08-16,Jennifer Rumsey,40,9,30,1,None
-2025-08-16,Alex Chriss,40,9,26,5,paypal ceo
-2025-08-16,Hamid Moghadam,38,10,22,6,prologis ceo
-2025-08-16,Thasunda Brown Duckett,36,11,24,1,None
-2025-08-16,Sarah London,40,15,21,4,business journals
-2025-08-16,Thomas Hill,39,10,22,7,ceo resigns
-2025-08-16,Michael Hutchins,10,1,7,2,freddie mac
-2025-08-16,Adam Norwitt,17,2,15,0,None
-2025-08-16,Timothy NeCastro,10,4,6,0,None
-2025-08-16,Samuel Hazen,11,6,5,0,None
-2025-08-16,Timothy Knavish,4,0,4,0,None
-2025-08-16,Marc Benioff,40,6,24,10,marc benioff
-2025-08-16,Ramon Laguarta,40,13,26,1,None
-2025-08-16,Daniel Amos,11,5,5,1,None
-2025-08-16,Laura Alber,40,12,23,5,williams sonoma
-2025-08-16,Timothy Wentworth,10,1,4,5,walgreens ceo
-2025-08-16,Heidi Petz,14,3,11,0,None
-2025-08-16,Robert Davis,40,4,28,8,merck ceo
-2025-08-16,Christopher Kastner,7,2,5,0,None
-2025-08-16,Andrew Sullivan,32,11,21,0,None
-2025-08-16,Albert Nahmad,10,3,5,2,None
-2025-08-16,Michael Dastoor,7,0,7,0,None
-2025-08-16,Shane O'Kelly,31,8,21,2,advance auto
-2025-08-16,Tony Spring,40,9,27,4,macy ceo
-2025-08-16,Vimal Kapur,34,6,27,1,None
-2025-08-16,Susan Patricia Griffith,5,4,1,0,None
-2025-08-16,Bruce Van Saun,39,8,27,4,bruce van
-2025-08-16,Tiang Yew Tan,3,3,0,0,None
-2025-08-16,Thomas Gayner,11,2,8,1,None
-2025-08-16,Beth Ford,35,13,18,4,lakes ceo
-2025-08-16,Susan Morris,40,12,24,4,new ceo
-2025-08-16,Stuart Bradie,24,5,16,3,None
-2025-08-16,John Stankey,40,8,26,6,ceo john
-2025-08-16,Elon Musk,40,9,20,11,elon musk
-2025-08-16,Stéphane de La Faverie,40,12,27,1,None
-2025-08-16,Thomas Bell,40,11,26,3,business journals
-2025-08-16,Marc Casper,29,9,19,1,None
-2025-08-16,Peter Arduini,40,14,25,1,None
-2025-08-16,George Holm,24,8,15,1,None
-2025-08-16,Donald Allan Jr.,18,3,15,0,None
-2025-08-16,Timothy Sweeney,12,11,0,1,None
-2025-08-16,Michel Khalaf,23,7,16,0,None
-2025-08-16,Alan Schnitzer,40,11,23,6,travelers ceo
-2025-08-16,Michael Nolan,33,10,20,3,None
-2025-08-16,Stephen Hemsley,40,9,25,6,pay package
-2025-08-16,Jeffrey Lorberbaum,8,6,2,0,None
-2025-08-16,Mario Harik,30,9,21,0,None
-2025-08-16,Clay Williams,40,15,22,3,None
-2025-08-16,Ravi Kumar S,40,11,25,4,ravi kumar
-2025-08-16,Gail Boudreaux,28,7,20,1,None
-2025-08-16,Calvin McDonald,40,6,29,5,calvin mcdonald
-2025-08-16,Gunjan Kedia,34,15,17,2,None
-2025-08-16,Jean-Marc Gilson,11,5,6,0,None
-2025-08-16,David Bruton Smith,9,0,4,5,bruton smith
-2025-08-16,Cameron Bready,27,5,21,1,None
-2025-08-16,Timothy Cook,40,11,26,3,new york
-2025-08-16,Tony Xu,40,6,29,5,business insider
-2025-08-16,Keith Allman,10,3,6,1,None
-2025-08-16,Gil West,38,5,23,10,hertz ceo
-2025-08-16,Thomas Polen,9,4,4,1,None
-2025-08-16,Timothy Spence,8,3,4,1,None
-2025-08-16,Scott Salmirs,9,4,4,1,None
-2025-08-16,Michael Kasbar,10,2,8,0,None
-2025-08-16,James Snee,15,1,13,1,None
-2025-08-16,Craig Smiddy,8,0,7,1,None
-2025-08-16,Mark Zuckerberg,40,8,23,9,mark zuckerberg
-2025-08-16,David Flitman,7,1,6,0,None
-2025-08-16,Andrew Jassy,40,7,30,3,None
-2025-08-16,Jeffrey Miller,27,11,15,1,None
-2025-08-16,Steven Vondran,9,4,5,0,None
-2025-08-16,William Brown,40,12,25,3,new ceo
-2025-08-16,Michael Wirth,36,6,22,8,chevron ceo
-2025-08-16,Corie Barry,40,38,2,0,None
-2025-08-16,Daryl Kenningham,26,8,16,2,business journals
-2025-08-16,Michael Doss,20,5,13,2,plane crash
-2025-08-16,Mark Witkowski,7,1,5,1,None
-2025-08-16,Ted Sarandos,40,7,24,9,netflix ceo
-2025-08-16,Jennifer Parmentier,7,0,7,0,None
-2025-08-16,Judith Marks,8,2,5,1,None
-2025-08-16,Richard Fairbank,40,9,21,10,capital ceo
-2025-08-16,Kaes Van’t Hof,35,21,12,2,None
-2025-08-16,Gregory Roberts,11,4,7,0,None
-2025-08-16,William Fehrman,10,5,5,0,None
-2025-08-16,Eric Slifka,19,5,12,2,None
-2025-08-16,Christophe Beck,40,15,25,0,None
-2025-08-16,Carl Eschenbach,40,6,28,6,cloud wars
-2025-08-16,Michael Shepherd,27,4,20,3,discover ceo
-2025-08-16,Scott Lauber,26,17,9,0,None
-2025-08-16,Harry Lawton III,2,1,1,0,None
-2025-08-16,Jon Farney,17,6,10,1,None
-2025-08-16,Christopher Nassetta,40,13,24,3,ceo hilton
-2025-08-16,Sean Connolly,40,7,31,2,None
-2025-08-16,Julian Francis,40,4,32,4,beacon roofing
-2025-08-16,Joseph Zubretsky,26,5,19,2,molina healthcare
-2025-08-16,Edward Decker,13,4,9,0,None
-2025-08-16,James Teague,8,3,5,0,None
-2025-08-16,Michael Manley,40,11,25,4,fiat chrysler
-2025-08-16,Michael Hsu,40,14,23,3,kimberly clark
-2025-08-16,Scott Strazik,40,10,24,6,ge vernova
-2025-08-16,David Joyner,40,1,33,6,cvs health
-2025-08-16,Benito Minicucci,8,0,6,2,None
-2025-08-16,Jamie Iannone,40,16,22,2,None
-2025-08-16,Kevin Stein,40,16,17,7,delos insurance
-2025-08-16,Kathleen Johnson,7,2,5,0,None
-2025-08-16,Eugene Bredow,4,1,3,0,None
-2025-08-16,David Zaslav,40,7,25,8,david zaslav
-2025-08-16,John Wren,36,10,22,4,john wren
-2025-08-16,Richard Wurster,7,1,6,0,None
-2025-08-16,Kevin Lobo,40,13,23,4,stryker ceo
-2025-08-16,Brian Roberts,40,11,28,1,None
-2025-08-16,John Christmann IV,9,2,6,1,None
-2025-08-16,David Solomon,40,9,19,12,goldman sachs
-2025-08-16,Brendan McCracken,17,9,7,1,None
-2025-08-16,Craig DeSanto,10,2,8,0,None
-2025-08-16,Hamid Akhavan,40,4,25,11,hollywood reporter
-2025-08-16,Robert Mauch,10,5,5,0,None
-2025-08-16,Vincent Sorgi,22,8,13,1,None
-2025-08-16,Andrew Teno,10,4,6,0,None
-2025-08-16,Mary Dillon,40,13,25,2,foot locker
-2025-08-16,Adaire Fox-Martin,40,19,18,3,None
-2025-08-16,Brian Doubles,23,7,16,0,None
-2025-08-16,Todd Vasos,40,6,29,5,dollar general
-2025-08-16,Thomas Wilson,40,15,18,7,allstate ceo
-2025-08-16,Robert Martin,40,10,26,4,beckley man
-2025-08-16,Mary Barra,40,9,22,9,mary barra
-2025-08-16,Michael Creedon,35,1,33,1,None
-2025-08-16,Rafael Santana,40,14,24,2,None
-2025-08-16,Lori Koch,22,8,14,0,None
-2025-08-16,Robert Isom,40,10,19,11,american airlines
-2025-08-16,Leon Topalian,40,16,19,5,business journals
-2025-08-16,Edward Pesicka,10,1,8,1,None
-2025-08-16,Michael Miebach,34,9,22,3,mastercard ceo
-2025-08-16,Lourenco Goncalves,37,5,26,6,cleveland cliffs
-2025-08-16,James Rechtin,10,5,4,1,None
-2025-08-16,Roger Crandall,24,5,18,1,None
-2025-08-16,Kevin Murphy,40,12,27,1,None
-2025-08-16,Robert Steer,5,1,4,0,None
-2025-08-16,Bruce Bodine,11,4,7,0,None
-2025-08-16,Jeffrey Harmening,33,4,22,7,general mills
-2025-08-16,Blake Moret,34,6,25,3,automation ceo
-2025-08-16,Troy Rudd,25,5,17,3,aecom ceo
-2025-08-16,Edward Bastian,12,3,8,1,None
-2025-08-16,Charles Robbins,15,3,11,1,None
-2025-08-16,Ronald O'Hanley,22,4,15,3,state street
-2025-08-16,Arvind Krishna,40,6,28,6,arvind krishna
-2025-08-16,Karla Lewis,10,3,7,0,None
-2025-08-16,Sundar Pichai,40,11,21,8,sundar pichai
-2025-08-16,Lane Riggs,23,13,9,1,None
-2025-08-16,Phebe Novakovic,31,25,4,2,None
-2025-08-16,Gregory Brown,26,6,18,2,None
-2025-08-16,José Mas,40,11,26,3,None
-2025-08-16,Harry Sideris,37,28,9,0,None
-2025-08-16,Reshma Kewalramani,40,12,25,3,vertex ceo
-2025-08-16,Jacek Olczak,40,9,24,7,philip morris
-2025-08-16,John Venhuizen,27,8,16,3,ace hardware
-2025-08-16,Timothy Archer,9,2,7,0,None
-2025-08-16,Laurence Fink,40,12,19,9,blackrock ceo
-2025-08-16,Jim Vena,27,10,14,3,union pacific
-2025-08-16,Mikael Bratt,17,6,6,5,000 jobs
-2025-08-16,Michael Bender,40,1,29,10,ceo fired
-2025-08-16,Erik Nordstrom,40,5,27,8,nordstrom ceo
-2025-08-16,Stephen Steinour,16,3,13,0,None
-2025-08-16,Martin Schroeter,26,8,17,1,None
-2025-08-16,Jay Debertin,14,3,9,2,None
-2025-08-16,William Stengel II,4,0,4,0,None
-2025-08-16,Tony Sarsam,27,12,13,2,None
-2025-08-16,William Oplinger,31,4,20,7,100 000
-2025-08-16,Joseph Dominguez,38,16,21,1,None
-2025-08-16,Kecia Steelman,40,34,6,0,None
-2025-08-16,Sasan Goodarzi,40,9,27,4,intuit ceo
-2025-08-16,Juan Luciano,40,7,20,13,adm shareholder
-2025-08-16,Brent Shafer,24,6,18,0,None
-2025-08-16,Shelley Simpson,40,10,28,2,None
-2025-08-16,Javier Rodriguez,40,21,19,0,None
-2025-08-16,Ernest Garcia III,31,18,9,4,ernest garcia
-2025-08-16,Joyce Mullen,18,7,11,0,None
-2025-08-16,Lip-Bu Tan,40,6,22,12,intel ceo
-2025-08-16,Lorenzo Simonelli,40,19,19,2,None
-2025-08-16,René Jones,40,13,24,3,None
-2025-08-16,Mick Beekhuizen,36,6,27,3,None
-2025-08-16,Jonas Prising,34,13,20,1,None
-2025-08-16,Thomas Reeg,13,7,5,1,None
-2025-08-16,Robert Vitale,11,2,7,2,ceo rob
-2025-08-16,Timothy Gerend,7,1,6,0,None
-2025-08-16,Michele Buck,40,7,29,4,hershey ceo
-2025-08-16,Kevin Hourican,35,10,20,5,sysco ceo
-2025-08-16,Paul Bay,40,10,25,5,ingram micro
-2025-08-16,Stefan Larsson,34,6,27,1,None
-2025-08-16,Scott Smith,36,9,22,5,hockey canada
-2025-08-16,James Farley Jr.,9,2,5,2,None
-2025-08-16,Ari Bousbib,25,5,20,0,None
-2025-08-16,Thibaut Mongon,23,3,20,0,None
-2025-08-16,Marvin Ellison,40,11,25,4,ceo marvin
-2025-08-16,Michael Rhodes,39,7,28,4,discover ceo
-2025-08-16,Brian Niccol,40,11,25,4,brian niccol
-2025-08-16,Mark Smucker,40,7,27,6,jm smucker
-2025-08-16,Peter Matt,10,8,2,0,None
-2025-08-16,"Michael Creedon, Jr.",10,0,10,0,None
-2025-08-16,John Plant,32,10,20,2,None
-2025-08-16,Cristiano Amon,40,6,29,5,qualcomm ceo
-2025-08-16,James Taiclet,40,9,23,8,lockheed martin
-2025-08-16,Leonard Schleifer,40,7,26,7,regeneron ceo
-2025-08-16,Ellen Cooper,26,6,18,2,lincoln financial
-2025-08-16,Rich Steinmeier,40,27,8,5,arnold violating
-2025-08-16,Dirk Van de Put,40,10,27,3,maker mondelez
-2025-08-16,Rainer Blair,19,4,13,2,None
-2025-08-16,Darren Woods,40,6,28,6,darren woods
-2025-08-16,David Cordani,40,15,23,2,cigna ceo
-2025-08-16,Timothy Cawley,9,3,3,3,new york
-2025-08-16,Peter Zaffino,40,15,22,3,ceo zaffino
-2025-08-16,Douglas McMillon,40,11,21,8,mart ceo
-2025-08-16,Charles Scharf,40,26,10,4,wells fargo
-2025-08-16,Preston Feight,39,9,27,3,None
-2025-08-16,Brian Robbins,40,6,34,0,None
-2025-08-16,James Dimon,40,8,22,10,jamie dimon
-2025-08-16,Karsanbhai,40,12,25,3,None
-2025-08-16,Deon Stander,10,1,9,0,None
-2025-08-16,Kimberly Dang,10,9,1,0,None
-2025-08-16,Deanna Strable-Soethout,8,1,7,0,None
-2025-08-16,Marc Bitzer,40,10,16,14,moody market
-2025-08-16,Tim Hingtgen,16,5,11,0,None
-2025-08-16,Sanjay Mehrotra,37,14,21,2,None
-2025-08-16,Robert Bradway,32,9,22,1,None
-2025-08-16,Lisa Su,40,8,31,1,None
-2025-08-16,Steven Cahillane,16,6,9,1,None
-2025-08-16,Mark Lashier,38,11,21,6,phillips 66
-2025-08-16,Rodney Sacks,40,14,20,6,None
-2025-08-16,John Engel,21,8,11,2,None
-2025-08-16,Sheryl Palmer,33,7,20,6,sheryl palmer
-2025-08-16,Christopher Caldwell,14,6,8,0,None
-2025-08-16,Jensen Huang,40,12,20,8,jensen huang
-2025-08-16,Joey Wat,29,11,17,1,None
-2025-08-16,John Turner Jr.,9,1,8,0,None
-2025-08-16,Brian Cornell,40,7,25,8,target ceo
-2025-08-16,Daniel O'Day,40,10,25,5,daniel day
-2025-08-16,Ezra Yacob,17,13,4,0,None
-2025-08-16,Dennis Mathew,24,5,16,3,altice usa
-2025-08-16,Justin Jude,9,3,3,3,None
-2025-08-16,Gerardo Norcia,10,7,3,0,None
-2025-08-16,Bryan DeBoer,40,14,25,1,None
-2025-08-16,David Gibbs,27,3,22,2,brands ceo
-2025-08-16,Andrew McMahon,31,10,20,1,None
-2025-08-16,Priscilla Almodovar,32,9,17,6,fannie mae
-2025-08-16,Mark Stewart,40,6,34,0,None
-2025-08-16,Jon Rousseau,11,8,3,0,None
-2025-08-16,Ronald Sargent,22,1,8,13,kroger ceo
-2025-08-16,Ryan Marshall,40,14,19,7,twitter harassment
-2025-08-16,Gary Guthart,40,10,25,5,intuitive surgical
-2025-08-16,John Ketchum,40,21,17,2,None
-2025-08-16,John Pfeifer,40,8,26,6,None
-2025-08-16,Robert Blue,23,13,9,1,None
-2025-08-16,Richard Tobin,16,5,10,1,None
-2025-08-16,Paul Romanowski,16,4,11,1,None
-2025-08-16,Brad Beckham,12,3,9,0,None
-2025-08-16,Malcolm Wilson,40,5,35,0,None
-2025-08-16,James Conroy,13,2,11,0,None
-2025-08-16,Heather Lavallee,20,10,8,2,ceo workplace
-2025-08-16,Christopher Peterson,13,3,8,2,None
-2025-08-16,Rajesh Subramaniam,40,13,26,1,None
-2025-08-16,Kristin Peck,40,19,21,0,None
-2025-08-16,Anthony Capuano,40,10,27,3,marriott ceo
-2025-08-16,Keith Demmings,11,5,6,0,None
-2025-08-16,Andrew Silvernail,11,1,10,0,None
-2025-08-16,Eduardo Menezes,13,2,10,1,None
-2025-08-16,James Cracchiolo,14,1,13,0,None
-2025-08-16,Clay Gaspar,13,12,1,0,None
-2025-08-16,Juan Andrade,28,6,21,1,None
-2025-08-16,Richard Wallace,13,5,8,0,None
-2025-08-16,Glenn Fogel,40,9,27,4,booking ceo
-2025-08-16,James Davis,30,8,21,1,None
-2025-08-16,James Zallie,10,4,5,1,None
-2025-08-16,Albert Bourla,40,9,23,8,pfizer ceo
-2025-08-16,Christian Ulbrich,40,11,27,2,None
-2025-08-16,Horacio Rozanski,32,12,18,2,booz allen
-2025-08-16,Joseph Bae,34,15,17,2,kkr ceo
-2025-08-16,Michael O’Sullivan,40,12,24,4,None
-2025-08-16,Richard Handler,40,15,12,13,jefferies ceo
-2025-08-16,Kathy Warden,40,16,22,2,northrop grumman
-2025-08-16,Safra Catz,40,11,19,10,safra catz
-2025-08-16,Christopher Winfrey,24,7,13,4,charter ceo
-2025-08-16,Robert Jordan,40,9,24,7,southwest ceo
-2025-08-16,Teresa Rasmussen,10,0,10,0,None
-2025-08-16,Kevin Hogan,40,8,30,2,None
-2025-08-16,Jennifer Johnson,40,12,27,1,None
-2025-08-16,Robert Berkley Jr.,17,3,11,3,berkley ceo
-2025-08-16,William Krueger,2,1,0,1,None
-2025-08-16,Philip Smith,40,6,32,2,None
-2025-08-16,John Mengucci,23,16,7,0,None
-2025-08-16,Matthew Pine,11,1,10,0,None
-2025-08-16,William Newlands,4,0,2,2,ceo says
-2025-08-16,William Monteleone,9,2,6,1,None
-2025-08-16,Raul Fernandez,40,3,34,3,None
-2025-08-16,Kevin Kwilinski,15,2,13,0,None
-2025-08-16,William Rogers Jr.,8,0,5,3,None
-2025-08-16,Scott Richardson,40,9,25,6,celanese stock
-2025-08-16,David Gitlin,40,14,22,4,david gitlin
-2025-08-16,William Demchak,40,16,19,5,pnc ceo
-2025-08-16,Ralph LaRossa,22,6,16,0,None
-2025-08-16,Christopher O'Herlihy,9,4,5,0,None
-2025-08-16,Steve Sanghi,40,7,32,1,None
-2025-08-16,Daniel Fisher,39,5,31,3,None
-2025-08-16,Hans Vestberg,40,17,23,0,None
-2025-08-16,Jack Fusco,40,15,20,5,None
-2025-08-16,Edward Pick,10,3,7,0,None
-2025-08-16,Mark George,34,8,18,8,norfolk southern
-2025-08-16,Jon Vander Ark,40,7,17,16,waste dive
-2025-08-16,David Bozeman,12,1,11,0,None
-2025-08-16,Rusty Rush,25,9,11,5,rush enterprises
-2025-08-16,Thomas Palmer,9,4,5,0,None
-2025-08-16,Matthew Flannery,23,22,1,0,None
-2025-08-16,Robin Vince,40,17,21,2,None
-2025-08-16,Robert Iger,40,11,24,5,robert iger
-2025-08-16,Scott Boatwright,40,5,33,2,None
-2025-08-16,Tim Go,16,6,9,1,None
-2025-08-16,John Barrett,40,12,27,1,None
-2025-08-16,David Hult,22,3,18,1,None
-2025-08-16,Robert Sulentic,11,2,8,1,None
-2025-08-16,James Blackledge,9,1,7,1,None
-2025-08-16,Ariane Gorin,31,7,24,0,None
-2025-08-16,Ernie Herrman,40,13,27,0,None
-2025-08-16,Robert Greenberg,40,8,28,4,None
-2025-08-16,Robert Ford,40,4,30,6,abbott ceo
-2025-08-16,Stephen Squeri,40,10,26,4,american express
-2025-08-16,Donnie King,40,19,17,4,tyson foods
-2025-08-16,Jack Sinclair,40,13,25,2,None
-2025-08-16,John Hess,40,13,22,5,hess ceo
-2025-08-16,Brian Chesky,40,4,28,8,brian chesky
-2025-08-16,Robert Frenzel,8,5,2,1,None
-2025-08-16,Kirt Walker,23,11,10,2,columbus ceo
-2025-08-16,Hock Tan,40,11,22,7,broadcom ceo
-2025-08-16,Shankh Mitra,25,12,12,1,None
-2025-08-16,Stanley Bergman,40,10,30,0,None
-2025-08-16,Andrew Wilson,40,10,27,3,andrew wilson
-2025-08-16,Stephen Schwarzman,40,11,23,6,stephen schwarzman
-2025-08-16,Bom Kim,33,6,25,2,None
-2025-08-16,Marc Rowan,40,17,18,5,apollo ceo
-2025-08-16,Brian Chambers,24,3,19,2,owens corning
-2025-08-16,William Hornbuckle,19,4,15,0,None
-2025-08-16,Michael Lyons,37,8,28,1,None
-2025-08-16,Robert Michael,40,9,30,1,None
-2025-08-16,Milan Galik,17,6,11,0,None
-2025-08-16,Robert Sanchez,40,15,23,2,trucking dive
-2025-08-16,Stephen Spray,10,2,6,2,cinfin estimates
-2025-08-16,Christopher Kempczinski,30,5,20,5,None
-2025-08-16,Pedro Pizarro,40,14,9,17,ceo says
-2025-08-16,Kathleen Quirk,28,9,17,2,None
-2025-08-16,Saumya Sutaria,10,4,5,1,None
-2025-08-16,Andrew Marsh,31,11,19,1,None
-2025-08-16,Giordano Albertazzi,35,17,14,4,data center
-2025-08-16,Gary Dickerson,40,11,23,6,applied materials
-2025-08-16,Lachlan Murdoch,40,11,26,3,lachlan murdoch
-2025-08-16,Jennifer Witz,35,8,20,7,ceo jennifer
-2025-08-16,Darryl Button,8,1,7,0,None
-2025-08-16,Frank Holding Jr.,15,6,9,0,None
-2025-08-16,Jason Wells,36,17,13,6,houston chronicle
-2025-08-16,Philip Gallagher,1,0,0,1,None
-2025-08-16,Jason Hollar,39,11,24,4,cardinal health
-2025-08-16,Todd Schneider,30,7,22,1,None
-2025-08-16,Joseph Nolan Jr.,5,2,3,0,None
-2025-08-16,Carol Tomé,40,12,26,2,None
-2025-08-16,Mark Pearson,27,12,15,0,None
-2025-08-16,Paul Shoukry,25,10,15,0,None
-2025-08-16,Philippe Krakowsky,40,14,24,2,None
-2025-08-16,Wilfred Chiang,1,0,1,0,None
-2025-08-16,Joseph Fadool,10,4,6,0,None
-2025-08-16,Patrick Geraghty,10,0,9,1,None
-2025-08-16,Warren Buffett,40,10,27,3,berkshire hathaway
-2025-08-16,Earl Austin Jr.,4,0,3,1,None
-2025-08-16,Maria Black,28,13,15,0,None
-2025-08-16,Matthew Meloy,9,5,4,0,None
-2025-08-16,Christopher Womack,9,1,8,0,None
-2025-08-16,Jane Fraser,40,9,24,7,jane fraser
-2025-08-16,William Gifford Jr.,10,1,9,0,None
-2025-08-16,Enrique Lores,40,13,23,4,hp ceo
-2025-08-16,Carlos Abrams-Rivera,40,12,27,1,None
-2025-08-16,Christopher Boerner,38,11,25,2,None
-2025-08-16,Christopher Hilger,8,2,5,1,None
-2025-08-16,Christopher Kubasik,32,7,19,6,lockheed ceo
-2025-08-16,Michael Rapino,40,10,23,7,live nation
-2025-08-16,James Quincey,40,11,22,7,coca cola
-2025-08-16,Robert Goldstein,40,7,30,3,robert goldstein
-2025-08-16,Daniel Florness,9,4,4,1,None
-2025-08-16,Darren Rebelez,40,13,25,2,ceo says
-2025-08-16,William Nash,8,3,4,1,None
-2025-08-16,Brian Moynihan,40,9,23,8,america ceo
-2025-08-16,Vicki Hollub,40,15,23,2,occidental ceo
-2025-08-16,David Burritt,40,11,19,10,steel ceo
-2025-08-16,Tony Cheng,14,3,9,2,None
-2025-08-16,Sumit Singh,40,16,20,4,ceo sumit
-2025-08-16,John Doyle,30,11,18,1,None
-2025-08-16,Noel Wallace,36,13,20,3,colgate ceo
-2025-08-16,Wendell Weeks,40,12,26,2,steve jobs
-2025-08-16,Jon Moeller,40,10,24,6,jon moeller
-2025-08-16,Sean Kerins,9,3,6,0,None
-2025-08-16,Christopher Swift,30,17,12,1,None
-2025-08-16,Douglas Yearley Jr.,10,1,6,3,toll brothers
-2025-08-16,Raymond Scott,10,3,6,1,None
-2025-08-16,Mark Millett,15,12,3,0,None
-2025-08-16,David Rawlinson II,18,4,13,1,None
-2025-08-16,Lawrence Coben,9,5,3,1,None
-2025-08-16,Andrew Clyde,40,9,30,1,None
-2025-08-16,Timothy Cofer,6,3,1,2,None
-2025-08-16,Roger Penske,40,17,19,4,roger penske
-2025-08-16,Christine Leahy,10,0,8,2,None
-2025-08-16,Antonio Neri,40,8,26,6,antonio neri
-2025-08-16,Satya Nadella,40,16,22,2,ceo satya
-2025-08-16,Richard McKenney,9,5,4,0,None
-2025-08-16,Ryan McInerney,40,11,25,4,payments dive
-2025-08-16,Gavin Hattersley,40,4,33,3,business journals
-2025-08-16,Mark Bertolini,40,10,25,5,aetna ceo
-2025-08-16,Jonathan Jaffe,9,2,7,0,None
-2025-08-16,Matthew Lucey,9,6,2,1,None
-2025-08-16,Calvin Butler Jr.,10,3,6,1,None
-2025-08-16,Arie Kotler,34,6,26,2,None
-2025-08-16,James Breuer,5,1,4,0,None
-2025-08-16,Ivan Tornos,40,11,26,3,biomet cut
-2025-08-16,Robert Thomson,40,4,28,8,news corp
-2025-08-16,Scott Donnelly,40,9,27,4,None
-2025-08-16,Scott Kirby,40,27,7,6,united airlines
-2025-08-16,Dara Khosrowshahi,40,14,22,4,uber ceo
-2025-08-16,Michael O'Grady,22,16,6,0,None
-2025-08-16,Michael Mahoney,40,13,26,1,None
-2025-08-16,Bracken Darrell,31,3,24,4,bracken darrell
-2025-08-16,Christopher Viehbacher,32,0,30,2,None
-2025-08-16,Elliott Hill,40,9,29,2,ceo elliott
-2025-08-16,Lauren Hobart,40,8,29,3,dick sporting
-2025-08-16,Penny Pennington,39,10,25,4,edward jones
-2025-08-16,Alan Armstrong,35,16,15,4,natural gas
-2025-08-16,Patricia Poppe,24,8,15,1,None
-2025-08-16,Robert Eddy,9,3,6,0,None
-2025-08-16,Patrick Zammit,18,8,10,0,None
-2025-08-16,Adam Schechter,27,7,19,1,None
-2025-08-16,Garrick Rochow,11,9,2,0,None
-2025-08-16,Jeffrey Sprecher,40,10,30,0,None
-2025-08-16,Thomas Long,29,17,8,4,energy transfer
-2025-08-16,Rick Lanoha,8,1,6,1,None
-2025-08-16,Nikesh Arora,40,9,23,8,nikesh arora
-2025-08-16,Christopher Calio,22,5,17,0,None
-2025-08-16,Philip Daniele III,1,0,1,0,None
-2025-08-16,Sandy Douglas,38,15,22,1,None
-2025-08-16,Brian Tyler,40,7,26,7,brian tyler
-2025-08-16,Toni Townes-Whitley,36,17,15,4,500 ceos
-2025-08-16,John Zillmer,25,7,16,2,None
-2025-08-16,Pierce Norton II,9,6,2,1,None
-2025-08-16,Ryan Lance,40,15,21,4,conocophillips ceo
-2025-08-16,Joanna Geraghty,40,13,26,1,None
-2025-08-16,Christopher Gorman,40,15,22,3,None
-2025-08-16,Mark Shapiro,40,7,30,3,blue jays
-2025-08-16,John May,40,12,25,3,deere ceo
-2025-08-16,Eric Hansotia,40,20,18,2,agriculture dive
-2025-08-16,Mark Kowlzan,11,2,7,2,None
-2025-08-16,Marc Miller,40,11,28,1,None
-2025-08-16,Lawrence Culp Jr.,40,11,25,4,None
-2025-08-16,Maryann Mannen,19,7,11,1,None
-2025-08-16,DG Macpherson,19,5,13,1,None
-2025-08-16,Erik Fyrwald,36,8,26,2,None
-2025-08-16,Macpherson,40,5,19,16,idt ceo
-2025-08-16,Martina Cheung,18,5,13,0,None
-2025-08-16,Robert Ortberg,13,2,10,1,None
+date,brand,company,positive,neutral,negative,total,theme
+2025-08-16,Adaire Fox-Martin,CEO,7,21,12,40,new york
+2025-08-16,Adam Norwitt,CEO,7,21,12,40,new york
+2025-08-16,Adam Schechter,CEO,7,21,12,40,new york
+2025-08-16,Alan Armstrong,CEO,7,21,12,40,new york
+2025-08-16,Alan Schnitzer,CEO,6,21,13,40,new york
+2025-08-16,Albert Bourla,CEO,9,18,13,40,new york
+2025-08-16,Albert Nahmad,CEO,7,20,13,40,new york
+2025-08-16,Alex Chriss,CEO,7,21,12,40,new york
+2025-08-16,Andrew Clyde,CEO,7,20,13,40,new york
+2025-08-16,Andrew Jassy,CEO,7,20,13,40,new york
+2025-08-16,Andrew Marsh,CEO,18,15,7,40,alex karp
+2025-08-16,Andrew McMahon,CEO,6,22,12,40,new york
+2025-08-16,Andrew Silvernail,CEO,7,20,13,40,new york
+2025-08-16,Andrew Sullivan,CEO,7,21,12,40,new york
+2025-08-16,Andrew Teno,CEO,7,20,13,40,new york
+2025-08-16,Andrew Wilson,CEO,7,21,12,40,new york
+2025-08-16,Andrés Gluski,CEO,7,21,12,40,new york
+2025-08-16,Anthony Capuano,CEO,7,20,13,40,new york
+2025-08-16,Anthony Guzzi,CEO,8,20,12,40,new york
+2025-08-16,Antonio Neri,CEO,7,21,12,40,new york
+2025-08-16,Ari Bousbib,CEO,6,21,13,40,new york
+2025-08-16,Ariane Gorin,CEO,8,20,12,40,new york
+2025-08-16,Arie Kotler,CEO,7,20,13,40,new york
+2025-08-16,Arvind Krishna,CEO,7,21,12,40,new york
+2025-08-16,Avigal Soreq,CEO,7,20,13,40,new york
+2025-08-16,Benito Minicucci,CEO,6,21,13,40,new york
+2025-08-16,Benjamin Tisch,CEO,8,20,12,40,new york
+2025-08-16,Beth Ford,CEO,8,20,12,40,new york
+2025-08-16,Blake Moret,CEO,8,20,12,40,new york
+2025-08-16,Bob Pragada,CEO,7,21,12,40,new york
+2025-08-16,Bom Kim,CEO,6,21,13,40,new york
+2025-08-16,Bracken Darrell,CEO,7,21,12,40,new york
+2025-08-16,Brad Beckham,CEO,6,21,13,40,new york
+2025-08-16,Brendan McCracken,CEO,7,20,13,40,new york
+2025-08-16,Brent Shafer,CEO,6,21,13,40,new york
+2025-08-16,Brian Chambers,CEO,7,21,12,40,new york
+2025-08-16,Brian Chesky,CEO,7,21,12,40,new york
+2025-08-16,Brian Cornell,CEO,6,21,13,40,new york
+2025-08-16,Brian Doubles,CEO,7,21,12,40,new york
+2025-08-16,Brian Moynihan,CEO,17,16,7,40,alex karp
+2025-08-16,Brian Niccol,CEO,6,24,10,40,brian niccol
+2025-08-16,Brian Robbins,CEO,7,22,11,40,new york
+2025-08-16,Brian Roberts,CEO,7,21,12,40,new york
+2025-08-16,Brian Tierney,CEO,7,21,12,40,new york
+2025-08-16,Brian Tyler,CEO,7,23,10,40,new york
+2025-08-16,Bruce Bodine,CEO,7,21,12,40,new york
+2025-08-16,Bruce Van Saun,CEO,7,21,12,40,new york
+2025-08-16,Bryan DeBoer,CEO,8,20,12,40,new york
+2025-08-16,Bryan Hanson,CEO,7,21,12,40,new york
+2025-08-16,Calvin Butler Jr.,CEO,8,20,12,40,new york
+2025-08-16,Calvin McDonald,CEO,7,21,12,40,new york
+2025-08-16,Cameron Bready,CEO,7,21,12,40,new york
+2025-08-16,Carl Eschenbach,CEO,7,20,13,40,new york
+2025-08-16,Carl Lindner lll,CEO,7,21,12,40,new york
+2025-08-16,Carlos Abrams-Rivera,CEO,7,21,12,40,new york
+2025-08-16,Carol Tomé,CEO,6,21,13,40,new york
+2025-08-16,Charles Magro,CEO,7,20,13,40,new york
+2025-08-16,Charles Robbins,CEO,9,19,12,40,new york
+2025-08-16,Charles Scharf,CEO,7,21,12,40,new york
+2025-08-16,Christian Ulbrich,CEO,7,20,13,40,new york
+2025-08-16,Christine Leahy,CEO,8,20,12,40,new york
+2025-08-16,Christophe Beck,CEO,7,21,12,40,new york
+2025-08-16,Christopher Boerner,CEO,7,20,13,40,new york
+2025-08-16,Christopher Caldwell,CEO,8,20,12,40,new york
+2025-08-16,Christopher Calio,CEO,7,21,12,40,new york
+2025-08-16,Christopher Gorman,CEO,7,20,13,40,new york
+2025-08-16,Christopher Hilger,CEO,7,21,12,40,new york
+2025-08-16,Christopher Kastner,CEO,7,20,13,40,new york
+2025-08-16,Christopher Kempczinski,CEO,6,21,13,40,new york
+2025-08-16,Christopher Kubasik,CEO,7,21,12,40,new york
+2025-08-16,Christopher Nassetta,CEO,7,21,12,40,new york
+2025-08-16,Christopher O'Herlihy,CEO,8,20,12,40,new york
+2025-08-16,Christopher Peterson,CEO,7,21,12,40,new york
+2025-08-16,Christopher Swift,CEO,6,21,13,40,new york
+2025-08-16,Christopher Viehbacher,CEO,7,20,13,40,new york
+2025-08-16,Christopher Winfrey,CEO,16,17,7,40,alex karp
+2025-08-16,Christopher Womack,CEO,7,21,12,40,new york
+2025-08-16,Clay Gaspar,CEO,7,20,13,40,new york
+2025-08-16,Clay Williams,CEO,7,20,13,40,new york
+2025-08-16,Corie Barry,CEO,7,21,12,40,new york
+2025-08-16,Craig DeSanto,CEO,6,19,15,40,new york
+2025-08-16,Craig Smiddy,CEO,7,21,12,40,new york
+2025-08-16,Cristiano Amon,CEO,8,20,12,40,new york
+2025-08-16,DG Macpherson,,5,13,1,19,
+2025-08-16,Daniel Amos,CEO,6,21,13,40,new york
+2025-08-16,Daniel Fisher,CEO,7,21,12,40,new york
+2025-08-16,Daniel Florness,CEO,7,21,12,40,new york
+2025-08-16,Daniel O'Day,CEO,7,20,13,40,new york
+2025-08-16,Daniel Wall,CEO,6,21,13,40,new york
+2025-08-16,Dara Khosrowshahi,CEO,6,23,11,40,yahoo finance
+2025-08-16,Darren Rebelez,CEO,7,21,12,40,new york
+2025-08-16,Darren Woods,CEO,7,21,12,40,new york
+2025-08-16,Darryl Button,CEO,7,21,12,40,new york
+2025-08-16,Daryl Kenningham,CEO,7,21,12,40,new york
+2025-08-16,David Bozeman,CEO,7,20,13,40,new york
+2025-08-16,David Bruton Smith,CEO,6,21,13,40,new york
+2025-08-16,David Burritt,CEO,7,20,13,40,new york
+2025-08-16,David Cordani,CEO,6,21,13,40,new york
+2025-08-16,David Flitman,CEO,7,20,13,40,new york
+2025-08-16,David Gibbs,CEO,6,22,12,40,new york
+2025-08-16,David Gitlin,CEO,7,20,13,40,new york
+2025-08-16,David Hult,CEO,7,20,13,40,new york
+2025-08-16,David Joyner,CEO,6,21,13,40,new york
+2025-08-16,David Rawlinson II,CEO,6,21,13,40,new york
+2025-08-16,David Ricks,CEO,7,20,13,40,new york
+2025-08-16,David Solomon,CEO,6,20,14,40,goldman sachs
+2025-08-16,David Zaslav,CEO,7,21,12,40,new york
+2025-08-16,Deanna Strable-Soethout,CEO,7,21,12,40,new york
+2025-08-16,Dennis Mathew,CEO,7,20,13,40,new york
+2025-08-16,Deon Stander,CEO,7,20,13,40,new york
+2025-08-16,Dirk Van de Put,CEO,6,20,14,40,new york
+2025-08-16,Donald Allan Jr.,CEO,8,20,12,40,new york
+2025-08-16,Donnie King,CEO,7,21,12,40,new york
+2025-08-16,Douglas McMillon,CEO,7,21,12,40,new york
+2025-08-16,Douglas Yearley Jr.,CEO,7,20,13,40,new york
+2025-08-16,Earl Austin Jr.,CEO,7,20,13,40,new york
+2025-08-16,Eduardo Menezes,CEO,7,20,13,40,new york
+2025-08-16,Edward Bastian,CEO,6,20,14,40,new york
+2025-08-16,Edward Decker,CEO,8,21,11,40,new york
+2025-08-16,Edward Pesicka,CEO,16,15,9,40,alex karp
+2025-08-16,Edward Pick,CEO,7,20,13,40,new york
+2025-08-16,Ellen Cooper,CEO,7,21,12,40,new york
+2025-08-16,Elliott Hill,CEO,6,22,12,40,new york
+2025-08-16,Elon Musk,CEO,18,12,10,40,elon musk
+2025-08-16,Enrique Lores,CEO,7,21,12,40,new york
+2025-08-16,Eric Hansotia,CEO,8,20,12,40,new york
+2025-08-16,Eric Slifka,CEO,7,20,13,40,new york
+2025-08-16,Erik Fyrwald,CEO,7,20,13,40,new york
+2025-08-16,Erik Nordstrom,CEO,8,21,11,40,new york
+2025-08-16,Ernest Garcia III,CEO,6,21,13,40,new york
+2025-08-16,Ernie Herrman,CEO,9,21,10,40,new york
+2025-08-16,Eugene Bredow,CEO,7,20,13,40,new york
+2025-08-16,Ezra Yacob,CEO,7,20,13,40,new york
+2025-08-16,Frank Holding Jr.,CEO,7,21,12,40,new york
+2025-08-16,Gail Boudreaux,CEO,6,20,14,40,new york
+2025-08-16,Garrick Rochow,CEO,7,20,13,40,new york
+2025-08-16,Gary Dickerson,CEO,7,21,12,40,new york
+2025-08-16,Gary Guthart,CEO,6,22,12,40,new york
+2025-08-16,Gavin Hattersley,CEO,6,21,13,40,new york
+2025-08-16,George Holm,CEO,7,20,13,40,new york
+2025-08-16,Gerardo Norcia,CEO,7,20,13,40,new york
+2025-08-16,Gil West,CEO,7,20,13,40,new york
+2025-08-16,Giordano Albertazzi,CEO,6,21,13,40,new york
+2025-08-16,Glenn Fogel,CEO,7,20,13,40,new york
+2025-08-16,Gregory Brown,CEO,7,20,13,40,new york
+2025-08-16,Gregory Roberts,CEO,7,20,13,40,new york
+2025-08-16,Gunjan Kedia,CEO,7,21,12,40,new york
+2025-08-16,Hamid Akhavan,CEO,6,21,13,40,new york
+2025-08-16,Hamid Moghadam,CEO,7,20,13,40,new york
+2025-08-16,Hans Vestberg,CEO,6,21,13,40,new york
+2025-08-16,Harry Lawton III,CEO,8,20,12,40,new york
+2025-08-16,Harry Sideris,CEO,8,20,12,40,new york
+2025-08-16,Haviv Ilan,CEO,7,21,12,40,new york
+2025-08-16,Heather Lavallee,CEO,7,21,12,40,new york
+2025-08-16,Heidi Petz,CEO,7,21,12,40,new york
+2025-08-16,Hock Tan,CEO,7,21,12,40,new york
+2025-08-16,Horacio Rozanski,CEO,7,21,12,40,new york
+2025-08-16,Ivan Tornos,CEO,7,21,12,40,new york
+2025-08-16,Jacek Olczak,CEO,7,20,13,40,new york
+2025-08-16,Jack Fusco,CEO,7,20,13,40,new york
+2025-08-16,Jack Sinclair,CEO,7,21,12,40,new york
+2025-08-16,James Blackledge,CEO,6,19,15,40,new york
+2025-08-16,James Breuer,CEO,7,20,13,40,new york
+2025-08-16,James Burke,CEO,7,20,13,40,new york
+2025-08-16,James Conroy,CEO,7,21,12,40,new york
+2025-08-16,James Cracchiolo,CEO,7,20,13,40,new york
+2025-08-16,James Davis,CEO,7,21,12,40,new york
+2025-08-16,James Dimon,CEO,8,20,12,40,new york
+2025-08-16,James Farley Jr.,CEO,7,21,12,40,new york
+2025-08-16,James Quincey,CEO,16,16,8,40,alex karp
+2025-08-16,James Rechtin,CEO,6,21,13,40,new york
+2025-08-16,James Snee,CEO,8,19,13,40,new york
+2025-08-16,James Taiclet,CEO,7,21,12,40,new york
+2025-08-16,James Teague,CEO,7,20,13,40,new york
+2025-08-16,James Zallie,CEO,8,20,12,40,new york
+2025-08-16,Jamie Iannone,CEO,7,21,12,40,new york
+2025-08-16,Jamie Whisnant,CEO,6,19,15,40,new york
+2025-08-16,Jane Fraser,CEO,6,24,10,40,new york
+2025-08-16,Jason Hollar,CEO,6,21,13,40,new york
+2025-08-16,Jason Wells,CEO,7,20,13,40,new york
+2025-08-16,Javier Rodriguez,CEO,7,21,12,40,new york
+2025-08-16,Jay Debertin,CEO,7,21,12,40,new york
+2025-08-16,Jean-Marc Gilson,CEO,7,20,13,40,new york
+2025-08-16,Jeffrey Harmening,CEO,8,20,12,40,new york
+2025-08-16,Jeffrey Lorberbaum,CEO,7,20,13,40,new york
+2025-08-16,Jeffrey Miller,CEO,7,21,12,40,new york
+2025-08-16,Jeffrey Sprecher,CEO,7,21,12,40,new york
+2025-08-16,Jennifer Johnson,CEO,7,20,13,40,new york
+2025-08-16,Jennifer Parmentier,CEO,7,20,13,40,new york
+2025-08-16,Jennifer Rumsey,CEO,9,19,12,40,new york
+2025-08-16,Jennifer Witz,CEO,6,21,13,40,new york
+2025-08-16,Jensen Huang,CEO,10,21,9,40,jensen huang
+2025-08-16,Jim Vena,CEO,6,22,12,40,new york
+2025-08-16,Joanna Geraghty,CEO,6,21,13,40,new york
+2025-08-16,Joaquin Duato,CEO,6,21,13,40,new york
+2025-08-16,Joey Wat,CEO,7,20,13,40,new york
+2025-08-16,John Barrett,CEO,7,21,12,40,new york
+2025-08-16,John Christmann IV,CEO,7,20,13,40,new york
+2025-08-16,John Doyle,CEO,7,21,12,40,new york
+2025-08-16,John Engel,CEO,7,20,13,40,new york
+2025-08-16,John Hess,CEO,7,20,13,40,new york
+2025-08-16,John Ketchum,CEO,7,20,13,40,new york
+2025-08-16,John May,CEO,7,21,12,40,new york
+2025-08-16,John Mengucci,CEO,7,21,12,40,new york
+2025-08-16,John Pfeifer,CEO,7,20,13,40,new york
+2025-08-16,John Plant,CEO,7,20,13,40,new york
+2025-08-16,John Stankey,CEO,8,22,10,40,business insider
+2025-08-16,John Turner Jr.,CEO,7,21,12,40,new york
+2025-08-16,John Venhuizen,CEO,8,20,12,40,new york
+2025-08-16,John Wren,CEO,7,20,13,40,new york
+2025-08-16,John Zillmer,CEO,6,21,13,40,new york
+2025-08-16,Jon Farney,CEO,7,21,12,40,new york
+2025-08-16,Jon Moeller,CEO,8,20,12,40,new york
+2025-08-16,Jon Rousseau,CEO,7,21,12,40,new york
+2025-08-16,Jon Vander Ark,CEO,7,21,12,40,new york
+2025-08-16,Jonas Prising,CEO,8,20,12,40,new york
+2025-08-16,Jonathan Jaffe,CEO,7,21,12,40,new york
+2025-08-16,Joseph Bae,CEO,7,20,13,40,new york
+2025-08-16,Joseph Dominguez,CEO,7,20,13,40,new york
+2025-08-16,Joseph Fadool,CEO,7,20,13,40,new york
+2025-08-16,Joseph Ferraro,CEO,7,20,13,40,new york
+2025-08-16,Joseph Hinrichs,CEO,7,21,12,40,new york
+2025-08-16,Joseph Nolan Jr.,CEO,7,21,12,40,new york
+2025-08-16,Joseph Zubretsky,CEO,6,21,13,40,new york
+2025-08-16,Jospeh Creed,CEO,7,21,12,40,new york
+2025-08-16,José Mas,CEO,7,20,13,40,new york
+2025-08-16,Joyce Mullen,CEO,8,20,12,40,new york
+2025-08-16,Juan Andrade,CEO,7,21,12,40,new york
+2025-08-16,Juan Luciano,CEO,7,21,12,40,new york
+2025-08-16,Judith Marks,CEO,7,21,12,40,new york
+2025-08-16,Julian Francis,CEO,7,19,14,40,business insider
+2025-08-16,Jure Sola,CEO,7,20,13,40,new york
+2025-08-16,Justin Jude,CEO,7,20,13,40,new york
+2025-08-16,Kaes Van’t Hof,CEO,7,20,13,40,new york
+2025-08-16,Karla Lewis,CEO,7,20,13,40,new york
+2025-08-16,Karsanbhai,CEO,7,21,12,40,new york
+2025-08-16,Kathleen Johnson,CEO,6,21,13,40,new york
+2025-08-16,Kathleen Mazzarella,CEO,8,20,12,40,new york
+2025-08-16,Kathleen Quirk,CEO,7,20,13,40,new york
+2025-08-16,Kathy Warden,CEO,8,20,12,40,new york
+2025-08-16,Kecia Steelman,CEO,7,21,12,40,new york
+2025-08-16,Keith Allman,CEO,7,21,12,40,new york
+2025-08-16,Keith Demmings,CEO,7,21,12,40,new york
+2025-08-16,Kevin Hogan,CEO,7,21,12,40,new york
+2025-08-16,Kevin Hourican,CEO,6,21,13,40,new york
+2025-08-16,Kevin Kwilinski,CEO,8,19,13,40,new york
+2025-08-16,Kevin Lobo,CEO,7,21,12,40,new york
+2025-08-16,Kevin Murphy,CEO,7,21,12,40,new york
+2025-08-16,Kevin Stein,CEO,7,20,13,40,new york
+2025-08-16,Kimberly Dang,CEO,7,21,12,40,new york
+2025-08-16,Kirt Walker,CEO,7,21,12,40,new york
+2025-08-16,Kristin Peck,CEO,7,21,12,40,new york
+2025-08-16,Lachlan Murdoch,CEO,7,22,11,40,new york
+2025-08-16,Lane Riggs,CEO,18,15,7,40,alex karp
+2025-08-16,Laura Alber,CEO,7,21,12,40,new york
+2025-08-16,Lauren Hobart,CEO,8,20,12,40,new york
+2025-08-16,Laurence Fink,CEO,8,20,12,40,new york
+2025-08-16,Lawrence Coben,CEO,7,20,13,40,new york
+2025-08-16,Lawrence Culp Jr.,CEO,7,20,13,40,new york
+2025-08-16,Leon Topalian,CEO,7,20,13,40,new york
+2025-08-16,Leonard Schleifer,CEO,7,20,13,40,new york
+2025-08-16,Lip-Bu Tan,CEO,11,17,12,40,bu tan
+2025-08-16,Lisa Su,CEO,9,19,12,40,business insider
+2025-08-16,Lorenzo Simonelli,CEO,6,21,13,40,new york
+2025-08-16,Lori Koch,CEO,7,20,13,40,new york
+2025-08-16,Lourenco Goncalves,CEO,7,20,13,40,new york
+2025-08-16,Macpherson,,6,9,25,40,suspended idt
+2025-08-16,Malcolm Wilson,CEO,7,20,13,40,new york
+2025-08-16,Marc Benioff,CEO,6,21,13,40,yahoo finance
+2025-08-16,Marc Bitzer,CEO,7,20,13,40,new york
+2025-08-16,Marc Casper,CEO,7,21,12,40,new york
+2025-08-16,Marc Miller,CEO,6,21,13,40,new york
+2025-08-16,Marc Rowan,CEO,7,20,13,40,new york
+2025-08-16,Maria Black,CEO,7,21,12,40,new york
+2025-08-16,Mario Harik,CEO,6,21,13,40,new york
+2025-08-16,Mark Bertolini,CEO,6,21,13,40,new york
+2025-08-16,Mark Costa,CEO,7,20,13,40,new york
+2025-08-16,Mark George,CEO,7,20,13,40,new york
+2025-08-16,Mark Kowlzan,CEO,7,20,13,40,new york
+2025-08-16,Mark Lashier,CEO,7,20,13,40,new york
+2025-08-16,Mark Millett,CEO,7,20,13,40,new york
+2025-08-16,Mark Pearson,CEO,8,20,12,40,new york
+2025-08-16,Mark Shapiro,CEO,7,21,12,40,new york
+2025-08-16,Mark Smucker,CEO,7,20,13,40,new york
+2025-08-16,Mark Stewart,CEO,7,20,13,40,new york
+2025-08-16,Mark Witkowski,CEO,7,20,13,40,new york
+2025-08-16,Mark Zuckerberg,CEO,8,20,12,40,mark zuckerberg
+2025-08-16,Martin Schroeter,CEO,7,20,13,40,new york
+2025-08-16,Martina Cheung,CEO,8,20,12,40,new york
+2025-08-16,Marvin Ellison,CEO,15,16,9,40,alex karp
+2025-08-16,Mary Barra,CEO,7,20,13,40,new york
+2025-08-16,Mary Dillon,CEO,7,21,12,40,new york
+2025-08-16,Maryann Mannen,CEO,7,20,13,40,new york
+2025-08-16,Matthew Flannery,CEO,7,20,13,40,new york
+2025-08-16,Matthew Lucey,CEO,7,20,13,40,new york
+2025-08-16,Matthew Meloy,CEO,7,20,13,40,new york
+2025-08-16,Matthew Pine,CEO,7,21,12,40,new york
+2025-08-16,Michael Bender,CEO,6,21,13,40,new york
+2025-08-16,Michael Creedon,,1,33,1,35,
+2025-08-16,"Michael Creedon, Jr.",,0,10,0,10,dollar tree
+2025-08-16,Michael Dastoor,CEO,6,21,13,40,new york
+2025-08-16,Michael Dell,CEO,7,20,13,40,new york
+2025-08-16,Michael Doss,CEO,8,20,12,40,new york
+2025-08-16,Michael Hsu,CEO,7,20,13,40,new york
+2025-08-16,Michael Hutchins,CEO,8,20,12,40,new york
+2025-08-16,Michael Kasbar,CEO,7,20,13,40,new york
+2025-08-16,Michael Lyons,CEO,7,21,12,40,new york
+2025-08-16,Michael Mahoney,CEO,7,21,12,40,new york
+2025-08-16,Michael Manley,CEO,7,20,13,40,new york
+2025-08-16,Michael Miebach,CEO,7,20,13,40,new york
+2025-08-16,Michael Nolan,CEO,8,20,12,40,new york
+2025-08-16,Michael O'Grady,CEO,7,20,13,40,new york
+2025-08-16,Michael O’Sullivan,CEO,7,21,12,40,new york
+2025-08-16,Michael Rapino,CEO,7,21,12,40,new york
+2025-08-16,Michael Rhodes,CEO,7,21,12,40,new york
+2025-08-16,Michael Shepherd,CEO,7,21,12,40,new york
+2025-08-16,Michael Wirth,CEO,6,21,13,40,new york
+2025-08-16,Michel Khalaf,CEO,7,21,12,40,new york
+2025-08-16,Michele Buck,CEO,7,21,12,40,new york
+2025-08-16,Mick Beekhuizen,CEO,7,20,13,40,new york
+2025-08-16,Mikael Bratt,CEO,7,20,13,40,new york
+2025-08-16,Milan Galik,CEO,6,21,13,40,new york
+2025-08-16,Nikesh Arora,CEO,7,20,13,40,new york
+2025-08-16,Niraj Shah,CEO,7,21,12,40,new york
+2025-08-16,Noel Wallace,CEO,8,20,12,40,new york
+2025-08-16,Patricia Poppe,CEO,8,20,12,40,new york
+2025-08-16,Patrick Gallagher Jr.,CEO,6,22,12,40,new york
+2025-08-16,Patrick Geraghty,CEO,7,21,12,40,new york
+2025-08-16,Patrick Zammit,CEO,6,21,13,40,new york
+2025-08-16,Paul Bay,CEO,8,20,12,40,new york
+2025-08-16,Paul Romanowski,CEO,7,21,12,40,new york
+2025-08-16,Paul Shoukry,CEO,7,20,13,40,new york
+2025-08-16,Pedro Pizarro,CEO,7,20,13,40,new york
+2025-08-16,Penny Pennington,CEO,8,20,12,40,new york
+2025-08-16,Peter Arduini,CEO,7,21,12,40,new york
+2025-08-16,Peter Jackson,CEO,7,21,12,40,new york
+2025-08-16,Peter Matt,CEO,7,20,13,40,new york
+2025-08-16,Peter Zaffino,CEO,7,21,12,40,new york
+2025-08-16,Phebe Novakovic,CEO,7,20,13,40,new york
+2025-08-16,Philip Daniele III,CEO,7,21,12,40,new york
+2025-08-16,Philip Gallagher,CEO,6,21,13,40,new york
+2025-08-16,Philip Smith,CEO,7,20,13,40,new york
+2025-08-16,Philippe Krakowsky,CEO,7,20,13,40,new york
+2025-08-16,Pierce Norton II,CEO,7,20,13,40,new york
+2025-08-16,Preston Feight,CEO,7,20,13,40,new york
+2025-08-16,Priscilla Almodovar,CEO,7,20,13,40,new york
+2025-08-16,Rafael Santana,CEO,7,20,13,40,new york
+2025-08-16,Rainer Blair,CEO,7,21,12,40,new york
+2025-08-16,Rajesh Subramaniam,CEO,8,20,12,40,new york
+2025-08-16,Ralph LaRossa,CEO,7,21,12,40,new york
+2025-08-16,Ramon Laguarta,CEO,7,20,13,40,new york
+2025-08-16,Raul Fernandez,CEO,7,20,13,40,new york
+2025-08-16,Raul Nicholas Vargas Ochoa,CEO,6,22,12,40,new york
+2025-08-16,Ravi Kumar S,CEO,7,20,13,40,new york
+2025-08-16,Raymond Scott,CEO,7,21,12,40,new york
+2025-08-16,René Jones,CEO,7,21,12,40,new york
+2025-08-16,Reshma Kewalramani,CEO,7,21,12,40,new york
+2025-08-16,Ricardo Cardenas,CEO,7,21,12,40,new york
+2025-08-16,Rich Steinmeier,CEO,8,20,12,40,new york
+2025-08-16,Richard Fairbank,CEO,7,21,12,40,new york
+2025-08-16,Richard Handler,CEO,8,20,12,40,new york
+2025-08-16,Richard McKenney,CEO,7,21,12,40,new york
+2025-08-16,Richard Tobin,CEO,7,20,13,40,new york
+2025-08-16,Richard Wallace,CEO,7,21,12,40,new york
+2025-08-16,Richard Wurster,CEO,7,20,13,40,new york
+2025-08-16,Rick Lanoha,CEO,7,20,13,40,new york
+2025-08-16,Robert Berkley Jr.,CEO,7,21,12,40,new york
+2025-08-16,Robert Blue,CEO,7,20,13,40,new york
+2025-08-16,Robert Bradway,CEO,7,20,13,40,new york
+2025-08-16,Robert Davis,CEO,8,20,12,40,new york
+2025-08-16,Robert Eddy,CEO,7,20,13,40,new york
+2025-08-16,Robert Ford,CEO,6,21,13,40,new york
+2025-08-16,Robert Frenzel,CEO,8,20,12,40,new york
+2025-08-16,Robert Goldstein,CEO,7,21,12,40,new york
+2025-08-16,Robert Greenberg,CEO,6,21,13,40,new york
+2025-08-16,Robert Iger,CEO,7,21,12,40,new york
+2025-08-16,Robert Isom,CEO,6,20,14,40,new york
+2025-08-16,Robert Jordan,CEO,6,21,13,40,new york
+2025-08-16,Robert Martin,CEO,16,15,9,40,alex karp
+2025-08-16,Robert Mauch,CEO,7,21,12,40,new york
+2025-08-16,Robert Michael,CEO,7,20,13,40,new york
+2025-08-16,Robert Ortberg,CEO,9,21,10,40,business insider
+2025-08-16,Robert Sanchez,CEO,7,20,13,40,new york
+2025-08-16,Robert Steer,CEO,7,21,12,40,new york
+2025-08-16,Robert Sulentic,CEO,7,20,13,40,new york
+2025-08-16,Robert Thomson,CEO,6,21,13,40,new york
+2025-08-16,Robert Vitale,CEO,8,20,12,40,new york
+2025-08-16,Robin Vince,CEO,6,21,13,40,new york
+2025-08-16,Rodney Sacks,CEO,6,21,13,40,new york
+2025-08-16,Roger Crandall,CEO,7,21,12,40,new york
+2025-08-16,Roger Penske,CEO,6,21,13,40,new york
+2025-08-16,Ron Vachris,CEO,8,20,12,40,new york
+2025-08-16,Ronald O'Hanley,CEO,7,20,13,40,new york
+2025-08-16,Ronald Sargent,CEO,8,18,14,40,ex kroger
+2025-08-16,Rush,,11,15,14,40,stockton rush
+2025-08-16,Rusty Rush,,9,11,5,25,rush enterprises
+2025-08-16,Ryan Lance,CEO,6,20,14,40,new york
+2025-08-16,Ryan Marshall,CEO,8,20,12,40,new york
+2025-08-16,Ryan McInerney,CEO,8,20,12,40,new york
+2025-08-16,Safra Catz,CEO,7,21,12,40,new york
+2025-08-16,Samuel Hazen,CEO,6,19,15,40,new york
+2025-08-16,Sandy Douglas,CEO,6,21,13,40,new york
+2025-08-16,Sanjay Mehrotra,CEO,7,21,12,40,new york
+2025-08-16,Sarah London,CEO,7,21,12,40,new york
+2025-08-16,Sasan Goodarzi,CEO,7,21,12,40,new york
+2025-08-16,Satya Nadella,CEO,7,21,12,40,satya nadella
+2025-08-16,Saumya Sutaria,CEO,6,21,13,40,new york
+2025-08-16,Scott Boatwright,CEO,8,21,11,40,new york
+2025-08-16,Scott Donnelly,CEO,7,21,12,40,new york
+2025-08-16,Scott Kirby,CEO,7,20,13,40,new york
+2025-08-16,Scott Lauber,CEO,7,21,12,40,new york
+2025-08-16,Scott Richardson,CEO,6,22,12,40,new york
+2025-08-16,Scott Salmirs,CEO,7,20,13,40,new york
+2025-08-16,Scott Smith,CEO,6,21,13,40,new york
+2025-08-16,Scott Strazik,CEO,6,21,13,40,new york
+2025-08-16,Sean Connolly,CEO,8,20,12,40,new york
+2025-08-16,Sean Kerins,CEO,7,21,12,40,new york
+2025-08-16,Shane O'Kelly,CEO,7,21,12,40,new york
+2025-08-16,Shankh Mitra,CEO,7,20,13,40,new york
+2025-08-16,Shantanu Narayen,CEO,8,20,12,40,new york
+2025-08-16,Shelley Simpson,CEO,7,20,13,40,new york
+2025-08-16,Sheryl Palmer,CEO,7,21,12,40,new york
+2025-08-16,Stanley Bergman,CEO,6,21,13,40,new york
+2025-08-16,Stefan Larsson,CEO,6,21,13,40,new york
+2025-08-16,Stephanie Ferris,CEO,7,21,12,40,new york
+2025-08-16,Stephen Hemsley,CEO,6,20,14,40,new york
+2025-08-16,Stephen Schwarzman,CEO,7,21,12,40,new york
+2025-08-16,Stephen Spray,CEO,7,21,12,40,new york
+2025-08-16,Stephen Squeri,CEO,7,21,12,40,new york
+2025-08-16,Stephen Steinour,CEO,7,21,12,40,new york
+2025-08-16,Steve Sanghi,CEO,7,20,13,40,new york
+2025-08-16,Steven Cahillane,CEO,7,21,12,40,new york
+2025-08-16,Steven Vondran,CEO,8,20,12,40,new york
+2025-08-16,Stuart Bradie,CEO,18,15,6,39,alex karp
+2025-08-16,Stéphane de La Faverie,CEO,7,21,12,40,new york
+2025-08-16,Sumit Singh,CEO,17,15,8,40,alex karp
+2025-08-16,Sundar Pichai,CEO,6,22,12,40,new york
+2025-08-16,Susan Morris,CEO,7,21,12,40,new york
+2025-08-16,Susan Patricia Griffith,CEO,7,21,12,40,new york
+2025-08-16,Ted Sarandos,CEO,6,23,11,40,new york
+2025-08-16,Teresa Rasmussen,CEO,7,21,12,40,new york
+2025-08-16,Thasunda Brown Duckett,CEO,8,20,12,40,new york
+2025-08-16,Thibaut Mongon,CEO,6,22,12,40,new york
+2025-08-16,Thomas Bell,CEO,7,20,13,40,new york
+2025-08-16,Thomas Gayner,CEO,7,20,13,40,new york
+2025-08-16,Thomas Hill,CEO,7,20,13,40,new york
+2025-08-16,Thomas Long,CEO,6,20,14,40,new york
+2025-08-16,Thomas Palmer,CEO,7,20,13,40,new york
+2025-08-16,Thomas Polen,CEO,7,21,12,40,new york
+2025-08-16,Thomas Reeg,CEO,6,21,13,40,new york
+2025-08-16,Thomas Wilson,CEO,7,21,12,40,new york
+2025-08-16,Tiang Yew Tan,CEO,7,20,13,40,new york
+2025-08-16,Tim Cook,,13,19,8,40,tim cook
+2025-08-16,Tim Go,CEO,7,20,13,40,new york
+2025-08-16,Tim Hingtgen,CEO,7,21,12,40,new york
+2025-08-16,Tim Wentworth,,8,20,12,40,new york
+2025-08-16,Timothy Archer,CEO,8,20,12,40,new york
+2025-08-16,Timothy Cawley,CEO,7,20,13,40,new york
+2025-08-16,Timothy Cofer,CEO,7,21,12,40,new york
+2025-08-16,Timothy Cook,,11,26,3,40,new york
+2025-08-16,Timothy Gerend,CEO,7,21,12,40,new york
+2025-08-16,Timothy Knavish,CEO,7,20,13,40,new york
+2025-08-16,Timothy NeCastro,CEO,6,18,16,40,new york
+2025-08-16,Timothy Spence,CEO,6,22,12,40,new york
+2025-08-16,Timothy Sweeney,CEO,6,19,15,40,new york
+2025-08-16,Timothy Wentworth,,1,4,5,10,walgreens ceo
+2025-08-16,Todd Schneider,CEO,7,20,13,40,new york
+2025-08-16,Todd Vasos,CEO,7,20,13,40,new york
+2025-08-16,Toni Townes-Whitley,CEO,8,20,12,40,new york
+2025-08-16,Tony Cheng,CEO,7,21,12,40,new york
+2025-08-16,Tony Sarsam,CEO,7,20,13,40,new york
+2025-08-16,Tony Spring,CEO,8,20,12,40,new york
+2025-08-16,Tony Xu,CEO,7,21,12,40,new york
+2025-08-16,Troy Rudd,CEO,6,22,12,40,new york
+2025-08-16,Vicki Hollub,CEO,7,20,13,40,new york
+2025-08-16,Vimal Kapur,CEO,7,21,12,40,new york
+2025-08-16,Vincent Roche,CEO,7,21,12,40,new york
+2025-08-16,Vincent Sorgi,CEO,7,21,12,40,new york
+2025-08-16,Walker Martin,CEO,7,20,13,40,new york
+2025-08-16,Warren Buffett,CEO,6,21,13,40,new york
+2025-08-16,Wendell Weeks,CEO,8,20,12,40,new york
+2025-08-16,Wilfred Chiang,CEO,6,21,13,40,new york
+2025-08-16,William Brown,CEO,6,21,13,40,new york
+2025-08-16,William Demchak,CEO,7,21,12,40,new york
+2025-08-16,William Fehrman,CEO,7,20,13,40,new york
+2025-08-16,William Gifford Jr.,CEO,7,20,13,40,new york
+2025-08-16,William Hornbuckle,CEO,7,21,12,40,new york
+2025-08-16,William Krueger,CEO,6,21,13,40,new york
+2025-08-16,William McDermott,CEO,6,21,13,40,new york
+2025-08-16,William Monteleone,CEO,6,21,13,40,new york
+2025-08-16,William Nash,CEO,7,20,13,40,new york
+2025-08-16,William Newlands,CEO,7,21,12,40,new york
+2025-08-16,William Oplinger,CEO,7,21,12,40,new york
+2025-08-16,William Rogers Jr.,CEO,7,21,12,40,new york
+2025-08-16,William Stengel II,CEO,7,21,12,40,new york
+2025-08-16,William Westrate,CEO,6,19,15,40,new york
