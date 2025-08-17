@@ -1,985 +1,493 @@
 brand,alias
 Douglas McMillon,Walmart
-Douglas McMillon,CEO
 Andrew Jassy,Amazon
-Andrew Jassy,CEO
 Stephen Hemsley,UnitedHealth
-Stephen Hemsley,CEO
-Tim Cook,Apple
-Tim Cook,CEO
+Timothy Cook,Apple
 David Joyner,CVS Health
-David Joyner,CEO
 Warren Buffett,Berkshire Hathaway
-Warren Buffett,CEO
 Sundar Pichai,Alphabet
-Sundar Pichai,CEO
 Darren Woods,Exxon Mobil
-Darren Woods,CEO
 Brian Tyler,McKesson
-Brian Tyler,CEO
 Robert Mauch,Cencora
-Robert Mauch,CEO
 James Dimon,JPMorgan Chase
-James Dimon,CEO
 Ron Vachris,Costco
-Ron Vachris,CEO
 David Cordani,Cigna
-David Cordani,CEO
 Satya Nadella,Microsoft
-Satya Nadella,CEO
 Jason Hollar,Cardinal Health
-Jason Hollar,CEO
 Michael Wirth,Chevron
-Michael Wirth,CEO
 Brian Moynihan,Bank of America
-Brian Moynihan,CEO
 Mary Barra,General Motors
-Mary Barra,CEO
 James Farley Jr.,Ford Motor
-James Farley Jr.,CEO
 Gail Boudreaux,Elevance Health
-Gail Boudreaux,CEO
 Jane Fraser,Citi
-Jane Fraser,CEO
 Mark Zuckerberg,Meta
-Mark Zuckerberg,CEO
 Sarah London,Centene
-Sarah London,CEO
 Edward Decker,Home Depot
-Edward Decker,CEO
 Priscilla Almodovar,Fannie Mae
-Priscilla Almodovar,CEO
-Tim Wentworth,Walgreens
-Tim Wentworth,CEO
+Timothy Wentworth,Walgreens
 Ronald Sargent,Kroger
-Ronald Sargent,CEO
 Mark Lashier,Phillips 66
-Mark Lashier,CEO
 Maryann Mannen,Marathon Petroleum
-Maryann Mannen,CEO
 Hans Vestberg,Verizon
-Hans Vestberg,CEO
 Jensen Huang,Nvidia
-Jensen Huang,CEO
 David Solomon,Goldman Sachs
-David Solomon,CEO
 Charles Scharf,Wells Fargo
-Charles Scharf,CEO
 Lane Riggs,Valero Energy
-Lane Riggs,CEO
 Brian Roberts,Comcast
-Brian Roberts,CEO
 Jon Farney,State Farm
-Jon Farney,CEO
 John Stankey,AT&T
-John Stankey,CEO
 Michael Hutchins,Freddie Mac
-Michael Hutchins,CEO
 James Rechtin,Humana
-James Rechtin,CEO
 Edward Pick,Morgan Stanley
-Edward Pick,CEO
 Brian Cornell,Target
-Brian Cornell,CEO
 Philip Smith,StoneX
-Philip Smith,CEO
 Elon Musk,Tesla
-Elon Musk,CEO
 Michael Dell,Dell Technologies
-Michael Dell,CEO
 Ramon Laguarta,PepsiCo
-Ramon Laguarta,CEO
 Robert Iger,Walt Disney
-Robert Iger,CEO
 Carol Tomé,UPS
-Carol Tomé,CEO
 Joaquin Duato,Johnson & Johnson
-Joaquin Duato,CEO
 Rajesh Subramaniam,FedEx
-Rajesh Subramaniam,CEO
 Juan Luciano,Archer Daniels Midland
-Juan Luciano,CEO
 Jon Moeller,Procter & Gamble
-Jon Moeller,CEO
 Marvin Ellison,Lowe's
-Marvin Ellison,CEO
 Thomas Long,Energy Transfer
-Thomas Long,CEO
 Christopher Calio,RTX
-Christopher Calio,CEO
 Susan Morris,Albertsons
-Susan Morris,CEO
 Kevin Hourican,Sysco
-Kevin Hourican,CEO
 Susan Patricia Griffith,Progressive
-Susan Patricia Griffith,CEO
 Stephen Squeri,American Express
-Stephen Squeri,CEO
 James Taiclet,Lockheed Martin
-James Taiclet,CEO
 Michel Khalaf,MetLife
-Michel Khalaf,CEO
 Samuel Hazen,HCA Healthcare
-Samuel Hazen,CEO
 Andrew Sullivan,Prudential Financial
-Andrew Sullivan,CEO
 Robert Ortberg,Boeing
-Robert Ortberg,CEO
 Jospeh Creed,Caterpillar
-Jospeh Creed,CEO
 Robert Davis,Merck
-Robert Davis,CEO
 Thomas Wilson,Allstate
-Thomas Wilson,CEO
 Albert Bourla,Pfizer
-Albert Bourla,CEO
 Arvind Krishna,IBM
-Arvind Krishna,CEO
 Craig DeSanto,New York Life Insurance
-Craig DeSanto,CEO
 Edward Bastian,Delta Airlines
-Edward Bastian,CEO
 Kevin Murphy,Publix Super Markets
-Kevin Murphy,CEO
 Kirt Walker,Nationwide
-Kirt Walker,CEO
 Patrick Zammit,TD Synnex
-Patrick Zammit,CEO
 Scott Kirby,United Airlines
-Scott Kirby,CEO
 Ryan Lance,ConocoPhillips
-Ryan Lance,CEO
 Ernie Herrman,TJX
-Ernie Herrman,CEO
 Robert Michael,AbbVie
-Robert Michael,CEO
 James Teague,Enterprise Products Partners
-James Teague,CEO
 Christopher Winfrey,Charter Communications
-Christopher Winfrey,CEO
 George Holm,Performance Food
-George Holm,CEO
 Robert Isom,American Airlines
-Robert Isom,CEO
 Richard Fairbank,Capital One
-Richard Fairbank,CEO
 Charles Robbins,Cisco Systems
-Charles Robbins,CEO
 Enrique Lores,HP
-Enrique Lores,CEO
 Donnie King,Tyson Foods
-Donnie King,CEO
 Lip-Bu Tan,Intel
-Lip-Bu Tan,CEO
 Safra Catz,Oracle
-Safra Catz,CEO
 Hock Tan,Broadcom
-Hock Tan,CEO
 John May,Deere
-John May,CEO
 Elliott Hill,Nike
-Elliott Hill,CEO
 Timothy Sweeney,Liberty Mutual Insurance
-Timothy Sweeney,CEO
 Wilfred Chiang,Plains GP
-Wilfred Chiang,CEO
 Juan Andrade,USAA
-Juan Andrade,CEO
 Christopher Boerner,Bristol-Myers Squibb
-Christopher Boerner,CEO
 Paul Bay,Ingram Micro
-Paul Bay,CEO
 Phebe Novakovic,General Dynamics
-Phebe Novakovic,CEO
 James Quincey,Coca-Cola
-James Quincey,CEO
 Thasunda Brown Duckett,TIAA
-Thasunda Brown Duckett,CEO
 Alan Schnitzer,Travelers
-Alan Schnitzer,CEO
 David Ricks,Eli Lilly
-David Ricks,CEO
 Dara Khosrowshahi,Uber
-Dara Khosrowshahi,CEO
 Roger Crandall,Mass Mutual
-Roger Crandall,CEO
 Marc Casper,Thermo Fisher Scientific
-Marc Casper,CEO
 Gunjan Kedia,U.S. Bancorp
-Gunjan Kedia,CEO
 Michael Kasbar,World Kinect
-Michael Kasbar,CEO
 Robert Ford,Abbott Laboratories
-Robert Ford,CEO
 Corie Barry,Best Buy
-Corie Barry,CEO
 Timothy Gerend,Northwestern Mutual
-Timothy Gerend,CEO
 Kathy Warden,Northrop Grumman
-Kathy Warden,CEO
 Joseph Zubretsky,Molina Healthcare
-Joseph Zubretsky,CEO
 Todd Vasos,Dollar General
-Todd Vasos,CEO
 Robin Vince,Bank of New York
-Robin Vince,CEO
 David Zaslav,Warner Bros. Discovery
-David Zaslav,CEO
 Jay Debertin,CHS
-Jay Debertin,CEO
 Ted Sarandos,Netflix
-Ted Sarandos,CEO
 Cristiano Amon,Qualcomm
-Cristiano Amon,CEO
 Lawrence Culp Jr.,General Electric
-Lawrence Culp Jr.,CEO
 Vimal Kapur,Honeywell
-Vimal Kapur,CEO
 Marc Benioff,Salesforce
-Marc Benioff,CEO
 Jacek Olczak,Philip Morris
-Jacek Olczak,CEO
 David Flitman,US Foods
-David Flitman,CEO
 Paul Romanowski,D.R. Horton
-Paul Romanowski,CEO
 Bryan DeBoer,Lithia Motors
-Bryan DeBoer,CEO
 Dirk Van de Put,Mondelez
-Dirk Van de Put,CEO
 Brian Niccol,Starbucks
-Brian Niccol,CEO
 Ryan McInerney,Visa
-Ryan McInerney,CEO
 Robert Sulentic,CBRE
-Robert Sulentic,CEO
 Jonathan Jaffe,Lennar
-Jonathan Jaffe,CEO
 Scott Strazik,GE Vernova
-Scott Strazik,CEO
 William Demchak,PNC
-William Demchak,CEO
 Jennifer Rumsey,Cummins
-Jennifer Rumsey,CEO
 Preston Feight,Paccar
-Preston Feight,CEO
 Robert Bradway,Amgen
-Robert Bradway,CEO
 Matthew Lucey,PBF Energy
-Matthew Lucey,CEO
 Patrick Geraghty,GuideWell Mutual
-Patrick Geraghty,CEO
 Alex Chriss,PayPal
-Alex Chriss,CEO
 Sandy Douglas,United Natural Foods
-Sandy Douglas,CEO
-Michael Creedon,Dollar Tree
-Michael Creedon,CEO
+Michael Creedon, Jr.,Dollar Tree
 Leon Topalian,Nucor
-Leon Topalian,CEO
 Roger Penske,Penske Automotive
-Roger Penske,CEO
 Bom Kim,Coupang
-Bom Kim,CEO
 Antonio Neri,Hewlett Packard
-Antonio Neri,CEO
 Harry Sideris,Duke Energy
-Harry Sideris,CEO
 Joseph Bae,KKR
-Joseph Bae,CEO
 Kevin Murphy,Ferguson
-Kevin Murphy,CEO
 Brian Robbins,Paramount Global
-Brian Robbins,CEO
 Michael Dastoor,Jabil
-Michael Dastoor,CEO
 Daniel O'Day,Gilead Sciences
-Daniel O'Day,CEO
 Tim Go,HF Sinclair
-Tim Go,CEO
 William Nash,CarMax
-William Nash,CEO
 Michael Miebach,Mastercard
-Michael Miebach,CEO
 Lawrence Coben,NRG Energy
-Lawrence Coben,CEO
 Sean Kerins,Arrow Electronics
-Sean Kerins,CEO
 Lorenzo Simonelli,Baker Hughes
-Lorenzo Simonelli,CEO
 Robert Jordan,Southwest Airlines
-Robert Jordan,CEO
 Peter Zaffino,American International
-Peter Zaffino,CEO
 Gary Dickerson,Applied Materials
-Gary Dickerson,CEO
 Vicki Hollub,Occidental Petroleum
-Vicki Hollub,CEO
 Michael Manley,AutoNation
-Michael Manley,CEO
 Christopher Womack,Southern
-Christopher Womack,CEO
 Christopher Swift,Hartford Insurance
-Christopher Swift,CEO
 Marc Rowan,Apollo Global Management
-Marc Rowan,CEO
 Richard Wurster,Charles Schwab
-Richard Wurster,CEO
 Christopher Kempczinski,McDonald's
-Christopher Kempczinski,CEO
 Carlos Abrams-Rivera,Kraft Heinz
-Carlos Abrams-Rivera,CEO
 Lisa Su,Advanced Micro Devices
-Lisa Su,CEO
 William Rogers Jr.,Truist Financial
-William Rogers Jr.,CEO
 Kathleen Quirk,Freeport-McMoRan
-Kathleen Quirk,CEO
 Sanjay Mehrotra,Micron Technology
-Sanjay Mehrotra,CEO
 Anthony Capuano,Marriott International
-Anthony Capuano,CEO
 David Gitlin,Carrier Global
-David Gitlin,CEO
 John Ketchum,NextEra Energy
-John Ketchum,CEO
 William Brown,3M
-William Brown,CEO
 John Doyle,Marsh & McLennan
-John Doyle,CEO
 Patricia Poppe,PG&E
-Patricia Poppe,CEO
 Jim Vena,Union Pacific
-Jim Vena,CEO
 Brian Doubles,Synchrony Financial
-Brian Doubles,CEO
 Rainer Blair,Danaher
-Rainer Blair,CEO
 Philip Gallagher,Avnet
-Philip Gallagher,CEO
 Glenn Fogel,Booking s
-Glenn Fogel,CEO
 Ezra Yacob,EOG Resources
-Ezra Yacob,CEO
 Earl Austin Jr.,Quanta Services
-Earl Austin Jr.,CEO
 Michael Shepherd,Discover Financial
-Michael Shepherd,CEO
 Joseph Dominguez,Constellation Energy
-Joseph Dominguez,CEO
 William Stengel II,Genuine Parts
-William Stengel II,CEO
 Christian Ulbrich,Jones Lang LaSalle
-Christian Ulbrich,CEO
 Raymond Scott,Lear Corporation
-Raymond Scott,CEO
 Michael Rapino,Live Nation Entertainment
-Michael Rapino,CEO
 Heidi Petz,Sherwin-Williams
-Heidi Petz,CEO
 Calvin Butler Jr.,Exelon
-Calvin Butler Jr.,CEO
 Tony Spring,Macy's
-Tony Spring,CEO
 Jeffrey Miller,Halliburton
-Jeffrey Miller,CEO
 Kevin Lobo,Stryker
-Kevin Lobo,CEO
 Tony Cheng,Reinsurance of America
-Tony Cheng,CEO
 Ronald O'Hanley,State Street
-Ronald O'Hanley,CEO
 John Engel,WESCO International
-John Engel,CEO
 Pierce Norton II,Oneok
-Pierce Norton II,CEO
 Shantanu Narayen,Adobe
-Shantanu Narayen,CEO
 William Westrate,American Family Insurance
-William Westrate,CEO
 Christopher Kubasik,L3Harris Technologies
-Christopher Kubasik,CEO
 James Conroy,Ross Stores
-James Conroy,CEO
 Christine Leahy,CDW
-Christine Leahy,CEO
 Saumya Sutaria,Tenet Healthcare
-Saumya Sutaria,CEO
 Robert Eddy,BJ's Wholesale Club
-Robert Eddy,CEO
 Michael Lyons,Fiserv
-Michael Lyons,CEO
 William Gifford Jr.,Altria
-William Gifford Jr.,CEO
 Laurence Fink,BlackRock
-Laurence Fink,CEO
 Thomas Polen,Becton Dickinson
-Thomas Polen,CEO
 Noel Wallace,Colgate-Palmolive
-Noel Wallace,CEO
 Michael Hsu,Kimberly-Clark
-Michael Hsu,CEO
 Daryl Kenningham,1 Automotive
-Daryl Kenningham,CEO
 Jennifer Parmentier,Parker-Hannifin
-Jennifer Parmentier,CEO
 Jeffrey Harmening,General Mills
-Jeffrey Harmening,CEO
 Ravi Kumar S,Cognizant Technology
-Ravi Kumar S,CEO
 William Fehrman,American Electric Power
-William Fehrman,CEO
 Peter Arduini,GE HealthCare Technologies
-Peter Arduini,CEO
 Maria Black,Automatic Data Processing
-Maria Black,CEO
 Lourenco Goncalves,Cleveland-Cliffs
-Lourenco Goncalves,CEO
 Daniel Amos,Aflac
-Daniel Amos,CEO
 Mark Stewart,Goodyear Tire & Rubber
-Mark Stewart,CEO
 Kevin Hogan,Corebridge Financial
-Kevin Hogan,CEO
 Thomas Palmer,Newmont
-Thomas Palmer,CEO
 Andrew Silvernail,International Paper
-Andrew Silvernail,CEO
 Philip Daniele III,AutoZone
-Philip Daniele III,CEO
 Ellen Cooper,Lincoln National
-Ellen Cooper,CEO
 Ryan Marshall,Pulte
-Ryan Marshall,CEO
 James Cracchiolo,Ameriprise Financial
-James Cracchiolo,CEO
 Andrew Clyde,Murphy USA
-Andrew Clyde,CEO
 Jonas Prising,Manpower
-Jonas Prising,CEO
 David Bozeman,C.H. Robinson Worldwide
-David Bozeman,CEO
 Timothy Knavish,PPG Industries
-Timothy Knavish,CEO
 Pedro Pizarro,Edison International
-Pedro Pizarro,CEO
 Mark Millett,Steel Dynamics
-Mark Millett,CEO
 Benjamin Tisch,Loews
-Benjamin Tisch,CEO
 Karsanbhai,Emerson Electric
-Karsanbhai,CEO
 John Zillmer,Aramark
-John Zillmer,CEO
 William Hornbuckle,MGM Resorts International
-William Hornbuckle,CEO
 James Burke,Vistra
-James Burke,CEO
 David Hult,Asbury Automotive
-David Hult,CEO
 DG Macpherson,W.W. Grainger
-DG Macpherson,CEO
 Eric Slifka,Global Partners
-Eric Slifka,CEO
 Bob Pragada,Jacobs Solutions
-Bob Pragada,CEO
 Charles Magro,Corteva
-Charles Magro,CEO
 Rick Lanoha,Peter Kiewit Sons'
-Rick Lanoha,CEO
 Michael Mahoney,Boston Scientific
-Michael Mahoney,CEO
 Brad Beckham,O'Reilly Automotive
-Brad Beckham,CEO
 Thomas Bell,Leidos
-Thomas Bell,CEO
 Thomas Gayner,Markel
-Thomas Gayner,CEO
 Marc Bitzer,Whirlpool
-Marc Bitzer,CEO
 Andrew McMahon,Guardian Life
-Andrew McMahon,CEO
 Peter Jackson,Builders FirstSource
-Peter Jackson,CEO
 Michael Rhodes,Ally Financial
-Michael Rhodes,CEO
 Matthew Meloy,Targa Resources
-Matthew Meloy,CEO
 James Breuer,Fluor
-James Breuer,CEO
 Sasan Goodarzi,Intuit
-Sasan Goodarzi,CEO
 Troy Rudd,AECOM
-Troy Rudd,CEO
 Penny Pennington,Edward Jones
-Penny Pennington,CEO
 Michael Bender,Kohl's
-Michael Bender,CEO
 Beth Ford,Land O'Lakes
-Beth Ford,CEO
 Deanna Strable-Soethout,Principal Financial
-Deanna Strable-Soethout,CEO
 Robert Blue,Dominion Energy
-Robert Blue,CEO
 Martin Schroeter,Kyndryl s
-Martin Schroeter,CEO
 Jon Vander Ark,Republic Services
-Jon Vander Ark,CEO
 Clay Gaspar,Devon Energy
-Clay Gaspar,CEO
 Christopher O'Herlihy,Illinois Tool Works
-Christopher O'Herlihy,CEO
 Michael O'Grady,Northern Trust
-Michael O'Grady,CEO
 Jamie Whisnant,Auto-Owners Insurance
-Jamie Whisnant,CEO
 Marc Miller,Universal Health Services
-Marc Miller,CEO
 Darryl Button,Pacific Life
-Darryl Button,CEO
 Hamid Akhavan,EchoStar
-Hamid Akhavan,CEO
 Christophe Beck,Ecolab
-Christophe Beck,CEO
 Jack Fusco,Cheniere Energy
-Jack Fusco,CEO
 John Wren,Omnicom
-John Wren,CEO
 Haviv Ilan,Texas Instruments
-Haviv Ilan,CEO
 David Burritt,United States Steel
-David Burritt,CEO
 Stéphane de La Faverie,Estée Lauder
-Stéphane de La Faverie,CEO
 Raul Nicholas Vargas Ochoa,Farmers Insurance Exchange
-Raul Nicholas Vargas Ochoa,CEO
 Thibaut Mongon,Kenvue
-Thibaut Mongon,CEO
 Ari Bousbib,IQVIA s
-Ari Bousbib,CEO
 Donald Allan Jr.,Stanley Black & Decker
-Donald Allan Jr.,CEO
 Timothy Cofer,Keurig Dr Pepper
-Timothy Cofer,CEO
 Matthew Flannery,United Rentals
-Matthew Flannery,CEO
 Timothy Cawley,Consolidated Edison
-Timothy Cawley,CEO
 Adam Norwitt,Amphenol
-Adam Norwitt,CEO
 Brent Shafer,Baxter International
-Brent Shafer,CEO
 Kimberly Dang,Kinder Morgan
-Kimberly Dang,CEO
 Erik Nordstrom,Nordstrom
-Erik Nordstrom,CEO
 Frank Holding Jr.,First Citizens BancShares
-Frank Holding Jr.,CEO
 Paul Shoukry,Raymond James Financial
-Paul Shoukry,CEO
 Timothy Archer,Lam Research
-Timothy Archer,CEO
 Harry Lawton III,Tractor Supply
-Harry Lawton III,CEO
 Darren Rebelez,Casey's General Stores
-Darren Rebelez,CEO
 Scott Smith,Viatris
-Scott Smith,CEO
 James Blackledge,Mutual of Omaha Insurance
-James Blackledge,CEO
 Anthony Guzzi,EMCOR
-Anthony Guzzi,CEO
 Joseph Hinrichs,CSX
-Joseph Hinrichs,CEO
 Justin Jude,LKQ
-Justin Jude,CEO
 Judith Marks,Otis Worldwide
-Judith Marks,CEO
 David Bruton Smith,Sonic Automotive
-David Bruton Smith,CEO
 Martina Cheung,S&P Global
-Martina Cheung,CEO
 Leonard Schleifer,Regeneron Pharmaceuticals
-Leonard Schleifer,CEO
 Joseph Fadool,BorgWarner
-Joseph Fadool,CEO
 Lachlan Murdoch,Fox
-Lachlan Murdoch,CEO
 Karla Lewis,Reliance
-Karla Lewis,CEO
 John Barrett,Western & Southern Financial
-John Barrett,CEO
 Scott Donnelly,Textron
-Scott Donnelly,CEO
 Ariane Gorin,Expedia
-Ariane Gorin,CEO
 Michael Nolan,Fidelity National Financial
-Michael Nolan,CEO
 Ernest Garcia III,Carvana
-Ernest Garcia III,CEO
 Raul Fernandez,DXC Technology
-Raul Fernandez,CEO
 Robert Berkley Jr.,W.R. Berkley
-Robert Berkley Jr.,CEO
 René Jones,M&T Bank
-René Jones,CEO
 Lauren Hobart,Dick's Sporting Goods
-Lauren Hobart,CEO
 Robert Frenzel,Xcel Energy
-Robert Frenzel,CEO
 Timothy Spence,Fifth Third Bancorp
-Timothy Spence,CEO
 Stephen Schwarzman,Blackstone
-Stephen Schwarzman,CEO
 Walker Martin,Sempra
-Walker Martin,CEO
 Timothy NeCastro,Erie Insurance
-Timothy NeCastro,CEO
 Wendell Weeks,Corning
-Wendell Weeks,CEO
 Kathleen Johnson,Lumen Technologies
-Kathleen Johnson,CEO
 Brian Tierney,FirstEnergy
-Brian Tierney,CEO
 John Hess,Hess
-John Hess,CEO
 Adam Schechter,Labcorp
-Adam Schechter,CEO
 Tiang Yew Tan,Western Digital
-Tiang Yew Tan,CEO
 Richard McKenney,Unum
-Richard McKenney,CEO
 Javier Rodriguez,DaVita
-Javier Rodriguez,CEO
 Steven Cahillane,Kellanova
-Steven Cahillane,CEO
 Stanley Bergman,Henry Schein
-Stanley Bergman,CEO
 Robert Sanchez,Ryder System
-Robert Sanchez,CEO
 Tim Hingtgen,Community Health Systems
-Tim Hingtgen,CEO
 Avigal Soreq,Delek US
-Avigal Soreq,CEO
 Gerardo Norcia,DTE Energy
-Gerardo Norcia,CEO
 Mark Pearson,Equitable
-Mark Pearson,CEO
 Lori Koch,DuPont
-Lori Koch,CEO
 Rich Steinmeier,LPL Financial
-Rich Steinmeier,CEO
 Bruce Van Saun,Citizens Financial
-Bruce Van Saun,CEO
 José Mas,MasTec
-José Mas,CEO
 Andrés Gluski,AES
-Andrés Gluski,CEO
 Kevin Kwilinski,Berry Global
-Kevin Kwilinski,CEO
 Jean-Marc Gilson,Westlake
-Jean-Marc Gilson,CEO
 Mark George,Norfolk Southern
-Mark George,CEO
 Eduardo Menezes,Air Products & Chemicals
-Eduardo Menezes,CEO
 Shelley Simpson,J.B. Hunt Transport Services
-Shelley Simpson,CEO
 Daniel Fisher,Ball
-Daniel Fisher,CEO
 Sean Connolly,Conagra Brands
-Sean Connolly,CEO
 Stephen Steinour,Huntington Bancshares
-Stephen Steinour,CEO
 James Snee,Hormel Foods
-James Snee,CEO
 Joseph Nolan Jr.,Eversource Energy
-Joseph Nolan Jr.,CEO
 William Oplinger,Alcoa
-William Oplinger,CEO
 Andrew Marsh,Entergy
-Andrew Marsh,CEO
 Keith Demmings,Assurant
-Keith Demmings,CEO
 Sumit Singh,Chewy
-Sumit Singh,CEO
 Niraj Shah,Wayfair
-Niraj Shah,CEO
 Joseph Ferraro,Avis Budget
-Joseph Ferraro,CEO
 Jeffrey Sprecher,Intercontinental Exchange
-Jeffrey Sprecher,CEO
 Benito Minicucci,Alaska Air
-Benito Minicucci,CEO
 Malcolm Wilson,GXO Logistics
-Malcolm Wilson,CEO
 Eric Hansotia,AGCO
-Eric Hansotia,CEO
 Kathleen Mazzarella,Graybar Electric
-Kathleen Mazzarella,CEO
 Gavin Hattersley,Molson Coors Beverage
-Gavin Hattersley,CEO
 Patrick Gallagher Jr.,Arthur J. Gallagher
-Patrick Gallagher Jr.,CEO
 Christopher Kastner,Huntington Ingalls Industries
-Christopher Kastner,CEO
 Erik Fyrwald,International Flavors & Fragrances
-Erik Fyrwald,CEO
 Ricardo Cardenas,Darden Restaurants
-Ricardo Cardenas,CEO
 Stephen Spray,Cincinnati Financial
-Stephen Spray,CEO
 Scott Boatwright,Chipotle Mexican Grill
-Scott Boatwright,CEO
 Joey Wat,Yum China
-Joey Wat,CEO
 Robert Goldstein,Las Vegas Sands
-Robert Goldstein,CEO
 Kecia Steelman,Ulta Beauty
-Kecia Steelman,CEO
 Thomas Reeg,Caesars Entertainment
-Thomas Reeg,CEO
 Jon Rousseau,BrightSpring Health Services
-Jon Rousseau,CEO
 William Krueger,Andersons
-William Krueger,CEO
 Michele Buck,Hershey
-Michele Buck,CEO
 Christopher Nassetta,Hilton
-Christopher Nassetta,CEO
 Bruce Bodine,Mosaic
-Bruce Bodine,CEO
 Brian Chesky,Airbnb
-Brian Chesky,CEO
 Kaes Van’t Hof,Diamondback Energy
-Kaes Van’t Hof,CEO
 Steven Vondran,American Tower
-Steven Vondran,CEO
 Reshma Kewalramani,Vertex Pharmaceuticals
-Reshma Kewalramani,CEO
 William McDermott,ServiceNow
-William McDermott,CEO
 Brian Chambers,Owens Corning
-Brian Chambers,CEO
 Teresa Rasmussen,Thrivent Financial for Lutherans
-Teresa Rasmussen,CEO
 Shane O'Kelly,Advance Auto Parts
-Shane O'Kelly,CEO
 Douglas Yearley Jr.,Toll Brothers
-Douglas Yearley Jr.,CEO
 Jeffrey Lorberbaum,Mohawk Industries
-Jeffrey Lorberbaum,CEO
 Gregory Brown,Motorola Solutions
-Gregory Brown,CEO
 John Pfeifer,Oshkosh
-John Pfeifer,CEO
 Tony Xu,DoorDash
-Tony Xu,CEO
 Edward Pesicka,Owens & Minor
-Edward Pesicka,CEO
 Eugene Bredow,NVR
-Eugene Bredow,CEO
 Philippe Krakowsky,Interpublic
-Philippe Krakowsky,CEO
 Horacio Rozanski,Booz Allen Hamilton
-Horacio Rozanski,CEO
 Michael O’Sullivan,Burlington Stores
-Michael O’Sullivan,CEO
 Daniel Wall,Expeditors International of Washington
-Daniel Wall,CEO
 Calvin McDonald,Lululemon athletica
-Calvin McDonald,CEO
 Stephanie Ferris,Fidelity National Information
-Stephanie Ferris,CEO
 Richard Handler,Jefferies Financial
-Richard Handler,CEO
 Alan Armstrong,Williams
-Alan Armstrong,CEO
 Bracken Darrell,VF Corporation
-Bracken Darrell,CEO
 Mikael Bratt,Autoliv
-Mikael Bratt,CEO
 Rafael Santana,Westinghouse Air Brake Technologies
-Rafael Santana,CEO
 Ralph LaRossa,Public Service Enterprise
-Ralph LaRossa,CEO
 Jamie Iannone,Ebay
-Jamie Iannone,CEO
 Scott Richardson,Celanese
-Scott Richardson,CEO
 Cameron Bready,Global Payments
-Cameron Bready,CEO
 Robert Thomson,News Corp.
-Robert Thomson,CEO
 Robert Martin,THOR Industries
-Robert Martin,CEO
 David Rawlinson II,QVC
-David Rawlinson II,CEO
 Andrew Teno,Icahn Enterprises
-Andrew Teno,CEO
 William Newlands,Constellation Brands
-William Newlands,CEO
 James Davis,Quest Diagnostics
-James Davis,CEO
 Richard Wallace,KLA
-Richard Wallace,CEO
 Julian Francis,QXO Building Products
-Julian Francis,CEO
 John Christmann IV,APA
-John Christmann IV,CEO
 Gregory Roberts,A-Mark Precious Metals
-Gregory Roberts,CEO
 Christopher Viehbacher,Biogen
-Christopher Viehbacher,CEO
 Mick Beekhuizen,Campbell's
-Mick Beekhuizen,CEO
 Christopher Caldwell,Concentrix
-Christopher Caldwell,CEO
 Todd Schneider,Cintas
-Todd Schneider,CEO
 Tony Sarsam,SpartanNash
-Tony Sarsam,CEO
 John Venhuizen,Ace Hardware
-John Venhuizen,CEO
 Vincent Roche,Analog Devices
-Vincent Roche,CEO
 Mark Costa,Eastman Chemical
-Mark Costa,CEO
 Milan Galik,Interactive Brokers
-Milan Galik,CEO
 John Turner Jr.,Regions Financial
-John Turner Jr.,CEO
 Joanna Geraghty,JetBlue Airways
-Joanna Geraghty,CEO
 Kristin Peck,Zoetis
-Kristin Peck,CEO
 Christopher Gorman,KeyCorp
-Christopher Gorman,CEO
 Mark Bertolini,Oscar Health
-Mark Bertolini,CEO
 Brendan McCracken,Ovintiv
-Brendan McCracken,CEO
 Robert Steer,Seaboard
-Robert Steer,CEO
 Gil West,Hertz
-Gil West,CEO
 Robert Greenberg,Skechers
-Robert Greenberg,CEO
 Dennis Mathew,Altice
-Dennis Mathew,CEO
 Clay Williams,NOV
-Clay Williams,CEO
 Michael Doss,Graphic Packaging
-Michael Doss,CEO
 Deon Stander,Avery Dennison
-Deon Stander,CEO
 Adaire Fox-Martin,Equinix
-Adaire Fox-Martin,CEO
 Joyce Mullen,Insight Enterprises
-Joyce Mullen,CEO
 Jennifer Witz,Sirius XM
-Jennifer Witz,CEO
 Stefan Larsson,PVH
-Stefan Larsson,CEO
 Jason Wells,CenterPoint Energy
-Jason Wells,CEO
 Scott Lauber,WEC Energy
-Scott Lauber,CEO
 Matthew Pine,Xylem
-Matthew Pine,CEO
 Jennifer Johnson,Franklin Resources
-Jennifer Johnson,CEO
 Vincent Sorgi,PPL
-Vincent Sorgi,CEO
 Carl Eschenbach,Workday
-Carl Eschenbach,CEO
 Richard Tobin,Dover
-Richard Tobin,CEO
 Mark Kowlzan,Packaging Corp. of America
-Mark Kowlzan,CEO
 Scott Salmirs,ABM Industries
-Scott Salmirs,CEO
 Gary Guthart,Intuitive Surgical
-Gary Guthart,CEO
 Carl Lindner lll,American Financial
-Carl Lindner lll,CEO
 Blake Moret,Rockwell Automation
-Blake Moret,CEO
 Bryan Hanson,Solventum
-Bryan Hanson,CEO
 Craig Smiddy,Old Republic International
-Craig Smiddy,CEO
 Christopher Hilger,Securian Financial
-Christopher Hilger,CEO
 Hamid Moghadam,Prologis
-Hamid Moghadam,CEO
 Mark Smucker,J.M. Smucker
-Mark Smucker,CEO
 Sheryl Palmer,Taylor Morrison Home
-Sheryl Palmer,CEO
 Mario Harik,XPO
-Mario Harik,CEO
 Heather Lavallee,Voya Financial
-Heather Lavallee,CEO
 Nikesh Arora,Palo Alto Networks
-Nikesh Arora,CEO
 Giordano Albertazzi,Vertiv s
-Giordano Albertazzi,CEO
 Shankh Mitra,Welltower
-Shankh Mitra,CEO
 Mary Dillon,Foot Locker
-Mary Dillon,CEO
 William Monteleone,Par Pacific
-William Monteleone,CEO
 Kevin Stein,TransDigm
-Kevin Stein,CEO
 Peter Matt,Commercial Metals
-Peter Matt,CEO
 Robert Vitale,Post s
-Robert Vitale,CEO
 Keith Allman,Masco
-Keith Allman,CEO
 Rusty Rush,Rush Enterprises
-Rusty Rush,CEO
 Stuart Bradie,KBR
-Stuart Bradie,CEO
 Jack Sinclair,Sprouts Farmers Market
-Jack Sinclair,CEO
 Laura Alber,Williams-Sonoma
-Laura Alber,CEO
 Ivan Tornos,Zimmer Biomet s
-Ivan Tornos,CEO
 John Mengucci,CACI International
-John Mengucci,CEO
 Steve Sanghi,Microchip Technology
-Steve Sanghi,CEO
 Albert Nahmad,Watsco
-Albert Nahmad,CEO
 Christopher Peterson,Newell Brands
-Christopher Peterson,CEO
 Arie Kotler,ARKO
-Arie Kotler,CEO
 Jure Sola,Sanmina
-Jure Sola,CEO
 Andrew Wilson,Electronic Arts
-Andrew Wilson,CEO
 David Gibbs,Yum Brands
-David Gibbs,CEO
 Daniel Florness,Fastenal
-Daniel Florness,CEO
 Garrick Rochow,CMS Energy
-Garrick Rochow,CEO
 Rodney Sacks,Monster Beverage
-Rodney Sacks,CEO
 Mark Shapiro,Endeavor
-Mark Shapiro,CEO
 Toni Townes-Whitley,Science Applications International
-Toni Townes-Whitley,CEO
 Mark Witkowski,Core & Main
-Mark Witkowski,CEO
 John Plant,Howmet Aerospace
 James Zallie,Ingredion
-John Plant,CEO
-James Zallie,CEO
 Thomas Hill,Vulcan Materials
-Thomas Hill,CEO
