@@ -96,7 +96,7 @@ Ingram Micro
 General Dynamics
 Coca-Cola
 TIAA
-Travelers
+Travelers Insurance
 Eli Lilly
 Uber
 Mass Mutual
@@ -225,7 +225,7 @@ Lincoln National
 Pulte
 Ameriprise Financial
 Murphy USA
-Manpower
+ManpowerGroup
 C.H. Robinson Worldwide
 PPG Industries
 Edison International
@@ -317,7 +317,6 @@ Erie Insurance
 Corning
 Lumen Technologies
 FirstEnergy
-Hess
 Labcorp
 Western Digital
 Unum
@@ -335,7 +334,6 @@ Citizens Financial
 MasTec
 AES
 Berry Global
-Westlake
 Norfolk Southern
 Air Products & Chemicals
 J.B. Hunt Transport Services
