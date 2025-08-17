@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
 """
-Simplified CEO News Sentiment:
+Simplified CEO News Sentiment with robust themes.
 
-- Input: ceo_aliases.csv with two columns:
-    brand,alias        # brand = CEO name, alias = Company name
-  (exactly one row per CEO)
+Input (exactly one row per CEO):
+  ceo_aliases.csv  -> columns: brand,alias   # brand=CEO name, alias=Company
 
-- Output:
-    data_ceos/articles/YYYY-MM-DD.csv  (per-article rows)
-    data_ceos/daily_counts.csv         (aggregated daily totals incl. company + theme)
+Outputs:
+  data_ceos/articles/YYYY-MM-DD.csv
+  data_ceos/daily_counts.csv   (includes 'company' and a short 'theme')
 
-- Behavior:
-    * Query Google News RSS with:  "<CEO NAME>" "<COMPANY>"
-    * Cap headlines per CEO per day: MAX_ITEMS_PER_QUERY
-    * Pause between CEOs to be polite: REQUEST_PAUSE_SEC
-    * Purge files/rows older than PURGE_OLDER_THAN_DAYS
-    * Compute a short "theme" from negative headlines (bigrams/trigrams)
+Query used per CEO:
+  "<CEO NAME>" "<COMPANY>"
 
-Safe to re-run: overwrites today's per-article CSV and updates/merges today's row in daily_counts.csv.
+Theme logic (negative headlines only):
+  1) bigram/trigram with min_df>=2
+  2) fallback bigram with min_df>=1
+  3) fallback unigrams (top 2–3 words)
+All while removing stopwords + CEO/Company tokens + "ceo".
 """
 
 import os, csv, time, math, re
@@ -31,9 +30,9 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from sklearn.feature_extraction.text import CountVectorizer
 
 # ------------------ Config ------------------
-HL   = "en-US"      # interface language
-GL   = "US"         # geography
-CEID = "US:en"      # country:lang
+HL   = "en-US"
+GL   = "US"
+CEID = "US:en"
 
 ALIASES_CSV = "ceo_aliases.csv"   # brand,alias (CEO, Company)
 
@@ -41,15 +40,13 @@ OUTPUT_BASE  = "data_ceos"
 ARTICLES_DIR = os.path.join(OUTPUT_BASE, "articles")
 COUNTS_CSV   = os.path.join(OUTPUT_BASE, "daily_counts.csv")
 
-REQUEST_PAUSE_SEC     = 1.0  # polite delay between CEOs
-MAX_ITEMS_PER_QUERY   = 40   # cap per CEO per day
+REQUEST_PAUSE_SEC     = 1.0   # polite delay between CEOs
+MAX_ITEMS_PER_QUERY   = 40    # cap per CEO per day
 PURGE_OLDER_THAN_DAYS = 90
 
-# Theme extraction
-MIN_THEME_FREQ   = 2
-NGRAM_RANGE      = (2, 3)    # bigrams/trigrams
-MAX_THEME_WORDS  = 10
-STOPWORDS = set((
+MAX_THEME_WORDS = 10
+
+BASE_STOPWORDS = set((
     "the","a","an","and","or","but","of","for","to","in","on","at","by","with","from","as","about","after","over","under",
     "this","that","these","those","it","its","their","his","her","they","we","you","our","your","i",
     "is","are","was","were","be","been","being","has","have","had","do","does","did","will","would","should","can","could","may","might","must",
@@ -58,7 +55,7 @@ STOPWORDS = set((
     "quarter","q1","q2","q3","q4","year","yrs","2024","2025","2026","usd","billion","million","percent","pct","vs","inc","corp","co","ltd","plc"
 ))
 
-# Filter out press-release heavy / low-signal sources (tweak as desired)
+# Filter out low-signal sources
 BLOCKED_DOMAINS = {
     "www.prnewswire.com",
     "www.businesswire.com",
@@ -67,16 +64,13 @@ BLOCKED_DOMAINS = {
     "seekingalpha.com",
 }
 
-# --------------- Helpers ----------------
+# ------------------ Helpers ------------------
 
 def today_str() -> str:
     return datetime.now(ZoneInfo("US/Eastern")).strftime("%Y-%m-%d")
 
 def load_ceo_company_map(path: str) -> dict:
-    """
-    Read ceo_aliases.csv (brand,alias) where alias = company name.
-    Returns: { CEO -> Company }
-    """
+    """Read ceo_aliases.csv (brand=CEO, alias=Company) -> {CEO: Company}"""
     out = {}
     with open(path, newline="", encoding="utf-8") as f:
         rdr = csv.DictReader(f)
@@ -89,12 +83,7 @@ def load_ceo_company_map(path: str) -> dict:
 
 def google_news_rss_url(query: str) -> str:
     base = "https://news.google.com/rss/search"
-    params = {
-        "q": query,
-        "hl": HL,
-        "gl": GL,
-        "ceid": CEID,
-    }
+    params = {"q": query, "hl": HL, "gl": GL, "ceid": CEID}
     return base + "?" + urlencode(params)
 
 def domain_of(link: str) -> str:
@@ -104,9 +93,6 @@ def domain_of(link: str) -> str:
         return ""
 
 def fetch_items_for_query(query: str, cap: int) -> list[dict]:
-    """
-    Return up to cap items: {title, link, published, domain}
-    """
     url = google_news_rss_url(query)
     parsed = feedparser.parse(url)
     out = []
@@ -147,10 +133,52 @@ def clean_for_theme(s: str) -> str:
     s = re.sub(r"\s+", " ", s).strip()
     return s
 
-def short_theme_from_negatives(neg_titles: list[str]) -> str:
+def tokens_from(s: str) -> set[str]:
+    return set(re.findall(r"[a-zA-Z][a-zA-Z\-']+", (s or "").lower()))
+
+def best_phrase_from(docs: list[str], stopwords: set[str], ngram_range=(2,3), min_df=2) -> str | None:
+    """Return top phrase or None."""
+    vec = CountVectorizer(stop_words=stopwords, ngram_range=ngram_range, min_df=min_df)
+    try:
+        X = vec.fit_transform(docs)
+    except ValueError:
+        return None
+    if X.shape[1] == 0:
+        return None
+    counts = X.sum(axis=0).A1
+    vocab  = vec.get_feature_names_out()
+    top_i  = counts.argmax()
+    phrase = vocab[top_i]
+    words  = phrase.split()
+    if not words:
+        return None
+    if len(words) > MAX_THEME_WORDS:
+        words = words[:MAX_THEME_WORDS]
+    return " ".join(words)
+
+def fallback_keywords(docs: list[str], stopwords: set[str], k: int = 3) -> str | None:
+    """Return top-k unigrams as a phrase, or None."""
+    vec = CountVectorizer(stop_words=stopwords, ngram_range=(1,1), min_df=1)
+    try:
+        X = vec.fit_transform(docs)
+    except ValueError:
+        return None
+    if X.shape[1] == 0:
+        return None
+    counts = X.sum(axis=0).A1
+    vocab  = vec.get_feature_names_out()
+    pairs  = sorted(zip(counts, vocab), reverse=True)
+    words  = [w for _, w in pairs[:k] if w]
+    if not words:
+        return None
+    if len(words) > MAX_THEME_WORDS:
+        words = words[:MAX_THEME_WORDS]
+    return " ".join(words)
+
+def theme_from_negatives(neg_titles: list[str], ceo: str, company: str) -> str:
     """
-    Build a concise theme from negative headlines.
-    Returns <=10 words or 'None' if nothing obvious.
+    Build a short theme from negative titles, excluding CEO/company tokens.
+    Tries: (2–3)-grams min_df>=2, then bigrams min_df>=1, then top unigrams.
     """
     if not neg_titles:
         return "None"
@@ -159,41 +187,35 @@ def short_theme_from_negatives(neg_titles: list[str]) -> str:
     if not docs:
         return "None"
 
-    vec = CountVectorizer(
-        stop_words=STOPWORDS,
-        ngram_range=NGRAM_RANGE,
-        min_df=MIN_THEME_FREQ
-    )
-    try:
-        X = vec.fit_transform(docs)
-    except ValueError:
-        return "None"
+    # dynamic stopwords (base + ceo/company tokens + 'ceo')
+    stop = set(BASE_STOPWORDS)
+    stop |= tokens_from(ceo)
+    stop |= tokens_from(company)
+    stop.add("ceo")
 
-    counts = X.sum(axis=0).A1
-    vocab  = vec.get_feature_names_out()
-    if not len(counts):
-        return "None"
+    # 1) strong signal: repeated 2–3 grams
+    p = best_phrase_from(docs, stopwords=stop, ngram_range=(2,3), min_df=2)
+    if p:
+        return p
 
-    top_idx = counts.argmax()
-    phrase  = vocab[top_idx]
-    words   = phrase.split()
-    if len(words) > MAX_THEME_WORDS:
-        words = words[:MAX_THEME_WORDS]
-    return " ".join(words) if words else "None"
+    # 2) any bigram
+    p = best_phrase_from(docs, stopwords=stop, ngram_range=(2,2), min_df=1)
+    if p:
+        return p
+
+    # 3) top unigrams (2–3 words)
+    p = fallback_keywords(docs, stopwords=stop, k=3)
+    return p if p else "None"
 
 def ensure_dirs():
     os.makedirs(ARTICLES_DIR, exist_ok=True)
     os.makedirs(OUTPUT_BASE, exist_ok=True)
 
 def purge_old_files():
-    """
-    Delete per-day article CSVs older than cutoff,
-    and trim old rows out of data_ceos/daily_counts.csv.
-    Use **date objects** to avoid timezone aware/naive comparisons.
-    """
+    """Purge using date objects to avoid offset-naive/aware issues."""
     cutoff_date = date.today() - timedelta(days=PURGE_OLDER_THAN_DAYS)
 
-    # Per-day article files
+    # delete old per-day article files
     for name in os.listdir(ARTICLES_DIR):
         if not name.endswith(".csv"):
             continue
@@ -207,7 +229,7 @@ def purge_old_files():
             except Exception:
                 pass
 
-    # Trim counts
+    # trim old rows in daily_counts.csv
     if os.path.exists(COUNTS_CSV):
         df = pd.read_csv(COUNTS_CSV)
         def keep(row):
@@ -221,10 +243,10 @@ def purge_old_files():
             if len(df2) != len(df):
                 df2.to_csv(COUNTS_CSV, index=False)
 
-# --------------- Main ----------------
+# ------------------ Main ------------------
 
 def main():
-    print("=== CEO Sentiment (simple alias) : start ===")
+    print("=== CEO Sentiment (improved themes) : start ===")
     ensure_dirs()
     purge_old_files()
 
@@ -235,14 +257,12 @@ def main():
     today = today_str()
     daily_articles_path = os.path.join(ARTICLES_DIR, f"{today}.csv")
 
-    # Collect per-article rows for today (overwrite the file)
     article_rows = []
-    counts_rows = []
+    counts_rows  = []
 
     for idx, (ceo, company) in enumerate(ceo_to_company.items(), start=1):
-        # Build disambiguated query
-        q = f"\"{ceo}\" \"{company}\""
-        items = fetch_items_for_query(q, MAX_ITEMS_PER_QUERY)
+        query = f"\"{ceo}\" \"{company}\""
+        items = fetch_items_for_query(query, MAX_ITEMS_PER_QUERY)
         items = dedup_by_title_domain(items)
 
         pos = neu = neg = 0
@@ -269,7 +289,7 @@ def main():
             })
 
         total = pos + neu + neg
-        theme = short_theme_from_negatives(neg_titles)
+        theme = theme_from_negatives(neg_titles, ceo=ceo, company=company)
 
         counts_rows.append({
             "date": today,
@@ -282,11 +302,10 @@ def main():
             "theme": theme,
         })
 
-        # polite pause between CEOs
         if idx < len(ceo_to_company):
             time.sleep(REQUEST_PAUSE_SEC)
 
-    # Write per-article
+    # write per-article
     with open(daily_articles_path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=[
             "date","brand","company","title","url","domain","sentiment","published"
@@ -295,8 +314,7 @@ def main():
         for r in article_rows:
             w.writerow(r)
 
-    # Upsert into daily_counts.csv
-    # Strategy: if file exists, drop any existing rows for today's date, then append new rows.
+    # upsert counts
     if os.path.exists(COUNTS_CSV):
         df_old = pd.read_csv(COUNTS_CSV)
         df_old = df_old[df_old["date"] != today]
@@ -316,7 +334,7 @@ def main():
 
     print(f"Wrote {len(article_rows)} articles -> {daily_articles_path}")
     print(f"Upserted {len(counts_rows)} rows -> {COUNTS_CSV}")
-    print("=== CEO Sentiment (simple alias) : done ===")
+    print("=== CEO Sentiment (improved themes) : done ===")
 
 if __name__ == "__main__":
     main()
