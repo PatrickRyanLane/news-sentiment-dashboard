@@ -319,7 +319,6 @@ Timothy NeCastro
 Wendell Weeks
 Kathleen Johnson
 Brian Tierney
-John Hess
 Adam Schechter
 Tiang Yew Tan
 Richard McKenney
@@ -337,7 +336,6 @@ Bruce Van Saun
 José Mas
 Andrés Gluski
 Kevin Kwilinski
-Jean-Marc Gilson
 Mark George
 Eduardo Menezes
 Shelley Simpson
