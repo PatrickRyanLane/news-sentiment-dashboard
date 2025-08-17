@@ -54,7 +54,7 @@ Energy Transfer
 RTX
 Albertsons
 Sysco
-Progressive
+Progressive Insurance
 American Express
 Lockheed Martin
 MetLife
@@ -69,7 +69,7 @@ IBM
 New York Life Insurance
 Delta Airlines
 Publix Super Markets
-Nationwide
+Nationwide Insurance
 TD Synnex
 United Airlines
 ConocoPhillips
