@@ -123,7 +123,6 @@ D.R. Horton
 Lithia Motors
 Mondelez
 Starbucks
-Visa
 CBRE
 Lennar
 GE Vernova
@@ -276,7 +275,7 @@ United States Steel
 Estée Lauder
 Farmers Insurance Exchange
 Kenvue
-IQVIA s
+IQVIA
 Stanley Black & Decker
 Keurig Dr Pepper
 United Rentals
@@ -300,7 +299,6 @@ Sonic Automotive
 S&P Global
 Regeneron Pharmaceuticals
 BorgWarner
-Fox
 Reliance
 Western & Southern Financial
 Textron
@@ -460,19 +458,18 @@ Taylor Morrison Home
 XPO
 Voya Financial
 Palo Alto Networks
-Vertiv s
+Vertiv
 Welltower
 Foot Locker
 Par Pacific
 TransDigm
 Commercial Metals
-Post s
 Masco
 Rush Enterprises
 KBR
 Sprouts Farmers Market
 Williams-Sonoma
-Zimmer Biomet s
+Zimmer Biomet
 CACI International
 Microchip Technology
 Watsco
