@@ -1,4 +1,4 @@
-Douglas McMillon
+Doug McMillon
 Andrew Jassy
 Stephen Hemsley
 Tim Cook
@@ -13,18 +13,18 @@ Ron Vachris
 David Cordani
 Satya Nadella
 Jason Hollar
-Michael Wirth
+Mike Wirth
 Brian Moynihan
 Mary Barra
-Jim Farley Jr.
+Jim Farley
 Gail Boudreaux
 Jane Fraser
 Mark Zuckerberg
 Sarah London
-Edward Decker
+Ted Decker
 Priscilla Almodovar
 Tim Wentworth
-Ronald Sargent
+Ron Sargent
 Mark Lashier
 Maryann Mannen
 Hans Vestberg
@@ -36,14 +36,14 @@ Brian Roberts
 Jon Farney
 John Stankey
 Michael Hutchins
-James Rechtin
-Edward Pick
+Jim Rechtin
+Ted Pick
 Brian Cornell
 Philip Smith
 Elon Musk
 Michael Dell
 Ramon Laguarta
-Robert Iger
+Bob Iger
 Carol Tomé
 Joaquin Duato
 Rajesh Subramaniam
@@ -54,33 +54,33 @@ Thomas Long
 Christopher Calio
 Susan Morris
 Kevin Hourican
-Susan Patricia Griffith
+Tricia Griffith
 Stephen Squeri
 James Taiclet
 Michel Khalaf
 Samuel Hazen
 Andrew Sullivan
-Robert Ortberg
-Jospeh Creed
-Robert Davis
-Thomas Wilson
+Kelly Ortberg
+Joe Creed
+Robert M Davis
+Thomas J Wilson
 Albert Bourla
 Arvind Krishna
 Craig DeSanto
-Edward Bastian
+Ed Bastian
 Kevin Murphy
 Kirt Walker
 Patrick Zammit
 Scott Kirby
 Ryan Lance
 Ernie Herrman
-Robert Michael
-James Teague
+Bob Michael
+AJ Jim Teague
 Christopher Winfrey
 George Holm
 Robert Isom
 Richard Fairbank
-Charles Robbins
+Chuck Robbins
 Enrique Lores
 Donnie King
 Lip-Bu Tan
@@ -88,10 +88,10 @@ Safra Catz
 Hock Tan
 John May
 Elliott Hill
-Timothy Sweeney
+Timothy M Sweeney
 Wilfred Chiang
 Juan Andrade
-Christopher Boerner
+Chris Boerner
 Paul Bay
 Phebe Novakovic
 James Quincey
@@ -105,16 +105,16 @@ Gunjan Kedia
 Michael Kasbar
 Robert Ford
 Corie Barry
-Timothy Gerend
+Tim Gerend
 Kathy Warden
-Joseph Zubretsky
+Joe Zubretsky
 Todd Vasos
 Robin Vince
 David Zaslav
 Jay Debertin
 Ted Sarandos
 Cristiano Amon
-Lawrence Culp Jr.
+Larry Culp
 Vimal Kapur
 Marc Benioff
 Jacek Olczak
@@ -132,10 +132,10 @@ Jennifer Rumsey
 Preston Feight
 Robert Bradway
 Matthew Lucey
-Patrick Geraghty
+Pat Geraghty
 Alex Chriss
 Sandy Douglas
-Michael Creedon, Jr.
+Michael Creedon
 Leon Topalian
 Roger Penske
 Bom Kim
@@ -152,7 +152,7 @@ Michael Miebach
 Lawrence Coben
 Sean Kerins
 Lorenzo Simonelli
-Robert Jordan
+Bob Jordan
 Peter Zaffino
 Gary Dickerson
 Vicki Hollub
@@ -160,17 +160,17 @@ Michael Manley
 Christopher Womack
 Christopher Swift
 Marc Rowan
-Richard Wurster
-Christopher Kempczinski
+Rick Wurster
+Chris Kempczinski
 Carlos Abrams-Rivera
 Lisa Su
-William Rogers Jr.
+William H Rogers Jr
 Kathleen Quirk
 Sanjay Mehrotra
 Anthony Capuano
 David Gitlin
 John Ketchum
-William Brown
+William M Brown
 John Doyle
 Patricia Poppe
 Jim Vena
@@ -179,31 +179,31 @@ Rainer Blair
 Philip Gallagher
 Glenn Fogel
 Ezra Yacob
-Earl Austin Jr.
+Earl Austin
 Michael Shepherd
 Joseph Dominguez
 William Stengel II
 Christian Ulbrich
-Raymond Scott
+Raymond E Scott
 Michael Rapino
 Heidi Petz
-Calvin Butler Jr.
+Calvin G Butler Jr
 Tony Spring
-Jeffrey Miller
+Jeff Miller
 Kevin Lobo
 Tony Cheng
-Ronald O'Hanley
+Ronald P O'Hanley
 John Engel
 Pierce Norton II
 Shantanu Narayen
-William Westrate
-Christopher Kubasik
+Bill Westrate
+Chris Kubasik
 James Conroy
 Christine Leahy
 Saumya Sutaria
-Robert Eddy
-Michael Lyons
-William Gifford Jr.
+Bob Eddy
+Mike Lyons
+William Gifford
 Laurence Fink
 Thomas Polen
 Noel Wallace
@@ -277,7 +277,7 @@ Stéphane de La Faverie
 Raul Nicholas Vargas Ochoa
 Thibaut Mongon
 Ari Bousbib
-Donald Allan Jr.
+Donald Allan
 Timothy Cofer
 Matthew Flannery
 Timothy Cawley
@@ -285,7 +285,7 @@ Adam Norwitt
 Brent Shafer
 Kimberly Dang
 Erik Nordstrom
-Frank Holding Jr.
+Frank Holding
 Paul Shoukry
 Timothy Archer
 Harry Lawton III
@@ -308,7 +308,7 @@ Ariane Gorin
 Michael Nolan
 Ernest Garcia III
 Raul Fernandez
-Robert Berkley Jr.
+Robert Berkley
 René Jones
 Lauren Hobart
 Robert Frenzel
@@ -343,7 +343,7 @@ Daniel Fisher
 Sean Connolly
 Stephen Steinour
 James Snee
-Joseph Nolan Jr.
+Joseph Nolan
 William Oplinger
 Andrew Marsh
 Keith Demmings
@@ -356,7 +356,7 @@ Malcolm Wilson
 Eric Hansotia
 Kathleen Mazzarella
 Gavin Hattersley
-Patrick Gallagher Jr.
+Patrick Gallagher
 Christopher Kastner
 Erik Fyrwald
 Ricardo Cardenas
@@ -379,7 +379,7 @@ William McDermott
 Brian Chambers
 Teresa Rasmussen
 Shane O'Kelly
-Douglas Yearley Jr.
+Douglas Yearley
 Jeffrey Lorberbaum
 Gregory Brown
 John Pfeifer
@@ -420,7 +420,7 @@ John Venhuizen
 Vincent Roche
 Mark Costa
 Milan Galik
-John Turner Jr.
+John Turner
 Joanna Geraghty
 Kristin Peck
 Christopher Gorman
