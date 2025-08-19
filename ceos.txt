@@ -204,7 +204,7 @@ Saumya Sutaria
 Bob Eddy
 Mike Lyons
 William Gifford
-Laurence Fink
+Larry Fink
 Thomas Polen
 Noel Wallace
 Michael Hsu
@@ -216,7 +216,7 @@ William Fehrman
 Peter Arduini
 Maria Black
 Lourenco Goncalves
-Daniel Amos
+Dan Amos
 Mark Stewart
 Kevin Hogan
 Thomas Palmer
@@ -392,7 +392,7 @@ Michael O’Sullivan
 Daniel Wall
 Calvin McDonald
 Stephanie Ferris
-Richard Handler
+Rich Handler
 Alan Armstrong
 Bracken Darrell
 Mikael Bratt
@@ -437,7 +437,7 @@ Adaire Fox-Martin
 Joyce Mullen
 Jennifer Witz
 Stefan Larsson
-Jason Wells
+Jason P Wells
 Scott Lauber
 Matthew Pine
 Jennifer Johnson
