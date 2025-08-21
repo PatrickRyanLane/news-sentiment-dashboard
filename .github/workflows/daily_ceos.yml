@@ -2,7 +2,7 @@ name: Daily CEO News Sentiment
 
 on:
   schedule:
-    - cron: "0 12 * * *"     # ~8am ET
+    - cron: "0 12 * * *"     # ~8am ET (12:00 UTC during DST)
   workflow_dispatch: {}
   push:
     paths:
@@ -14,7 +14,7 @@ on:
 permissions:
   contents: write
 
-# Prevent overlapping runs from racing on pushes
+# Prevent overlapping runs that write to the repo
 concurrency:
   group: repo-data-writes
   cancel-in-progress: false
@@ -22,6 +22,10 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    env:
+      PYTHONUNBUFFERED: '1'
+      TZ: America/New_York
+
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -32,6 +36,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies (if requirements.txt exists)
         if: ${{ hashFiles('requirements.txt') != '' }}
@@ -42,25 +48,32 @@ jobs:
       - name: Ensure CEO data folders exist
         run: mkdir -p data_ceos/articles
 
-      - name: Run daily CEO sentiment
+      - name: Run daily CEO sentiment (if script exists)
+        if: ${{ hashFiles('news_sentiment_ceos.py') != '' }}
         run: python news_sentiment_ceos.py
 
-     - name: Commit & push changes (if any)
-  run: |
-    set -e
-    git config user.name  "github-actions[bot]"
-    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Commit & push changes (if any)
+        run: |
+          set -e
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-    # Only commit if something actually changed
-    if [[ -n "$(git status --porcelain)" ]]; then
-      git add -A
-      git commit -m "chore(data): update $(date -u +%F)"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add -A
+            git commit -m "chore(data_ceos): update CEO news sentiment for $(date -u +%F)"
+            # Rebase to avoid non-fast-forward errors
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main
+          else
+            echo "No changes to commit."
+          fi
 
-      # Reconcile with remote even if we have local changes
-      git pull --rebase --autostash origin main
-
-      # Push our rebased commit
-      git push origin HEAD:main
-    else
-      echo "No changes to commit."
-    fi
+      - name: Upload CEO data artifact (optional)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: data_ceos-${{ github.run_id }}
+          path: |
+            data_ceos/daily_counts.csv
+            data_ceos/articles/*.csv
+          if-no-files-found: ignore
