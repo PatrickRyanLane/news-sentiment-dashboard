@@ -45,26 +45,22 @@ jobs:
       - name: Run daily CEO sentiment
         run: python news_sentiment_ceos.py
 
-      - name: Commit & push changes (safe rebase)
-        run: |
-          set -e
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+     - name: Commit & push changes (if any)
+  run: |
+    set -e
+    git config user.name  "github-actions[bot]"
+    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Stage changes if any
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git add -A
-            git commit -m "chore(data_ceos): update CEO news sentiment for $(date -u +%F)"
+    # Only commit if something actually changed
+    if [[ -n "$(git status --porcelain)" ]]; then
+      git add -A
+      git commit -m "chore(data): update $(date -u +%F)"
 
-            # Make sure we're up-to-date before pushing
-            git fetch origin main
-            git pull --rebase origin main
+      # Reconcile with remote even if we have local changes
+      git pull --rebase --autostash origin main
 
-            # First push attempt
-            if ! git push origin HEAD:main; then
-              echo "First push failed, retrying with --force-with-lease..."
-              git push --force-with-lease origin HEAD:main
-            fi
-          else
-            echo "No changes to commit."
-          fi
+      # Push our rebased commit
+      git push origin HEAD:main
+    else
+      echo "No changes to commit."
+    fi
