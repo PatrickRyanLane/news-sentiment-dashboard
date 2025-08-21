@@ -1,20 +1,22 @@
-name: Daily Roc Nation News Sentiment
+name: Daily ROC News Sentiment
 
 on:
   schedule:
-    - cron: "0 12 * * *"   # ~8am New York (UTC-based; shifts with DST)
+    - cron: "0 12 * * *"   # ~8am ET during DST (12:00 UTC)
   workflow_dispatch: {}
   push:
     paths:
       - 'news_sentiment_roc.py'
+      - 'requirements.txt'
       - 'roc_aliases.csv'
       - 'roc.txt'
+      - 'roc-dashboard.html'
       - '.github/workflows/daily_roc.yml'
 
 permissions:
   contents: write
 
-# Optional: prevent push conflicts with other data-writing jobs
+# Prevent overlapping runs across workflows that write data
 concurrency:
   group: repo-data-writes
   cancel-in-progress: false
@@ -22,44 +24,14 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    env:
+      PYTHONUNBUFFERED: '1'
+      TZ: America/New_York
+
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
-
-      - name: Install dependencies (if requirements.txt exists)
-        if: ${{ hashFiles('requirements.txt') != '' }}
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Ensure ROC data folders exist
-        run: mkdir -p data_roc/articles
-
-      - name: Run daily Roc Nation sentiment
-        run: python news_sentiment_roc.py
-
-      - name: Commit & push changes (if any)
-  run: |
-    set -e
-    git config user.name  "github-actions[bot]"
-    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-    # Only commit if something actually changed
-    if [[ -n "$(git status --porcelain)" ]]; then
-      git add -A
-      git commit -m "chore(data): update $(date -u +%F)"
-
-      # Reconcile with remote even if we have local changes
-      git pull --rebase --autostash origin main
-
-      # Push our rebased commit
-      git push origin HEAD:main
-    else
-      echo "No changes to commit."
-    fi
-
