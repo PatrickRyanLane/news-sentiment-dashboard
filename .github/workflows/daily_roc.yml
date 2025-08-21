@@ -1,0 +1,58 @@
+name: Daily Roc Nation News Sentiment
+
+on:
+  schedule:
+    - cron: "0 12 * * *"   # ~8am New York (UTC-based; shifts with DST)
+  workflow_dispatch: {}
+  push:
+    paths:
+      - 'news_sentiment_roc.py'
+      - 'roc_aliases.csv'
+      - 'roc.txt'
+      - '.github/workflows/daily_roc.yml'
+
+permissions:
+  contents: write
+
+# Optional: prevent push conflicts with other data-writing jobs
+concurrency:
+  group: data-writes
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+
+      - name: Install dependencies (if requirements.txt exists)
+        if: ${{ hashFiles('requirements.txt') != '' }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ensure ROC data folders exist
+        run: mkdir -p data_roc/articles
+
+      - name: Run daily Roc Nation sentiment
+        run: python news_sentiment_roc.py
+
+      - name: Commit & push changes (if any)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git pull --rebase origin main || true
+          if [[ -n $(git status --porcelain) ]]; then
+            git add -A
+            git commit -m "chore(data_roc): update Roc Nation news sentiment for $(date -u +%F)"
+            git push
+          else
+            echo "No changes to commit."
+          fi
