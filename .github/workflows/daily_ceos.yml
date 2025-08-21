@@ -16,8 +16,8 @@ permissions:
 
 # Prevent overlapping runs from racing on pushes
 concurrency:
-  group: ceo-data
-  cancel-in-progress: true
+  group: repo-data-writes
+  cancel-in-progress: false
 
 jobs:
   run:
