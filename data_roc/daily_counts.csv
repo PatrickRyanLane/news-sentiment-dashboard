@@ -1,10 +1,10 @@
 date,brand,company,total,positive,neutral,negative,theme
 2025-08-21,Andrew Dutkanych,MILB,3,0,2,1,None
-2025-08-21,Antonio Anderson,MILB,15,5,8,2,None
+2025-08-21,Antonio Anderson,MILB,14,5,7,2,None
 2025-08-21,Braden Montgomery,MILB,35,21,13,1,None
 2025-08-21,Christian Little,MILB,9,5,0,4,None
 2025-08-21,Christopher Suero,MILB,8,1,6,1,None
-2025-08-21,CJ Abrams,MLB,40,5,30,5,None
+2025-08-21,CJ Abrams,MLB,40,6,29,5,None
 2025-08-21,Dominic Johnson,MILB,0,0,0,0,None
 2025-08-21,Dominic Smith,MLB,40,12,22,6,None
 2025-08-21,Ed Howard,MILB,8,2,6,0,None
@@ -17,7 +17,7 @@ date,brand,company,total,positive,neutral,negative,theme
 2025-08-21,Jazz Chisholm,MLB,40,16,18,6,None
 2025-08-21,Jeremiah Estrada,MLB,40,13,21,6,None
 2025-08-21,Jordan McCants,MILB,8,3,5,0,None
-2025-08-21,Logan Allen,Baseball,40,12,23,5,None
+2025-08-21,Logan Allen,Baseball,40,11,24,5,None
 2025-08-21,Marcus Stroman,MLB,40,5,30,5,None
 2025-08-21,Mark Vientos,MLB,40,6,29,5,None
 2025-08-21,Masyn Winn,MLB,40,13,22,5,None
@@ -26,52 +26,52 @@ date,brand,company,total,positive,neutral,negative,theme
 2025-08-21,Niko Goodrum,MLB,40,9,26,5,None
 2025-08-21,Nick Gordon,MLB,40,6,31,3,None
 2025-08-21,Robinson Cano,Baseball,40,19,21,0,None
-2025-08-21,Termarr Johnson,MILB,32,12,17,3,None
+2025-08-21,Termarr Johnson,MILB,21,10,11,0,None
 2025-08-21,TJ McCants,MILB,10,5,5,0,None
 2025-08-21,Xavier Edwards,MLB,35,7,20,8,None
 2025-08-21,Zack Showalter,MILB,10,4,6,0,None
 2025-08-21,Aeneas Peebles,NFL Draft Prospect,10,3,4,3,None
-2025-08-21,Andrew Thomas,NFL,40,7,24,9,None
+2025-08-21,Andrew Thomas,NFL,40,9,23,8,None
 2025-08-21,Andrew Voorhees,NFL,10,3,4,3,None
 2025-08-21,Azeez Ojulari,NFL,40,17,19,4,None
 2025-08-21,Baron Browning,NFL,40,13,26,1,None
 2025-08-21,Bradley Chubb,NFL,40,11,24,5,None
 2025-08-21,Brandon Coleman,NFL,40,17,19,4,None
 2025-08-21,Brandon Jones,NFL,40,26,11,3,None
-2025-08-21,Carlos Boogie Basham,NFL,22,4,17,1,None
+2025-08-21,Carlos Boogie Basham,NFL,21,4,16,1,None
 2025-08-21,Chris Paul,NFL,40,5,31,4,None
 2025-08-21,CJ Henderson,NFL,40,8,29,3,None
 2025-08-21,Clay Webb,NFL Draft Prospect,10,8,0,2,None
 2025-08-21,Devin Duvernay,NFL,40,6,27,7,None
-2025-08-21,De'Von Achane,NFL,40,4,9,27,None
-2025-08-21,Drake London,NFL,40,17,21,2,None
+2025-08-21,De'Von Achane,NFL,40,5,9,26,None
+2025-08-21,Drake London,NFL,40,17,20,3,None
 2025-08-21,Erik Ezukanma,NFL,38,3,23,12,None
 2025-08-21,Gabriel Davis,NFL,40,9,27,4,None
 2025-08-21,Germaine Pratt,NFL,40,9,29,2,None
-2025-08-21,Isaiah Likely,NFL,40,8,17,15,None
+2025-08-21,Isaiah Likely,NFL,40,9,17,14,None
 2025-08-21,Jaire Alexander,NFL,40,10,25,5,None
 2025-08-21,Jakorian Bennett,NFL,40,7,27,6,None
 2025-08-21,Jalen McMillan,NFL,40,3,13,24,None
-2025-08-21,Jalyn Armour-Davis,NFL,40,8,26,6,None
+2025-08-21,Jalyn Armour-Davis,NFL,40,9,24,7,None
 2025-08-21,Jamaree Salyer,NFL,40,11,24,5,None
-2025-08-21,Jamel Dean,NFL,40,11,19,10,None
+2025-08-21,Jamel Dean,NFL,40,10,21,9,None
 2025-08-21,Jaylon Jones,NFL,40,10,23,7,None
-2025-08-21,Jordyn Brooks,NFL,40,13,23,4,None
+2025-08-21,Jordyn Brooks,NFL,40,14,22,4,None
 2025-08-21,Josaiah Stewart,NFL Draft Prospect,16,9,5,2,None
 2025-08-21,Julian Okwara,NFL,40,8,29,3,None
 2025-08-21,Kevin Winston Jr,NFL Draft Prospect,15,10,4,1,None
-2025-08-21,Kyler Murray,NFL,40,9,25,6,None
-2025-08-21,Le'Raven Clark,NFL,36,8,20,8,None
-2025-08-21,Lewis Cine,NFL,40,9,23,8,None
-2025-08-21,Louis Rees Zammit,NFL,39,10,28,1,None
-2025-08-21,Luiji Vilain,NFL,40,3,34,3,None
+2025-08-21,Kyler Murray,NFL,40,9,26,5,None
+2025-08-21,Le'Raven Clark,NFL,39,10,21,8,None
+2025-08-21,Lewis Cine,NFL,40,11,21,8,None
+2025-08-21,Louis Rees Zammit,NFL,39,10,27,2,None
+2025-08-21,Luiji Vilain,NFL,30,3,25,2,None
 2025-08-21,Marcus Maye,NFL,40,8,23,9,None
 2025-08-21,Micheal Clemons,NFL,40,9,21,10,None
 2025-08-21,Michael Pittman Jr,NFL,40,9,18,13,None
 2025-08-21,Patrick Paul,NFL,40,15,21,4,None
 2025-08-21,Rashod Bateman,NFL,40,12,25,3,None
-2025-08-21,Ronnie Stanley,NFL,40,14,22,4,None
-2025-08-21,Roschon Johnson,NFL,40,10,22,8,None
+2025-08-21,Ronnie Stanley,NFL,40,13,23,4,None
+2025-08-21,Roschon Johnson,NFL,40,9,23,8,None
 2025-08-21,Sam Ehlinger,NFL,40,8,28,4,None
 2025-08-21,Savion Williams,NFL Draft Prospect,22,14,6,2,None
 2025-08-21,Terence Steele,NFL,40,12,17,11,None
@@ -79,27 +79,27 @@ date,brand,company,total,positive,neutral,negative,theme
 2025-08-21,Tyler Higbee,NFL,40,17,12,11,None
 2025-08-21,Tyler Lacy,NFL,39,5,29,5,None
 2025-08-21,Tyler Shough,NFL Draft Prospect,40,19,18,3,None
-2025-08-21,Tyree Wilson,NFL,40,15,24,1,None
+2025-08-21,Tyree Wilson,NFL,40,11,26,3,None
 2025-08-21,Upton Stout,NFL Draft Prospect,10,6,3,1,None
 2025-08-21,Will Campbell,NFL Draft Prospect,40,22,8,10,None
 2025-08-21,Za'Darius Smith,NFL,40,21,16,3,None
 2025-08-21,Zamir White,NFL,40,6,25,9,None
 2025-08-21,Aphelele Fassi,Rugby,40,16,17,7,None
 2025-08-21,Ardie Savea,Rugby,40,22,13,5,None
-2025-08-21,Cheslin Kolbe,Rugby,40,21,10,9,None
+2025-08-21,Cheslin Kolbe,Rugby,40,20,11,9,None
 2025-08-21,Ellis Genge,Rugby,40,10,21,9,None
-2025-08-21,Jordan Hendrikse,Rugby,40,9,23,8,None
+2025-08-21,Jordan Hendrikse,Rugby,40,10,22,8,None
 2025-08-21,Luyolo Doyi,Rugby,10,6,4,0,None
 2025-08-21,Marcus Smith,Rugby,40,9,24,7,None
 2025-08-21,Mamus Rademeyer,Rugby,0,0,0,0,None
-2025-08-21,Ollie Lawrence,Rugby,40,8,14,18,None
+2025-08-21,Ollie Lawrence,Rugby,40,7,14,19,None
 2025-08-21,Owam Freempong,Rugby,3,2,1,0,None
 2025-08-21,Ronald Brown,Rugby,40,15,20,5,None
-2025-08-21,Siya Kolisi,Rugby,40,11,19,10,None
+2025-08-21,Siya Kolisi,Rugby,40,12,19,9,None
 2025-08-21,Tendai Mtawarira,Rugby,40,18,17,5,None
 2025-08-21,Zukisani Tom,Rugby,8,6,2,0,None
 2025-08-21,Adem Bona,NBA,40,12,24,4,None
-2025-08-21,Bennie Boatwright,Basketball,40,19,17,4,None
+2025-08-21,Bennie Boatwright,Basketball,40,18,17,5,None
 2025-08-21,Buddy Boeheim,NBA,40,10,27,3,None
 2025-08-21,Chris Boucher,NBA,40,15,25,0,None
 2025-08-21,Dillon Jones,NBA,40,9,31,0,None
@@ -108,29 +108,29 @@ date,brand,company,total,positive,neutral,negative,theme
 2025-08-21,Kevin Porter Jr,NBA,40,9,27,4,None
 2025-08-21,LaMelo Ball,NBA,40,8,24,8,None
 2025-08-21,Quincy Guerrier,NBA,40,5,34,1,None
-2025-08-21,Rickea Jackson,WNBA,40,12,27,1,None
+2025-08-21,Rickea Jackson,WNBA,40,12,26,2,None
 2025-08-21,Skylar Diggins-Smith,WNBA,40,10,27,3,None
 2025-08-21,Allen Griffin,Coach,34,9,24,1,None
 2025-08-21,Dejan Stanković,Coach,40,14,24,2,None
-2025-08-21,God Shammgod,Coach,40,25,13,2,None
+2025-08-21,God Shammgod,Coach,40,27,11,2,None
 2025-08-21,Hamlet Tibbs,Coach,10,6,4,0,None
-2025-08-21,Hue Jackson,Coach,40,5,25,10,None
-2025-08-21,Kliff Kingsbury,Coach,40,10,25,5,None
+2025-08-21,Hue Jackson,Coach,40,4,27,9,None
+2025-08-21,Kliff Kingsbury,Coach,40,12,24,4,None
 2025-08-21,Rod Strickland,Coach,40,9,24,7,None
-2025-08-21,Adedire Mebude,Soccer,8,1,5,2,None
+2025-08-21,Adedire Mebude,Soccer,7,0,5,2,None
 2025-08-21,Alan Kardec De Souza,Soccer,0,0,0,0,None
 2025-08-21,Alexandre Cesar Santos Ribeiro,Soccer,0,0,0,0,None
 2025-08-21,Alfie McNally,Soccer,1,0,1,0,None
-2025-08-21,Andre Silva,Soccer,40,6,17,17,None
+2025-08-21,Andre Silva,Soccer,40,8,16,16,None
 2025-08-21,Andre Clovis Silva Filho,Soccer,0,0,0,0,None
-2025-08-21,Andrew brody,Soccer,37,9,25,3,None
-2025-08-21,Anthony Fontana,Soccer,28,10,16,2,None
+2025-08-21,Andrew brody,Soccer,40,9,27,4,None
+2025-08-21,Anthony Fontana,Soccer,29,10,17,2,None
 2025-08-21,Anselmo Ramon Alves Herculano,Soccer,0,0,0,0,None
 2025-08-21,Arthur Augusto De Matos Soares,Soccer,2,1,1,0,None
 2025-08-21,Arthur Zanell Koerich,Soccer,0,0,0,0,None
 2025-08-21,Axel Uriostegui,Soccer,8,6,1,1,None
 2025-08-21,Axel Witsel,Soccer,40,10,24,6,None
-2025-08-21,Aziel Jackson,Soccer,40,15,23,2,None
+2025-08-21,Aziel Jackson,Soccer,39,14,23,2,None
 2025-08-21,Billy Gee,Soccer,10,4,5,1,None
 2025-08-21,Bradley Ibrahim,Soccer,9,2,6,1,None
 2025-08-21,Brooke Norton-Cuffy,Soccer,23,6,17,0,None
@@ -159,7 +159,7 @@ date,brand,company,total,positive,neutral,negative,theme
 2025-08-21,Felipe Felicio Silva Reis,Soccer,0,0,0,0,None
 2025-08-21,Felipe Vieira Dos Santos Martins,Soccer,0,0,0,0,None
 2025-08-21,Gabriel Correia Da Silva,Soccer,1,0,1,0,None
-2025-08-21,Gabriel Teodoro Martinelli Silva,Soccer,9,3,5,1,None
+2025-08-21,Gabriel Teodoro Martinelli Silva,Soccer,9,4,4,1,None
 2025-08-21,Gabryelo Bica Zaffari D Agustini,Soccer,0,0,0,0,None
 2025-08-21,Gustavo Henrique Correa,Soccer,0,0,0,0,None
 2025-08-21,Gustavo Reis De Alcantara,Soccer,0,0,0,0,None
@@ -171,7 +171,7 @@ date,brand,company,total,positive,neutral,negative,theme
 2025-08-21,Jack Mcglynn,Soccer,40,7,28,5,None
 2025-08-21,Jackson Teixeira Filho,Soccer,0,0,0,0,None
 2025-08-21,Jacob Neptune,Soccer,0,0,0,0,None
-2025-08-21,Jacob Wright,Soccer,31,13,16,2,None
+2025-08-21,Jacob Wright,Soccer,32,14,16,2,None
 2025-08-21,Jadan Raymond,Soccer,9,2,5,2,None
 2025-08-21,Jadsom Meemyas De Oliveira Da Silva,Soccer,0,0,0,0,None
 2025-08-21,Jahmari Clarke,Soccer,5,2,2,1,None
@@ -192,7 +192,7 @@ date,brand,company,total,positive,neutral,negative,theme
 2025-08-21,Kayke Ferrari Guimaraes,Soccer,0,0,0,0,None
 2025-08-21,Keaton Parks,Soccer,40,11,25,4,None
 2025-08-21,Keven Vinicius Duarte Silva,Soccer,0,0,0,0,None
-2025-08-21,Kevin de Bruyne,Soccer,40,11,26,3,None
+2025-08-21,Kevin de Bruyne,Soccer,40,11,27,2,None
 2025-08-21,Kevyn Henrique Monteiro De Souza,Soccer,0,0,0,0,None
 2025-08-21,Korede Osundina,Soccer,9,2,7,0,None
 2025-08-21,Lazaro Vinicius Marques,Soccer,4,0,4,0,None
@@ -222,16 +222,16 @@ date,brand,company,total,positive,neutral,negative,theme
 2025-08-21,Mateus Macena De Almeida Santos,Soccer,0,0,0,0,None
 2025-08-21,Matheus Dalsasso Dias,Soccer,0,0,0,0,None
 2025-08-21,Matheus Rossetto,Soccer,23,7,11,5,None
-2025-08-21,Matt Miazaga,Soccer,3,0,3,0,None
-2025-08-21,Matt Real,Soccer,27,5,19,3,None
+2025-08-21,Matt Miazaga,Soccer,2,0,2,0,None
+2025-08-21,Matt Real,Soccer,27,4,19,4,None
 2025-08-21,Maycon Vinicius De Lima Galho,Soccer,0,0,0,0,None
 2025-08-21,Murilo Camargo Dos Santos,Soccer,0,0,0,0,None
-2025-08-21,Murilo Cerqueira Paim,Soccer,4,1,3,0,None
+2025-08-21,Murilo Cerqueira Paim,Soccer,3,1,2,0,None
 2025-08-21,Nathan Ferguson,Soccer,14,6,5,3,None
 2025-08-21,Nathan Pinheiro Dantas Benvindo Rosal,Soccer,0,0,0,0,None
 2025-08-21,Nathan Santos de Araújo,Soccer,1,0,1,0,None
 2025-08-21,Nkosi Tafari,Soccer,40,6,32,2,None
-2025-08-21,Olger Escobar,Soccer,39,6,33,0,None
+2025-08-21,Olger Escobar,Soccer,36,6,30,0,None
 2025-08-21,Òscar Masqué García,Soccer,0,0,0,0,None
 2025-08-21,Oscar Torrellas,Soccer,0,0,0,0,None
 2025-08-21,Otavio Goncalves De Oliveira,Soccer,0,0,0,0,None
@@ -257,7 +257,7 @@ date,brand,company,total,positive,neutral,negative,theme
 2025-08-21,Tyreece John-Jules,Soccer,9,2,7,0,None
 2025-08-21,Victor Hugo Gomes Silva,Soccer,1,1,0,0,None
 2025-08-21,Victor Marcelo Mendes de Santana,Soccer,0,0,0,0,None
-2025-08-21,Vinicius Jose Paixao de Oliveira Junior,Soccer,15,5,5,5,None
+2025-08-21,Vinicius Jose Paixao de Oliveira Junior,Soccer,14,5,4,5,None
 2025-08-21,Vonnte Williams,Soccer,3,2,1,0,None
 2025-08-21,Vitor Carvalho,Soccer,8,0,7,1,None
 2025-08-21,Vitor Dos Santos Figueiredo,Soccer,0,0,0,0,None
