@@ -44,15 +44,22 @@ jobs:
         run: python news_sentiment_roc.py
 
       - name: Commit & push changes (if any)
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin main
-          git pull --rebase origin main || true
-          if [[ -n $(git status --porcelain) ]]; then
-            git add -A
-            git commit -m "chore(data_roc): update Roc Nation news sentiment for $(date -u +%F)"
-            git push
-          else
-            echo "No changes to commit."
-          fi
+  run: |
+    set -e
+    git config user.name  "github-actions[bot]"
+    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+    # Only commit if something actually changed
+    if [[ -n "$(git status --porcelain)" ]]; then
+      git add -A
+      git commit -m "chore(data): update $(date -u +%F)"
+
+      # Reconcile with remote even if we have local changes
+      git pull --rebase --autostash origin main
+
+      # Push our rebased commit
+      git push origin HEAD:main
+    else
+      echo "No changes to commit."
+    fi
+
