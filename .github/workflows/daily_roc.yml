@@ -16,7 +16,7 @@ permissions:
 
 # Optional: prevent push conflicts with other data-writing jobs
 concurrency:
-  group: data-writes
+  group: repo-data-writes
   cancel-in-progress: false
 
 jobs:
