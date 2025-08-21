@@ -18,8 +18,8 @@ permissions:
 
 # Avoid overlapping schedule/manual/push runs
 concurrency:
-  group: daily-news-sentiment-${{ github.ref }}
-  cancel-in-progress: true
+  group: repo-data-writes
+  cancel-in-progress: false
 
 jobs:
   run:
