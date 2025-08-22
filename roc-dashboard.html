@@ -524,35 +524,124 @@
     }
     return {dates,pos,neu,neg};
   }
-  function updateTrend(){
-    const selCount=selected.size;
-    let brand=null;
-    if(selCount===1) brand = Array.from(selected)[0];
-    else if(selCount===0 && currentRows.length) brand = currentRows[0].brand;
-    else { trendHint.classList.remove('hidden'); trendInfo.textContent=''; trendRange.textContent=''; if(trendChart){trendChart.destroy();} return; }
+  // Weighted index across ALL names for each day.
+// (weights by article totals: sums pos/neu/neg, then percent if in % mode)
+function seriesForIndex() {
+  const dates = allDatesSorted();            // existing helper you already have
+  const sumByDate = new Map();               // date -> {pos,neu,neg,total}
 
-    if(brand!==trendBrand) trendPage=0;
-    trendHint.classList.add('hidden');
-    const full=seriesForBrand(brand), total=full.dates.length, W=TREND_WINDOW;
-    const maxPage=Math.max(0, Math.ceil(total/W)-1); if(trendPage>maxPage) trendPage=maxPage;
-    const end=Math.max(0,total-W*trendPage), start=Math.max(0,end-W);
-    const labels=full.dates.slice(start,end), pos=full.pos.slice(start,end), neu=full.neu.slice(start,end), neg=full.neg.slice(start,end);
-    trendBrand=brand; trendInfo.textContent=`Name: ${brand}`;
-    trendRange.textContent = labels.length ? `  |  DATE: ${labels[0]} → ${labels.at(-1)}` : '';
-    const showLabels = labels.length<=7;
-    const data={ labels, datasets:[
-      {label:'Positive',data:pos,backgroundColor:COLOR_POS,stack:'sent'},
-      {label:'Neutral', data:neu,backgroundColor:COLOR_NEU,stack:'sent'},
-      {label:'Negative',data:neg,backgroundColor:COLOR_NEG,stack:'sent'},
-    ]};
-    const options={
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{position:'top'}, tooltip:{callbacks:{label:(c)=> (viewMode==='percent')?`${c.dataset.label}: ${c.parsed.y}%`:`${c.dataset.label}: ${c.parsed.y}`}} },
-      scales:{ x:{stacked:true,ticks:{display:showLabels}}, y:{stacked:true,beginAtZero:true,ticks:{callback:(v)=> viewMode==='percent'?v+'%':v}} }
-    };
-    if(trendChart) trendChart.destroy();
-    trendChart = new Chart(trendCanvas.getContext('2d'), {type:'bar', data, options});
+  for (const r of allRows) {
+    const d = r.date;
+    const agg = sumByDate.get(d) || { pos: 0, neu: 0, neg: 0, total: 0 };
+    agg.pos   += Number(r.positive) || 0;
+    agg.neu   += Number(r.neutral)  || 0;
+    agg.neg   += Number(r.negative) || 0;
+    agg.total += Number(r.total)    || 0;
+    sumByDate.set(d, agg);
   }
+
+  const pos = [], neu = [], neg = [];
+  for (const d of dates) {
+    const a = sumByDate.get(d) || { pos:0, neu:0, neg:0, total:0 };
+    if (viewMode === 'percent') {
+      const t = a.total || 0;
+      pos.push(t ? +(a.pos / t * 100).toFixed(1) : 0);
+      neu.push(t ? +(a.neu / t * 100).toFixed(1) : 0);
+      neg.push(t ? +(a.neg / t * 100).toFixed(1) : 0);
+    } else {
+      pos.push(a.pos); neu.push(a.neu); neg.push(a.neg);
+    }
+  }
+
+  return { dates, pos, neu, neg, label: 'INDEX (weighted avg)' };
+}
+ function updateTrend() {
+  const selCount = selected.size;
+
+  // Decide what to plot
+  let series = null;
+  let label  = null;
+  if (selCount === 1) {
+    const brand = Array.from(selected)[0];
+    label  = brand;
+    series = seriesForBrand(brand);
+    // reset paging when switching "target"
+    if (trendBrand !== 'BRAND::' + brand) { trendPage = 0; }
+    trendBrand = 'BRAND::' + brand;
+    trendHint.classList.add('hidden');
+  } else if (selCount === 0) {
+    // NEW: default to index average
+    series = seriesForIndex();
+    label  = series.label;
+    if (trendBrand !== 'INDEX') { trendPage = 0; }
+    trendBrand = 'INDEX';
+    trendHint.classList.add('hidden');
+  } else {
+    // too many selections to show one trend
+    trendHint.classList.remove('hidden');
+    trendInfo.textContent = '';
+    if (trendRange) trendRange.textContent = '';
+    if (trendChart) { trendChart.destroy(); trendChart = null; }
+    return;
+  }
+
+  const total = series.dates.length;
+  const W = TREND_WINDOW; // you already have this (30)
+  const maxPage = Math.max(0, Math.ceil(total / W) - 1);
+  if (trendPage > maxPage) trendPage = maxPage;
+
+  const end   = Math.max(0, total - W * trendPage);
+  const start = Math.max(0, end - W);
+
+  const labels = series.dates.slice(start, end);
+  const pos    = series.pos.slice(start, end);
+  const neu    = series.neu.slice(start, end);
+  const neg    = series.neg.slice(start, end);
+
+  // Header text
+  trendInfo.textContent = `BRAND: ${label}`;
+  if (trendRange) {
+    const rangeText = labels.length ? `  |  DATE: ${labels[0]} → ${labels[labels.length-1]}` : '';
+    trendRange.textContent = rangeText;
+  }
+
+  const showLabels = labels.length <= 7;
+
+  const data = {
+    labels,
+    datasets: [
+      { label: 'Positive', data: pos, backgroundColor: '#98c15b', stack: 'sent' },
+      { label: 'Neutral',  data: neu, backgroundColor: '#dae5e6', stack: 'sent' },
+      { label: 'Negative', data: neg, backgroundColor: '#ffb199', stack: 'sent' },
+    ]
+  };
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const v = ctx.parsed.y;
+            return (viewMode === 'percent') ? `${ctx.dataset.label}: ${v}%` : `${ctx.dataset.label}: ${v}`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: { stacked: true, ticks: { display: showLabels } },
+      y: { stacked: true, beginAtZero: true,
+           ticks: { callback: (v)=> viewMode==='percent' ? v + '%' : v } }
+    }
+  };
+
+  if (trendChart) trendChart.destroy();
+  if (trendCanvas) {
+    trendChart = new Chart(trendCanvas.getContext('2d'), { type: 'bar', data, options });
+  }
+}
+
 
   // ---------- Load & events ----------
   function loadCountsCsv(){
