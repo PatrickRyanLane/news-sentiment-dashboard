@@ -1,491 +1,989 @@
 brand,alias
 Doug McMillon,Walmart
 Andrew Jassy,Amazon
-Stephen Hemsley,UnitedHealth
 Tim Cook,Apple
-David Joyner,CVS Health
+Stephen Hemsley,UnitedHealth
 Warren Buffett,Berkshire Hathaway
-Sundar Pichai,Alphabet
+David Joyner,CVS Health
 Darren Woods,Exxon Mobil
+Sundar Pichai,Alphabet
 Brian Tyler,McKesson
 Robert Mauch,Cencora
-Jamie Dimon,JPMorgan Chase
 Ron Vachris,Costco
-David Cordani,Cigna
+Jamie Dimon,JPMorgan Chase
 Satya Nadella,Microsoft
 Jason Hollar,Cardinal Health
 Mike Wirth,Chevron
+David Cordani,Cigna
+Jim Farley,Ford Motor
 Brian Moynihan,Bank of America
 Mary Barra,General Motors
-Jim Farley,Ford Motor
 Gail Boudreaux,Elevance Health
 Jane Fraser,Citigroup
-Mark Zuckerberg,Meta
 Sarah London,Centene
 Ted Decker,Home Depot
-Priscilla Almodovar,Fannie Mae
-Tim Wentworth,Walgreens
+Maryann Mannen,Marathon Petroleum
 Ron Sargent,Kroger
 Mark Lashier,Phillips 66
-Maryann Mannen,Marathon Petroleum
-Hans Vestberg,Verizon
-Jensen Huang,Nvidia
-David Solomon,Goldman Sachs
-Charles Scharf,Wells Fargo
+Priscilla Almodovar,Fannie Mae
+Tim Wentworth,Walgreens
 Lane Riggs,Valero Energy
-Brian Roberts,Comcast
-Jon Farney,State Farm
+Mark Zuckerberg,Meta
+Hans Vestberg,Verizon
 John Stankey,AT&T
+Brian Roberts,Comcast
+Charles Scharf,Wells Fargo
+David Solomon,Goldman Sachs
 Michael Hutchins,Freddie Mac
-Jim Rechtin,Humana
-Ted Pick,Morgan Stanley
 Michael Fiddelke,Target
-Philip Smith,StoneX
+Jim Rechtin,Humana
+Jon Farney,State Farm Insurance
 Elon Musk,Tesla
-Michael Dell,Dell Technologies
-Ramon Laguarta,PepsiCo
-Bob Iger,Walt Disney
-Carol Tomé,UPS
+Ted Pick,Morgan Stanley
 Joaquin Duato,Johnson & Johnson
-Rajesh Subramaniam,FedEx
 Juan Luciano,Archer Daniels Midland
+Ramon Laguarta,PepsiCo
+Carol Tomé,UPS
+Rajesh Subramaniam,FedEx
+Bob Iger,Walt Disney
+Michael Dell,Dell Technologies
+Marvin Ellison,Lowes
 Jon Moeller,Procter & Gamble
-Marvin Ellison,Lowe's
 Thomas Long,Energy Transfer
-Christopher Calio,RTX
+Kelly Ortberg,Boeing
 Susan Morris,Albertsons
 Kevin Hourican,Sysco
-Tricia Griffith,Progressive
-Stephen Squeri,American Express
+Christopher Calio,RTX
+Larry Culp,General Electric
 James Taiclet,Lockheed Martin
+Stephen Squeri,American Express
+Joe Creed,Caterpillar
 Michel Khalaf,MetLife
 Samuel Hazen,HCA Healthcare
-Andrew Sullivan,Prudential Financial
-Kelly Ortberg,Boeing
-Joe Creed,Caterpillar
-Robert M Davis,Merck
-Thomas J Wilson,Allstate
-Albert Bourla,Pfizer
+Tricia Griffith,Progressive Insurance
 Arvind Krishna,IBM
-Craig DeSanto,New York Life Insurance
-Ed Bastian,Delta Airlines
-Kevin Murphy,Publix Super Markets
-Kirt Walker,Nationwide
-Patrick Zammit,TD Synnex
-Scott Kirby,United Airlines
-Ryan Lance,ConocoPhillips
-Ernie Herrman,TJX
-Bob Michael,AbbVie
-AJ Jim Teague,Enterprise Products Partners
-Christopher Winfrey,Charter Communications
-George Holm,Performance Food
-Robert Isom,American Airlines
-Richard Fairbank,Capital One
-Chuck Robbins,Cisco Systems
-Enrique Lores,HP
-Donnie King,Tyson Foods
-Lip-Bu Tan,Intel
-Safra Catz,Oracle
-Hock Tan,Broadcom
 John May,Deere
-Elliott Hill,Nike
+Jensen Huang,Nvidia
+Philip Smith,StoneX
+Robert M Davis,Merck
+Ryan Lance,ConocoPhillips
+Albert Bourla,Pfizer
+Ed Bastian,Delta Air Lines
+Patrick Zammit,TD Synnex
+Kevin Murphy,Publix Super Markets
+Thomas J Wilson,Allstate
+Chuck Robbins,Cisco Systems
+Kirt Walker,Nationwide
+Christopher Winfrey,Charter Communications
+Bob Michael,AbbVie
+Craig DeSanto,New York Life Insurance
+Lip-Bu Tan,Intel
+Ernie Herrman,TJX
+Andrew Sullivan,Prudential Financial
+Enrique Lores,Hewlett Packard
+Scott Kirby,United Airlines
+George Holm,Performance Food
+Donnie King,Tyson Foods
+Robert Isom,American Airlines
 Timothy M Sweeney,Liberty Mutual Insurance
+Elliott Hill,Nike
+Safra Catz,Oracle
+AJ Jim Teague,Enterprise Products Partners
+Richard Fairbank,Capital One
 Wilfred Chiang,Plains GP
-Juan Andrade,USAA
-Chris Boerner,Bristol-Myers Squibb
-Paul Bay,Ingram Micro
-Phebe Novakovic,General Dynamics
-James Quincey,Coca-Cola
-Thasunda Brown Duckett,TIAA
-Alan Schnitzer,Travelers
-David Ricks,Eli Lilly
-Dara Khosrowshahi,Uber
-Roger Crandall,Mass Mutual
-Marc Casper,Thermo Fisher Scientific
-Gunjan Kedia,US Bancorp
 Michael Kasbar,World Kinect
-Robert Ford,Abbott Laboratories
-Corie Barry,Best Buy
-Tim Gerend,Northwestern Mutual
-Kathy Warden,Northrop Grumman
-Joe Zubretsky,Molina Healthcare
-Todd Vasos,Dollar General
-Robin Vince,Bank of New York
-David Zaslav,Warner Bros Discovery
+Peter Zaffino,American International Group
+James Quincey,The Coca-Cola Company
+Thasunda Brown Duckett,TIAA
 Jay Debertin,CHS
-Ted Sarandos,Netflix
-Cristiano Amon,Qualcomm
-Larry Culp,General Electric
+Chris Boerner,Bristol-Myers Squibb
+Corie Barry,Best Buy
+Marc Casper,Thermo Fisher Scientific
+Roger Crandall,Mass Mutual
+Juan Andrade,USAA
+Phebe Novakovic,General Dynamics
+Alan Schnitzer,Travelers Insurance
+David Zaslav,Warner Bros Discovery
+Gunjan Kedia,US Bancorp
+Robert Ford,Abbott Laboratories
+Kathy Warden,Northrop Grumman
+Tim Gerend,Northwestern Mutual
+Todd Vasos,Dollar General
+Matthew Lucey,PBF Energy
+Dara Khosrowshahi,Uber
 Vimal Kapur,Honeywell
-Marc Benioff,Salesforce
-Jacek Olczak,Philip Morris
-David Flitman,US Foods
-Paul Romanowski,DR Horton
-Bryan DeBoer,Lithia Motors
 Dirk Van de Put,Mondelez
 Brian Niccol,Starbucks
-Ryan McInerney,Visa
-Robert Sulentic,CBRE
-Jonathan Jaffe,Lennar
-Scott Strazik,GE Vernova
-William Demchak,PNC
-Jennifer Rumsey,Cummins
+Cristiano Amon,Qualcomm
+Hock Tan,Broadcom
+David Flitman,US Foods
+Paul Romanowski,DR Horton
+Jacek Olczak,Philip Morris
 Preston Feight,Paccar
-Robert Bradway,Amgen
-Matthew Lucey,PBF Energy
-Pat Geraghty,GuideWell Mutual
-Alex Chriss,PayPal
-Sandy Douglas,United Natural Foods
-Michael Creedon,Dollar Tree
+Marc Benioff,Salesforce
 Leon Topalian,Nucor
-Roger Penske,Penske Automotive
-Bom Kim,Coupang
-Antonio Neri,Hewlett Packard
-Harry Sideris,Duke Energy
-Joseph Bae,KKR
-Kevin Murphy,Ferguson Enterprises
-Brian Robbins,Paramount Global
 Michael Dastoor,Jabil
-Daniel O'Day,Gilead Sciences
-Tim Go,HF Sinclair
-William Nash,CarMax
-Michael Miebach,Mastercard
-Lawrence Coben,NRG Energy
-Sean Kerins,Arrow Electronics
-Lorenzo Simonelli,Baker Hughes
-Bob Jordan,Southwest Airlines
-Peter Zaffino,American International
-Gary Dickerson,Applied Materials
-Vicki Hollub,Occidental Petroleum
-Michael Manley,AutoNation
-Christopher Womack,Southern Company
-Christopher Swift,Hartford Insurance
-Marc Rowan,Apollo Global Management
-Rick Wurster,Charles Schwab
-Chris Kempczinski,McDonald's
-Carlos Abrams-Rivera,Kraft Heinz
-Lisa Su,Advanced Micro Devices
+Jonathan Jaffe,Lennar
+David Ricks,Eli Lilly
+Joe Zubretsky,Molina Healthcare
+Jennifer Rumsey,Cummins
+Robin Vince,Bank of New York Mellon
+Ted Sarandos,Netflix
 William H Rogers Jr,Truist Financial
-Kathleen Quirk,Freeport-McMoRan
-Sanjay Mehrotra,Micron Technology
-Anthony Capuano,Marriott International
-David Gitlin,Carrier Global
-John Ketchum,NextEra Energy
+Sean Kerins,Arrow Electronics
 William M Brown,3M
-John Doyle,Marsh & McLennan
-Patricia Poppe,PG&E
-Jim Vena,Union Pacific
-Brian Doubles,Synchrony Financial
+Ryan McInerney,Visa
+Marc Rowan,Apollo Global Management
+Tim Go,HF Sinclair
+Robert Sulentic,CBRE Group
+William Demchak,PNC Financial Services
+Bryan DeBoer,Lithia Motors
+William Nash,CarMax
+Brian Robbins,Paramount Global
+Michael Creedon,Dollar Tree
+Sandy Douglas,United Natural Foods
+Alex Chriss,PayPal
+Roger Penske,Penske Automotive
+Antonio Neri,Hewlett Packard Enterprise
+Harry Sideris,Duke Energy
+Vicki Hollub,Occidental Petroleum
+Lawrence Coben,NRG Energy
+Robert Bradway,Amgen
+John Ketchum,NextEra Energy
 Rainer Blair,Danaher
+Daniel O'Day,Gilead Sciences
+Michael Manley,AutoNation
+Carlos Abrams-Rivera,Kraft Heinz
 Philip Gallagher,Avnet
-Glenn Fogel,Booking s
-Ezra Yacob,EOG Resources
-Earl Austin,Quanta Services
-Michael Shepherd,Discover Financial
+Gary Dickerson,Applied Materials
+Bob Jordan,Southwest Airlines
+Rick Wurster,Charles Schwab
+Lorenzo Simonelli,Baker Hughes
+Chris Kempczinski,McDonalds
+Christopher Womack,Southern Company
+Michael Miebach,Mastercard
 Joseph Dominguez,Constellation Energy
-William Stengel II,Genuine Parts
-Christian Ulbrich,Jones Lang LaSalle
+Christopher Swift,The Hartford
+Patricia Poppe,PG&E
+Bom Kim,Coupang
+Ezra Yacob,EOG Resources
+Jim Vena,Union Pacific
+Matt Schroeder,Rite Aid
+Tony Spring,Macys
+Anthony Capuano,Marriott International
 Raymond E Scott,Lear Corporation
-Michael Rapino,Live Nation Entertainment
+William Stengel II,Genuine Parts
 Heidi Petz,Sherwin-Williams
-Calvin G Butler Jr,Exelon
-Tony Spring,Macy's
 Jeff Miller,Halliburton
-Kevin Lobo,Stryker
-Tony Cheng,Reinsurance of America
-Ronald P O'Hanley,State Street
+Kathleen Quirk,Freeport-McMoRan
+Michael Rapino,Live Nation Entertainment
+John Doyle,Marsh & McLennan
+Lisa Su,Advanced Micro Devices
+Frank Holding,First Citizens BancShares
 John Engel,WESCO International
-Pierce Norton II,Oneok
-Shantanu Narayen,Adobe
-Bill Westrate,American Family Insurance
-Chris Kubasik,L3Harris Technologies
-James Conroy,Ross Stores
-Christine Leahy,CDW
-Saumya Sutaria,Tenet Healthcare
-Bob Eddy,BJ's Wholesale Club
-Mike Lyons,Fiserv
-William Gifford,Altria
-Larry Fink,BlackRock
-Thomas Polen,Becton Dickinson
-Noel Wallace,Colgate-Palmolive
-Michael Hsu,Kimberly-Clark
-Daryl Kenningham,1 Automotive
-Jennifer Parmentier,Parker-Hannifin
-Jeffrey Harmening,General Mills
-Ravi Kumar S,Cognizant Technology
-William Fehrman,American Electric Power
-Peter Arduini,GE HealthCare Technologies
-Maria Black,Automatic Data Processing
+David Gitlin,Carrier Global
 Lourenco Goncalves,Cleveland-Cliffs
-Dan Amos,Aflac
+Jack Dorsey,Block Inc
+Calvin G Butler Jr,Exelon
+Joseph Bae,KKR
+Christine Leahy,CDW
+Glenn Fogel,Booking Holdings
+Brian Doubles,Synchrony Financial
+Earl Austin,Quanta Services
+Christian Ulbrich,Jones Lang LaSalle
+Saumya Sutaria,Tenet Healthcare
+William Gifford,Altria
+Kevin Lobo,Stryker
+Michael Hsu,Kimberly-Clark
+Jack Fusco,Cheniere Energy
+James Conroy,Ross Stores
+Anthony Smurfit,Smurfit Westrock
+Jeffrey Harmening,General Mills
 Mark Stewart,Goodyear Tire & Rubber
-Kevin Hogan,Corebridge Financial
-Thomas Palmer,Newmont
-Andrew Silvernail,International Paper
-Philip Daniele III,AutoZone
-Ellen Cooper,Lincoln National
-Ryan Marshall,PulteGroup
-James Cracchiolo,Ameriprise Financial
+Bob Eddy,BJs Wholesale Club
+Peter Arduini,GE HealthCare Technologies
+Noel Wallace,Colgate-Palmolive
+Marc Bitzer,Whirlpool
+Chris Kubasik,L3Harris Technologies
+Shantanu Narayen,Adobe
+Thomas Polen,Becton Dickinson
+Richard P Dealy,Pioneer Natural Resources
+Ravi Kumar S,Cognizant Technology Solutions
 Andrew Clyde,Murphy USA
-Jonas Prising,Manpower
-David Bozeman,CH Robinson Worldwide
-Timothy Knavish,PPG Industries
-Pedro Pizarro,Edison International
-Mark Millett,Steel Dynamics
-Benjamin Tisch,Loews
-Karsanbhai,Emerson Electric
+Mike Lyons,Fiserv
+Jennifer Parmentier,Parker-Hannifin
+William Fehrman,American Electric Power
+Andrew Silvernail,International Paper
+Jonas Prising,ManpowerGroup
 John Zillmer,Aramark
-William Hornbuckle,MGM Resorts International
-James Burke,Vistra
-David Hult,Asbury Automotive
-DG Macpherson,WW Grainger
-Eric Slifka,Global Partners
-Bob Pragada,Jacobs Solutions
+Mark Millett,Steel Dynamics
+Dan Amos,Aflac
+Tony Cheng,Reinsurance Group of America
+Karsanbhai,Emerson Electric
+Ronald P O'Hanley,State Street
+Timothy Knavish,PPG Industries
+David Burritt,United States Steel
+Maria Black,Automatic Data Processing
+Daryl Kenningham,Group 1 Automotive
+Robert Blue,Dominion Energy
+Larry Fink,BlackRock
+Pierce Norton II,Oneok
+David Bozeman,CH Robinson Worldwide
+Haviv Ilan,Texas Instruments
+Michael Bender,Kohls
+Philip Daniele III,AutoZone
+Timothy Archer,Lam Research
 Charles Magro,Corteva
 Rick Lanoha,Peter Kiewit Sons'
-Michael Mahoney,Boston Scientific
-Brad Beckham,O'Reilly Automotive
-Thomas Bell,Leidos
-Thomas Gayner,Markel Group
-Marc Bitzer,Whirlpool
-Andrew McMahon,Guardian Life
 Peter Jackson,Builders FirstSource
-Michael Rhodes,Ally Financial
-Matthew Meloy,Targa Resources
-James Breuer,Fluor
-Sasan Goodarzi,Intuit
-Troy Rudd,AECOM
-Penny Pennington,Edward Jones
-Michael Bender,Kohl's
-Beth Ford,Land O'Lakes
-Deanna Strable-Soethout,Principal Financial
-Robert Blue,Dominion Energy
-Martin Schroeter,Kyndryl s
-Jon Vander Ark,Republic Services
-Clay Gaspar,Devon Energy
-Christopher O'Herlihy,Illinois Tool Works
-Michael O'Grady,Northern Trust
-Jamie Whisnant,Auto-Owners Insurance
-Marc Miller,Universal Health Services
-Darryl Button,Pacific Life
+Martin Schroeter,Kyndryl
 Hamid Akhavan,EchoStar
-Christophe Beck,Ecolab
-Jack Fusco,Cheniere Energy
-John Wren,Omnicom
-Haviv Ilan,Texas Instruments
-David Burritt,United States Steel
-Stéphane de La Faverie,Estée Lauder
-Raul Nicholas Vargas Ochoa,Farmers Insurance Exchange
-Thibaut Mongon,Kenvue
-Ari Bousbib,IQVIA s
-Donald Allan,Stanley Black & Decker
-Timothy Cofer,Keurig Dr Pepper
-Matthew Flannery,United Rentals
-Timothy Cawley,Consolidated Edison
-Adam Norwitt,Amphenol
-Brent Shafer,Baxter International
-Kimberly Dang,Kinder Morgan
-Erik Nordstrom,Nordstrom
-Frank Holding,First Citizens BancShares
-Paul Shoukry,Raymond James Financial
-Timothy Archer,Lam Research
-Harry Lawton III,Tractor Supply
-Darren Rebelez,Casey's General Stores
-Scott Smith,Viatris
-James Blackledge,Mutual of Omaha Insurance
-Anthony Guzzi,EMCOR
-Joseph Hinrichs,CSX
-Justin Jude,LKQ
-Judith Marks,Otis Worldwide
-David Bruton Smith,Sonic Automotive
-Martina Cheung,S&P Global
-Leonard Schleifer,Regeneron Pharmaceuticals
-Joseph Fadool,BorgWarner
-Lachlan Murdoch,Fox
-Karla Lewis,Reliance
-John Barrett,Western & Southern Financial
-Scott Donnelly,Textron
-Ariane Gorin,Expedia
-Michael Nolan,Fidelity National Financial
-Ernest Garcia III,Carvana
-Raul Fernandez,DXC Technology
-Robert Berkley,WR Berkley
-René Jones,M&T Bank
-Lauren Hobart,Dick's Sporting Goods
-Robert Frenzel,Xcel Energy
-Timothy Spence,Fifth Third Bancorp
-Stephen Schwarzman,Blackstone
-Walker Martin,Sempra
-Timothy NeCastro,Erie Insurance
-Wendell Weeks,Corning
-Kathleen Johnson,Lumen Technologies
-Brian Tierney,FirstEnergy
-Adam Schechter,Labcorp
-Tiang Yew Tan,Western Digital
-Richard McKenney,Unum
-Javier Rodriguez,DaVita
-Steven Cahillane,Kellanova
-Stanley Bergman,Henry Schein
-Robert Sanchez,Ryder System
-Tim Hingtgen,Community Health Systems
+Bill Westrate,American Family Insurance
 Avigal Soreq,Delek US
-Gerardo Norcia,DTE Energy
-Mark Pearson,Equitable
-Lori Koch,DuPont
-Rich Steinmeier,LPL Financial
-Bruce Van Saun,Citizens Financial
-José Mas,MasTec
-Andrés Gluski,AES
-Kevin Kwilinski,Berry Global
-Mark George,Norfolk Southern
-Eduardo Menezes,Air Products & Chemicals
-Shelley Simpson,JB Hunt Transport Services
-Daniel Fisher,Ball
-Sean Connolly,Conagra Brands
-Stephen Steinour,Huntington Bancshares
-James Snee,Hormel Foods
-Joseph Nolan,Eversource Energy
-William Oplinger,Alcoa
-Andrew Marsh,Entergy
-Keith Demmings,Assurant
-Sumit Singh,Chewy
-Niraj Shah,Wayfair
-Joseph Ferraro,Avis Budget
-Jeffrey Sprecher,Intercontinental Exchange
-Benito Minicucci,Alaska Air
-Malcolm Wilson,GXO Logistics
-Eric Hansotia,AGCO
-Kathleen Mazzarella,Graybar Electric
-Gavin Hattersley,Molson Coors Beverage
-Patrick Gallagher,Arthur J Gallagher
-Christopher Kastner,Huntington Ingalls Industries
-Erik Fyrwald,International Flavors & Fragrances
-Ricardo Cardenas,Darden Restaurants
-Stephen Spray,Cincinnati Financial
-Scott Boatwright,Chipotle Mexican Grill
-Joey Wat,Yum China
-Robert Goldstein,Las Vegas Sands
-Kecia Steelman,Ulta Beauty
-Thomas Reeg,Caesars Entertainment
-Jon Rousseau,BrightSpring Health Services
+Beth Ford,Land O'Lakes
+Walker Martin,Sempra
+Eric Slifka,Global Partners
+DG Macpherson,WW Grainger
+Bob Pragada,Jacobs Solutions
+Pedro Pizarro,Edison International
+William Hornbuckle,MGM Resorts International
+Andrew McMahon,Guardian Life insurance
+Christopher O'Herlihy,Illinois Tool Works
+James Cracchiolo,Ameriprise Financial
+Ryan Marshall,PulteGroup
+Matthew Meloy,Targa Resources
+Michael Rhodes,Ally Financial
+Joseph Fadool,BorgWarner
+Stéphane de La Faverie,Estée Lauder
+Benjamin Tisch,Loews
+Brad Beckham,O'Reilly Automotive
+Thomas Gayner,Markel Group
+Donald Allan,Stanley Black & Decker
+Sanjay Mehrotra,Micron Technology
+James Breuer,Fluor
+Thomas Bell,Leidos
+Scott Smith,Viatris
+Kimberly Dang,Kinder Morgan
+Christophe Beck,Ecolab
+Brent Shafer,Baxter International
+Clay Gaspar,Devon Energy
+Steven Cahillane,Kellanova
+Raul Nicholas Vargas Ochoa,Farmers Insurance Exchange
+Darren Rebelez,Caseys General Stores
+Ari Bousbib,IQVIA
+Jon Vander Ark,Republic Services
+Lachlan Murdoch,Fox
+Timothy Cofer,Keurig Dr Pepper
+Karla Lewis,Reliance Inc
+David Hult,Asbury Automotive Group
+Darryl Button,Pacific Life
+James Burke,Vistra
+John Barrett,Western & Southern Financial
 William Krueger,Andersons
-Michele Buck,Hershey
-Christopher Nassetta,Hilton
+Erik Nordstrom,Nordstrom
+John Wren,Omnicom Group
+Stephanie Ferris,Fidelity National Information Services
+Timothy Cawley,Consolidated Edison
+Joseph Hinrichs,CSX
+Troy Rudd,AECOM
+Kathleen Johnson,Lumen Technologies
+Harry Lawton III,Tractor Supply
+Raul Fernandez,DXC Technology
+Eric Hansotia,AGCO
+David Bruton Smith,Sonic Automotive
+Sasan Goodarzi,Intuit
+Matthew Flannery,United Rentals
+Marc Miller,Universal Health Services
+Michael Mahoney,Boston Scientific
+Judith Marks,Otis Worldwide
+Robert Frenzel,Xcel Energy
+Penny Pennington,Edward Jones
+Daniel Fisher,Ball
+Justin Jude,LKQ
+James Blackledge,Mutual of Omaha
 Bruce Bodine,Mosaic
-Brian Chesky,Airbnb
-Kaes Van’t Hof,Diamondback Energy
-Steven Vondran,American Tower
-Reshma Kewalramani,Vertex Pharmaceuticals
-William McDermott,ServiceNow
-Brian Chambers,Owens Corning
-Teresa Rasmussen,Thrivent Financial for Lutherans
-Shane O'Kelly,Advance Auto Parts
-Douglas Yearley,Toll Brothers
-Jeffrey Lorberbaum,Mohawk Industries
-Gregory Brown,Motorola Solutions
-John Pfeifer,Oshkosh
-Tony Xu,DoorDash
-Edward Pesicka,Owens & Minor
-Eugene Bredow,NVR
-Philippe Krakowsky,Interpublic
-Horacio Rozanski,Booz Allen Hamilton
-Michael O’Sullivan,Burlington Stores
-Daniel Wall,Expeditors International of Washington
-Calvin McDonald,Lululemon athletica
-Stephanie Ferris,Fidelity National Information
-Rich Handler,Jefferies Financial
-Alan Armstrong,Williams
-Bracken Darrell,VF Corporation
-Mikael Bratt,Autoliv
-Rafael Santana,Westinghouse Air Brake Technologies
-Ralph LaRossa,Public Service Enterprise
-Jamie Iannone,Ebay
-Scott Richardson,Celanese
-Cameron Bready,Global Payments
-Robert Thomson,News Corp
-Robert Martin,THOR Industries
-David Rawlinson II,QVC
-Andrew Teno,Icahn Enterprises
-William Newlands,Constellation Brands
-James Davis,Quest Diagnostics
-Richard Wallace,KLA
-Julian Francis,QXO Building Products
-John Christmann IV,APA
-Gregory Roberts,A-Mark Precious Metals
-Christopher Viehbacher,Biogen
-Mick Beekhuizen,Campbell's
-Christopher Caldwell,Concentrix
-Todd Schneider,Cintas
-Tony Sarsam,SpartanNash
-John Venhuizen,Ace Hardware
+Scott Donnelly,Textron
+Adam Schechter,Labcorp Holdings
+Deanna Strable-Soethout,Principal Financial
+Leonard Schleifer,Regeneron Pharmaceuticals
+Paul Shoukry,Raymond James Financial
+Lauren Hobart,Dicks Sporting Goods
+Jamie Whisnant,Auto-Owners Insurance
+Ariane Gorin,Expedia
+Shelley Simpson,JB Hunt Transport Services
+René Jones,M&T Bank
+Gerardo Norcia,DTE Energy
+Andrés Gluski,AES
+Timothy Spence,Fifth Third Bancorp
+Eduardo Menezes,Air Products & Chemicals
+Wendell Weeks,Corning
+Anthony Guzzi,EMCOR Group
+Adam Norwitt,Amphenol
+Jean-Marc Gilson,Westlake Corporation
+Lori Koch,DuPont
+Derek Chang,Liberty Media
+Martina Cheung,S&P Global
+Tim Hingtgen,Community Health Systems
+Brian Tierney,FirstEnergy
+Rick McKenney,Unum Group
+Stanley Bergman,Henry Schein
+Tiang Yew Tan,Western Digital
 Vincent Roche,Analog Devices
-Mark Costa,Eastman Chemical
-Milan Galik,Interactive Brokers
-John Turner,Regions Financial
-Joanna Geraghty,JetBlue Airways
-Kristin Peck,Zoetis
-Christopher Gorman,KeyCorp
-Mark Bertolini,Oscar Health
+Sean Connolly,Conagra Brands
+Bruce Van Saun,Citizens Financial Group
+Mark George,Norfolk Southern
+Andrew Marsh,Entergy
+Robert Berkley,WR Berkley
+Javier Rodriguez,DaVita
+Michael O'Grady,Northern Trust
+James Snee,Hormel Foods
+Timothy J Donahue,Crown Holdings
+Joseph Ferraro,Avis Budget
+Niraj Shah,Wayfair
+José Mas,MasTec
+Joseph Nolan,Eversource Energy
+Thomas Palmer,Newmont
+Robert Sanchez,Ryder System
+Michael Nolan,Fidelity National Financial
+Gavin Hattersley,Molson Coors Beverage
+Thomas Reeg,Caesars Entertainment
+Ellen Cooper,Lincoln National
+Bracken Darrell,VF Corporation
+Erik Fyrwald,International Flavors & Fragrances
+Christopher Kastner,Huntington Ingalls Industries
+Shane O'Kelly,Advance Auto Parts
+Ralph LaRossa,Public Service Enterprise Group
+Kecia Steelman,Ulta Beauty
+Michele Buck,Hershey
+Sumit Singh,Chewy
+Steven Vondran,American Tower
+Jeffrey Lorberbaum,Mohawk Industries
+Keith Demmings,Assurant
+Robert Martin,Thor Industries
+Kathleen Mazzarella,Graybar Electric
+Joey Wat,Yum China
+Scott Richardson,Celanese
+David Rawlinson II,QVC
+Alan Armstrong,Williams
+Philippe Krakowsky,Interpublic Group
 Brendan McCracken,Ovintiv
+Andrew Teno,Icahn Enterprises
+Stephen Steinour,Huntington Bancshares
+Timothy NeCastro,Erie Insurance
+Ernest Garcia III,Carvana
+R Bruce McDonald,Dana Incorporated
+William Oplinger,Alcoa
+Mark Pearson,Equitable
+Richard Wallace,KLA
+Ricardo Cardenas,Darden Restaurants
+Mikael Bratt,Autoliv
+Benito Minicucci,Alaska Air
+Christopher Gorman,KeyCorp
+Robert Goldstein,Las Vegas Sands
+Edward Pesicka,Owens & Minor
+Christopher Nassetta,Hilton Worldwide
+Jamie Iannone,Ebay
+Patrick Gallagher,Arthur J Gallagher
+Rich Steinmeier,LPL Financial
+Stephen Spray,Cincinnati Financial
+Douglas Yearley,Toll Brothers
+Gregory Brown,Motorola Solutions
+Brian Chesky,Airbnb
+Jeffrey Sprecher,Intercontinental Exchange
+Robert Thomson,News Corp
+Scott Boatwright,Chipotle Mexican Grill
+Reshma Kewalramani,Vertex Pharmaceuticals
+Christopher Viehbacher,Biogen
+Malcolm Wilson,GXO Logistics
+Tony Sarsam,SpartanNash
+Michael O’Sullivan,Burlington Stores
+Teresa Rasmussen,Thrivent Financial for Lutherans
+Eugene Bredow,NVR
+Brian Chambers,Owens Corning
+Rafael Santana,Westinghouse Air Brake Technologies
+John Pfeifer,Oshkosh
+Cameron Bready,Global Payments
+Calvin McDonald,Lululemon athletica
+J Kent Masters,Albemarle
+Joanna Geraghty,JetBlue Airways
 Robert Steer,Seaboard
-Gil West,Hertz
-Robert Greenberg,Skechers
-Dennis Mathew,Altice
-Clay Williams,NOV
+William Newlands,Constellation Brands
 Michael Doss,Graphic Packaging
-Deon Stander,Avery Dennison
-Adaire Fox-Martin,Equinix
-Joyce Mullen,Insight Enterprises
-Jennifer Witz,Sirius XM
+Gil West,Hertz
+Malcolm C Roberts,FM Global
+Mick Beekhuizen,Campbell Soup
+Daniel Wall,Expeditors International of Washington
+Gregory Roberts,A-Mark Precious Metals
+Horacio Rozanski,Booz Allen Hamilton
+James Davis,Quest Diagnostics
+Dennis Mathew,Altice
 Stefan Larsson,PVH
-Jason P Wells,CenterPoint Energy
-Scott Lauber,WEC Energy
-Matthew Pine,Xylem
-Jennifer Johnson,Franklin Resources
-Vincent Sorgi,PPL
-Carl Eschenbach,Workday
-Richard Tobin,Dover
-Mark Kowlzan,Packaging Corp of America
-Scott Salmirs,ABM Industries
-Gary Guthart,Intuitive Surgical
-Carl Lindner lll,American Financial
+Mark Costa,Eastman Chemical
+Joyce Mullen,Insight Enterprises
+John Turner,Regions Financial
+Julian G Francis,Beacon Roofing Supply
 Blake Moret,Rockwell Automation
-Bryan Hanson,Solventum
-Craig Smiddy,Old Republic International
+Mike Speetzen,Polaris Inc
+William McDermott,ServiceNow
+Jure Sola,Sanmina
+Bob Flexon,UGI Utilities Inc
+Scott Lauber,WEC Energy
+Jon Rousseau,BrightSpring Health Services
+Todd Schneider,Cintas
+Peter Matt,Commercial Metals
+Robert D Lawler,Continental Resources
+Domenic Dell’Osso Jr,Expand Energy
+Jason P Wells,CenterPoint Energy
+H Michael Krimbill,NGL Energy Partners
+Tony Xu,DoorDash
+Clay Williams,NOV
+Kristin Peck,Zoetis
+Mark Smucker,JM Smucker
+Steve Sanghi,Microchip Technology
+Richard Tobin,Dover Corporation
+Kaes Van’t Hof,Diamondback Energy
+Deon Stander,Avery Dennison
+Vincent Sorgi,PPL
+Hassane El-Khoury,ON Semiconductor
+Arie Kotler,ARKO
+William Monteleone,Par Pacific
+John Christmann IV,APA
+Adaire Fox-Martin,Equinix
+Joseph M Otting,Flagstar Financial
+Mary Dillon,Foot Locker
+James Zallie,Ingredion
+Christopher Peterson,Newell Brands
+Scott Salmirs,ABM Industries
 Christopher Hilger,Securian Financial
 Hamid Moghadam,Prologis
-Mark Smucker,JM Smucker
-Sheryl Palmer,Taylor Morrison Home
-Mario Harik,XPO
-Heather Lavallee,Voya Financial
-Nikesh Arora,Palo Alto Networks
-Giordano Albertazzi,Vertiv s
-Shankh Mitra,Welltower
-Mary Dillon,Foot Locker
-William Monteleone,Par Pacific
-Kevin Stein,TransDigm
-Peter Matt,Commercial Metals
-Robert Vitale,Post s
+Stephen Schwarzman,Blackstone
+Robert Greenberg,Skechers USA
 Keith Allman,Masco
 Rusty Rush,Rush Enterprises
-Stuart Bradie,KBR
-Jack Sinclair,Sprouts Farmers Market
-Laura Alber,Williams-Sonoma
-Ivan Tornos,Zimmer Biomet s
-John Mengucci,CACI International
-Steve Sanghi,Microchip Technology
-Albert Nahmad,Watsco
-Christopher Peterson,Newell Brands
-Arie Kotler,ARKO
-Jure Sola,Sanmina
-Andrew Wilson,Electronic Arts
-David Gibbs,Yum Brands
-Daniel Florness,Fastenal
-Garrick Rochow,CMS Energy
-Rodney Sacks,Monster Beverage
-Mark Shapiro,Endeavor
-Toni Townes-Whitley,Science Applications International
-Mark Witkowski,Core & Main
-John Plant,Howmet Aerospace
-James Zallie,Ingredion
+Jennifer Johnson,Franklin Resources
+Gerry P Smith,ODP Business Solutions
+Carl Lindner lll,American Financial
+Mark Kowlzan,Packaging Corp of America
 Thomas Hill,Vulcan Materials
+Milan Galik,Interactive Brokers
+Laura Alber,Williams-Sonoma
+Mario Harik,XPO
+Devin Stockfish,Weyerhaeuser
+Thomas J McInerney,Genworth Financial
+Garrick Rochow,CMS Energy
+Toni Townes-Whitley,Science Applications International
+Rich Handler,Jefferies Financial
+Daniel Heaf,Bath & Body Works
+Andrew Wilson,Electronic Arts
+Sheryl Palmer,Taylor Morrison Home
+Ivan Tornos,Zimmer Biomet
+Linda Rendle,Clorox
+Matthew Pine,Xylem
+Heather Lavallee,Voya Financial
+Daniel Florness,Fastenal
+Albert Nahmad,Watsco
+Carl Eschenbach,Workday
+Craig Smiddy,Old Republic International
+Frank C Sullivan,RPM International
+Matthew Missad,UFP Industries
+Martin J Lyons,Ameren
+Adam W Miller,Knight Swift Transportation
+Rodney Sacks,Monster Beverage
+Gary Guthart,Intuitive Surgical
+Charles Liang,Super Micro Computer
+Christopher Caldwell,Concentrix
+Gordon J Hardie,O-I Glass
+David Gibbs,Yum Brands
+Steve Henry,Domtar
+Chuck Treadway,CommScope
+Rob Vitale,Post Holdings
+Steven J Moskowitz,Crown Castle
+Emmanuel Ligner,Avantor
+Stuart Bradie,KBR
+Carrie Wheeler,Opendoor Technologies
+Russell Becker,APi Group
+Toby Rice,EQT
+Jesse Arenivas,EnLink Midstream
+Nikesh Arora,Palo Alto Networks
+Steven Bandrowczak,Xerox
+Vicente Reynal,Ingersoll Rand
+William T Dillard II,Dillards
+C Howard Nye,Martin Marietta Materials
+Giordano Albertazzi,Vertiv
+Stephane Bancel,Moderna
+Nate R Jorgensen,Boise Cascade
+Jack Sinclair,Sprouts Farmers Market
+Padraig McDonnell,Agilent Technologies
+Kenneth T Lane,Olin
+Randall C Stuewe,Darling Ingredients
+R Howard Coker,Sonoco Products
+John Mengucci,CACI International
+Mark Witkowski,Core & Main
+Lee M Tillman,Marathon Oil
+Mark Hoplamazian,Hyatt Hotels
+David S Chernow,Select Medical
+Brendan M Foley,McCormick & Company
+Joanne Crevoiserat,Tapestry
+James Quincey,The Coca-Cola Company
+John Plant,Howmet Aerospace
+Shankh Mitra,Welltower
+W Anthony Will,CF Industries
+David A Zapico,Ametek
+Kevin Stein,TransDigm
+Craig Billings,Wynn Resorts
+William J Way,Southwestern Energy
+Giel Rutten,Amkor Technology
+Paul Sarvadi,Insperity
+Donald Zurbay,Patterson Companies Inc
+Rob Sharps,T Rowe Price
+Patrice Louvet,Ralph Lauren
+Jeffrey Mezger,KB Home
+David M Foulkes,Brunswick
+M Keith Waddell,Robert Half
+Jay Snowden,PENN Entertainment
+George Kurian,NetApp
+Kevin Ali,Organon
+Joel D Anderson,Petco Health and Wellness
+Louis V Pinkham,Regal Rexnord
+Jay Geldmacher,Resideo Technologies
+Marcus Lemonis,Camping World
+Peter R Huntsman,Huntsman
+Hillary Super,Victorias Secret
+Michelle Gass,Levi Strauss
+Neil Hunn,Roper Technologies
+Steven P Lawrence,Academy Sports and Outdoors
+Phillippe Lord,Meritage Homes
+David C Dauch,American Axle & Manufacturing
+Olumide Soroye,Fortive
+Adena Friedman,Nasdaq
+Tim Gokey,Broadridge Financial Solutions
+Patrick M Shanahan,Spirit AeroSystems
+Robert Kyncl,Warner Music Group
+Denise Dignam,Chemours
+Jim DeVries,ADT
+Bernard Zovighian,Edwards Lifesciences
+Mark E Seaton,First American Financial
+John C Roche,Hanover Insurance Group
+Adam J Greenlee,Silgan
+Jayne Hrdlicka,Endeavor Group
+Robert Fauber,Moodys
+Thomas E Jorden,Coterra Energy
+Eugene A Hall,Gartner
+Kevin Plank,Under Armour
+James W Lanning,Ingles Markets
+Matthew T Farrell,Church & Dwight
+Kevin M Freeman,Old Dominion Freight Line
+Joe Shoen,U-Haul
+Mark Bertolini,Oscar Health
+Jayshree Ullal,Arista Networks
+Sassine Ghazi,Synopsys
+Jochen Zeitz,Harley-Davidson
+Nick Jeffery,Frontier Communications
+Thomas Edward McCormick,Primoris Services
+D Christian Koch,Carlisle Companies
+David E Simon,Simon Property Group
+Stephen Bratspies,Hanesbrands
+Ryan M. Schneider,Anywhere Real Estate Inc
+George Bobb III,Teledyne Technologies
+Terrence A Duffy,CME Group
+Rami Rahim,Juniper Networks
+Sue Nabi,Coty
+Peter D Arvan,Pool Corporation
+David Campbell,Evergy
+Matthew J Murphy,Marvell Technology
+Lloyd Yates,NiSource
+William C Stone,SS&C Technologies
+Mark Rourke,Schneider National
+Andrew Anagnost,Autodesk
+Dustin Semach,Sealed Air Corporation
+William L Meaney,Iron Mountain
+Andy P Power,Digital Realty Trust
+Satish Dhanasekaran,Keysight Technologies
+Frank M Svoboda,Globe Life
+Carey A Smith,Parsons
+Ynon Kreiz,Mattel
+Karen S Haller,Southwest Gas
+Terrance Williams,TruStage
+Eric W Gerstenberg,Clean Harbors
+Gunner Smith,Cornerstone Building Brands
+Gerben W Bakker,Hubbell
+Dave Davis,Spirit Airlines
+Michael J Smith,Lamb Weston
+Strauss Zelnick,Take-Two Interactive Software
+John C Turner Jr,GMS
+David M O'Malley,Penn Mutual Life Insurance
+Frank A Lonegro,Landstar System
+James F Risoleo,Host Hotels & Resorts
+Ken Xie,Fortinet
+Doug Shulman,OneMain
+Ryan Cohen,GameStop
+Mark W Begor,Equifax
+Jay L Schottenstein,American Eagle Outfitters
+Curtis C Farmer,Comerica
+Ole Rosgaard,Greif
+Brian E Lane,Comfort Systems USA
+Robert M Buck,TopBuild
+Ralph Andretta,Bread Financial
+Jim Anderson,Coherent
+Walter C. D. Carlson,Telephone & Data Systems
+Ronald Kruszewski,Stifel Financial
+Richard Hayne,Urban Outfitters
+Simon Meester,Terex
+Edward J Lehner,Ryerson Holding
+Nicholas T Pinchuk,Snap-on
+Ryals McMullian,Flowers Foods
+D Bryan Jordan,First Horizon
+John B Gibson,Paychex
+Chris Cocks,Hasbro
+Pete McPartland,Sentry Insurance Group
+Michael Arougheti,Ares Management
+Alok Maskara,Lennox International
+James C Grech,Peabody Energy
+Joseph P Lacher Jr,Kemper
+Perry A Sook,Nexstar Media Group
+Wade Davis,TelevisaUnivision
+Scott L Thompson,Tempur Sealy International
+Mike Simonds,TriNet Group
+B Andrew Rose,Worthington Enterprises
+Bruce L Caswell,Maximus
+Robert L Reffkin,Compass
+Mark Eubanks,Brinks Company
+Peter Quigley,Kelly Services inc
+David L Yowan,Navient
+Mary E Kipp,Puget Sound Energy
+Adam Aron,AMC Entertainment
+Mark J Tarr,Encompass Health
+Liam K Griffin,Skyworks Solutions
+Richard G Kyle,Timken
+Ron Gusek,Liberty Energy
+John E Geller Jr,Marriott Vacations Worldwide
+Karl G. Glassman,Leggett & Platt
+Bruce K Thorn,Big Lots
+Jonathan H Weis,Weis Markets
+Jeffrey B Guldner,Pinnacle West Capital
+Arkadiy Dobkin,EPAM Systems
+Paul M Rady,Antero Resources
+Michael Spanos,Bloomin Brands
+Nicole A Kivisto,MDU Resources Group
+Gerald L Morgan,Texas Roadhouse
+Gabriel Tirador,Mercury General
+Nicholas I Fink,Fortune Brands Innovations
+Paul E Burdiss,Zions Bancorp
+William J Christensen,JELD-WEN Holding
+Evan Spiegel,Snap Inc
+Bill Burns,Zebra Technologies
+Steven Sell,Agilon Health
+Richard M Olson,Toro Company
+Eric S Yuan,Zoom Video Communications
+Dan L Batrack,Tetra Tech
+Joseph D Russell Jr,Public Storage
+Jacob Thaysen,Illumina inc
+Debra A Cafaro,Ventas inc
+Pierre R Brondeau,FMC Corporation
+Judy R McReynolds,ArcBest
+Russell J Weiner,Dominos Pizza inc
+Theodore S Hanson,ASGN
+RJ Scaringe,Rivian Automotive
+Jeffrey N Simmons,Elanco Animal Health
+Tim O Shaughnessy,Graham Holdings Company
+Thomas V Taylor,Floor & Decor
+Neil A Schrimsher,Applied Industrial Technologies
+Robert E Price,PriceSmart
+John David Risher,Lyft
+Gary B Smith,Ciena
+Joey Levin,IAC
+Jim Jacobs,Country Financial
+Devin B McGranahan,Western Union
+R Scott Rowe,Flowserve
+Kenneth A Vecchione,Western Alliance Bancorp
+John C Rademacher,Option Care Health
+Doug Black,SiteOne Landscape Supply
+Oliver G Brewer III,Topgolf Callaway Brands
+Glenn Sanford,eXp World
+Fran Horowitz,Abercrombie & Fitch
+Kevin Akers,Atmos Energy
+Alessandro Maselli,Catalent
+J Powell Brown,Brown & Brown
+Aman Bhutani,GoDaddy
+John C. Griffith,American Water Works
+John J Marchioni,Selective Insurance Group
+Lawson E Whiting,Brown-Forman
+Dave Peacock,Advantage Solutions
+Mick Farrell,ResMed
+Kamal Hathi,Splunk
+Todd Kelsey,Plexus
+Phillip D Yeager,Hub Group
+Steven B Hedlund,Lincoln Electric
+Timothy C Oliver,NCR Atleos
+Bruce Fleming,Calumet
+Daniel S. Peyovich,Dycom Industries
+Avner M Applbaum,Valmont Industries
+Kimberly A Fields,ATI inc
+Khozema Z Shipchandler,Twilio
+Gary C Bhojwani,CNO Financial Group
+William Andrew Hendricks Jr,Patterson-UTI Energy
+Kevin D Hochman,Brinker International
+James C Foster,Charles River Laboratories International
+Rajiv K Prasad,Hyster-Yale
+Eric T Steigerwalt,Brighthouse Financial
+Thomas L Ryan,Service Corp International
+Charles M Nifong Jr,CrossAmerica Partners
+Anirudh Devgan,Cadence
+Andi Owen,MillerKnoll
+Sumit Roy,Realty Income
+Timothy John Fitzgerald,Middleby
+Robert H Schottenstein,M/I Homes
+Stephen P MacMillan,Hologic
+Lisa M Barton,Alliant Energy
+Aaron P Jagdfeld,Generac
+Erik Gershwind,MSC Industrial Direct
+Varun Krishna,Rocket Companies
+Fahmi Karam,Upbound Group
+NADominic Ng,East West Bancorp
+Mark Wang,Hilton Grand Vacations
+Robert J Sheedy Jr,Grocery Outlet Holding
+Simon D Campion,Dentsply Sirona
+Jeremy Wensinger,V2X
+Andrew Rees,Crocs
+David M Maura,Spectrum Brands
+Sachin S Lawande,Visteon
+Neil M Ashe,Acuity Brands
+Lorie L Tekorius,Greenbrier
+John R Ciulla,Webster Financial
+Sean D Keohane,Cabot Corporation
+Drew M Wilkerson,RXO inc
+Daniel E Brown,Chord Energy
+Javier D Ferrer Fernandez,Popular inc
+Olivier Rabiller,Garrett Motion inc
+Ronald N Tutor,Tutor Perini Corporation
+Jeff Liaw,Copart
+Aman Narang,Toast inc
+Joseph M Hogan,Align Technology
+Kevin J Wheeler,A O Smith
+Christopher A Cartwright,TransUnion
+James Kelly,NCR Voyix
+Tom Leighton,Akamai Technologies
+Robert G Painter,Trimble
+Tony Helton,Medical Mutual of Ohio
+Caroline S Grace,AMN Healthcare Services
+Patrick Kaltenbach,Mettler-Toledo International
+Michael L Baur,ScanSource
+Jason Lippert,LCI Industries
+Fredric J Tomczyk,Cboe Global Markets
+Octavio Marquez,Diebold Nixdorf
+Sivasankaran Somasundaram,ChampionX
+Ronald F Clarke,Corpay
+Robert W Pittman,iHeartMedia
+Patrick Zalupski,Dream Finders Homes
+Keith E Smith,Boyd Gaming
+Mehran Assadi,NLV Financial
+Barry R Port,Ensign Group
+Denise A Paulonis,Sally Beauty
+Clifford A Skelton,Conduent
+Jean-Michel Ribieras,Sylvamo
+Douglas F Bauer,Tri Pointe Homes
+Shawn O'Connell,EnerSys
+Bill Meury,Incyte
+Dale Francescon,Century Communities
+Michael Nierenberg,Rithm Capital
+Michael J Brown,Euronet Worldwide
+Scott Seu,Hawaiian Electric Industries
+Jason D Robins,DraftKings
+Jonathan J Mazelsky,IDEXX Laboratories
+Richard S Swartz,MYR Group
+Stefano Caroti,Deckers Outdoor
+Kevin R Sayer,DexCom
+John T C Lee,MKS Instruments
+Edward B Pitoniak,VICI Properties
+Albert White III,Cooper Cos
+Barry L Biffle,Frontier Airlines
+Robert A Bruggeworth,Qorvo
+Winnie Park,Five Below
+Steven Oakland,TreeHouse Foods
+James S Hagedorn,Scotts Miracle-Gro
+Michael Cannon-Brookes,Atlassian
+Bertrand Loy,Entegris
+William E Waltz,Atkore
+Celeste B Mastin,H B Fuller
+Kyle T Larkin,Granite Construction
+Michael J Happe,Winnebago Industries
+Steven H Gunby,FTI Consulting
+Stephan B Tanda,AptarGroup
+Timothy P Boyle,Columbia Sportswear
+Anthony J Wood,Roku
+M Christopher Doyle,Civitas Resources
+Jeffrey J Jones II,H&R Block
+Andy Eidson,Alpha Metallurgical Resources
+Andy L Nemeth,Patrick Industries
+Roger W Jenkins,Murphy Oil
+Kevin S Blair,Synovus Financial
+Julie Felss Masino,Cracker Barrel Old Country Store
+David M Overton,Cheesecake Factory
+Nick DeIuliis,CNX Resources
+Christopher Pappas,Chefs Warehouse
+Tod Carpenter,Donaldson Company
+Gregory L Christopher,Mueller Industries
+Rob Saltiel,MRC Global
+Jillian C Evanko,Chart Industries
+Dave Guilmette,Alight Solutions
+Joel Smejkal,Vishay Intertechnology
+Dennis Degner,Range Resources
+Ira D Robbins,Valley National Bancorp
+Bernard Kim,Match Group
+Vincent Pilette,Gen Digital
+Timothy S Crane,Wintrust Financial
+Pat Roche,Moog inc
+Mark R Widmar,First Solar
+Niko Lahanas,Central Garden & Pet
+Chris Osowski,Green Plains inc
+Derek J Leathers,Werner Enterprises
+Adam Foroughi,AppLovin
+Luca Savi,ITT
+Lawrence H Silber,Herc Rentals
+Hilton H Howell Jr,Gray Television
+Eric D Ashleman,IDEX
+Owen D Thomas,Boston Properties
+Kurt Wolf,Pitney Bowes
+Sara E Armbruster,Steelcase
+Charles D. Young,Sun Communities
+Suzanne Foster,AdaptHealth
+Grant E Sims,Genesis Energy
+Laura Prieskorn,Jackson Financial
+Rick L Wessel,FirstCash
+Sherman Miller,Cal-Maine Foods
+Paul A Lang,Arch Resources
+Ashish K Khandpur,Avient
+Shyam K Reddy,BlueLinx
+Christopher S Ripley,Sinclair
+Stacy Kymes,BOK Financial
+James H Walter,Permian Resources
+Jason Murray,PACS Group
+Brian Armstrong,Coinbase Global
+Oscar K Brown,Western Midstream Partners
+Nicholas R Lower,Federated Mutual Insurance
+Morris Goldfarb,G-III Apparel Group
+Mark D Morelli,Vontier
+Matthew J Cox,Matson inc
+David W Grzebinski,Kirby Corporation
+Keith A Harvey,Kaiser Aluminum
+Eric Nyman,Vista Outdoor
+Doug Howe,Designer Brands
+Jerry E Gahlhoff Jr,Rollins inc
+D Scott Barbour,Advanced Drainage Systems
+Sean Gamble,Cinemark
+George Kurtz,CrowdStrike
+Bill Ready,Pinterest
+Fidji Simo,Instacart
+Kimberly K Ryan,Hillenbrand
+David S Graziosi,Allison Transmission
+Gary G Friedman,Restoration Hardware
+Lucinda M Baier,Brookdale Senior Living
+Brian J Blaser,QuidelOrtho
+E Jean Savage,Trinity Industries
+Liam J Kelly,Teleflex
+Laurans A Mendelson,HEICO
+Frank H Laukien,Bruker
+Harvey M Schwartz,Carlyle Group
+Mark S LaVigne,Energizer
+Joel Quadracci,Quad/Graphics
+Amar Maletira,Rackspace Technology
+Udit Batra,Waters Corporation
+Eric M Green,West Pharmaceutical Services
+Doug Palladini,Carters inc
+G Mike Mikan,NeueHealth
+Russell "Chip" Childs,SkyWest
+Christopher H Hunter,Acadia Healthcare
+Prahlad Singh,Revvity
+Maria M Pope,Portland General Electric
+Charles Chip Blankenship,Woodward inc
+Mike Steib,TEGNA
+Kurt J Ekert,Sabre Corporation
+Matt Wilson,Light & Wonder
+Rob Katz,Vail Resorts
+Schnitzer Steel Industries,Radius Recycling
+David A Spector,PennyMac Financial Services
+Frederick J Holzgrefe III,Saia inc
+Mark J Parrell,Equity Residential
+John W Lindsay,Helmerich & Payne
+Gary D Burnison,Korn Ferry
+Timothy J McGrath,PC Connection
+Lynn M Bamford,Curtiss-Wright
+Jonathan W Witter,Sallie Mae
+Jeff Benck,Benchmark Electronics
+Charles H Giancarlo,Pure Storage
+Brian R Gray,Knife River Corporation
+Jay Schmidt,Caleres inc
+Dale Asplund,BrightView Holdings
+Jeffrey S Edwards,Cooper-Standard
+Glenn J Williams,Primerica
+Francois Locoh-Donou,F5
+Joseph Wm Foran,Matador Resources
+Sridhar Ramaswamy,Snowflake inc
+Mark D Dankberg,Viasat
+Francisco J Leon,California Resources
+Peter Stern,Peloton
+David Baszucki,Roblox
+Jeffrey W Edwards,Installed Building Products
+Clark Lauritzen,First National of Nebraska
+Carlos Alberini,Guess inc
+Shyam P Kambeyanda,ESAB
+Edmund Shallcross III,Amica Mutual Insurance
+Benjamin W Schall,AvalonBay Communities
+Allan C Thygesen,DocuSign
+Bryan J Knutson,Titan Machinery
+Heath Sampson,ModivCare
+Ara K Hovnanian,Hovnanian Enterprises
+Joshua G Silverman,Etsy
+Kevin Roycraft,Adams Resources & Energy
+J Eric Evans,Surgery Partners
+Clint E Stein,Columbia Banking System
+Lee M Shavel,Verisk
+Dave Banyard Jr,MasterBrand
+Peter R Ingram,Hawaiian Airlines inc
+Kristin A Dolan,AMC Networks
+Brendan T Cavanagh,SBA Communications
+George F Chappelle Jr,Americold Realty Trust
+Thomas E Gottwald,NewMarket Corporation
+Thomas J Baltimore Jr,Park Hotels & Resorts
+Peter M Moglia,Alexandria Real Estate Equities
+Ronald J Kramer,Griffon Corporation
+John L Plueger,Air Lease
+Jennifer F Scanlon,UL Solutions
+Greg Smith,Teradyne
+Sean Trauschke,OGE Energy
+Norman D Schwartz,Bio-Rad Laboratories
+Scott Doyle,Spire inc
+Michael E Reed,Gannett
+Cindy J Miller,Stericycle
+Phillip D Green,Cullen Frost Bankers
+Joseph D Margolis,Extra Space Storage
+Mark A Skonieczny,REV Group
+Ladd Wilks,ProFrac Holding
+Sundaram Nagarajan,Nordson
+Anne P Noonan,Summit Materials
+Lori Flees,Valvoline inc
+Scott H Baxter,Kontoor Brands
+Tim Larson,Skyline Champion
+Chuck Divita,Teladoc Health
+W Bradley Southern,Louisiana-Pacific Corporation
+George C Freeman III,Universal Corporation
+James A Brock,Consol Energy
+Robert Antokol,Playtika Holding
+Joe Craft,Alliance Resource Partners
+Paul Keel,Envista
+Jared Isaacman,Shift4 Payments
+Mark Mac McFarland,Talen Energy
+Tony R Thene,Carpenter Technology
+Melissa D Smith,WEX
+James Jim C Ryan III,Old National Bancorp
+Peter J Federico,AGNC Investment
+Brent L Yeagy,Wabash National
+Henry A Fernandez,MSCI
+Mark Penn,Stagwell
+Julie Schertell,Mativ
+Ashish Chand,Belden
+Greg Anderson,Allegiant Travel Company
+Drew Houston,Dropbox
+Kevin T Conroy,Exact Sciences
+Rex D Geveden,BWX Technologies
+Scott R Wells,Clear Channel Outdoor Hldgs
