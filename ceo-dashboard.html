@@ -70,7 +70,9 @@
           <button id="trendNext" class="px-2 py-1 border rounded disabled:opacity-40" title="Newer 30 days">→</button>
         </div>
       </div>
-      <p id="trendHint" class="text-sm text-slate-500 mb-2">Tip: select <b>1 CEO</b> to display trend.</p>
+      <p id="trendHint" class="text-sm text-slate-500 mb-2">
+        Select <b>1 CEO</b> to display their trend. When none is selected, the <b>INDEX (average)</b> is shown.
+      </p>
       <div id="trendWrap">
         <canvas id="trendChart"></canvas>
       </div>
@@ -628,6 +630,8 @@
   if(trendNext){ trendNext.addEventListener('click', ()=>{ trendPage = Math.max(0, trendPage - 1); updateTrend(); }); }
 
   function allDatesSorted(){ return Array.from(new Set(allRows.map(r=>r.date))).sort(); }
+
+  // Build per-date series for a single CEO
   function seriesForBrand(brand){
     const dates = allDatesSorted();
     const byDate = new Map();
@@ -646,22 +650,46 @@
     }
     return { dates, pos, neu, neg };
   }
+
+  // NEW: Build INDEX (average across all CEOs) series
+  function seriesForIndex(){
+    const dates = allDatesSorted();
+    const pos = [], neu = [], neg = [];
+    for(const d of dates){
+      const rows = allRows.filter(r => r.date === d);
+      const tot = rows.reduce((s,r)=> s + (r.total||0), 0);
+      const sp  = rows.reduce((s,r)=> s + (r.positive||0), 0);
+      const sn  = rows.reduce((s,r)=> s + (r.neutral||0), 0);
+      const sg  = rows.reduce((s,r)=> s + (r.negative||0), 0);
+      if(viewMode === 'percent'){
+        const f = (x)=> tot ? (x/tot*100) : 0;
+        pos.push(+f(sp).toFixed(1));
+        neu.push(+f(sn).toFixed(1));
+        neg.push(+f(sg).toFixed(1));
+      }else{
+        // counts mode: show totals across the cohort
+        pos.push(sp); neu.push(sn); neg.push(sg);
+      }
+    }
+    return { dates, pos, neu, neg };
+  }
+
   function updateTrend(){
     const selCount = selected.size;
+    let mode = 'index'; // default to INDEX when nothing selected
     let brand = null;
-    if(selCount === 1){ brand = Array.from(selected)[0]; }
-    else if(selCount === 0 && currentRows.length){ brand = currentRows[0].brand; }
-    else {
-      trendHint.classList.remove('hidden');
-      trendInfo.textContent = '';
-      if(trendRange) trendRange.textContent = '';
-      if(trendChart){ trendChart.destroy(); trendChart = null; }
-      return;
+
+    if(selCount === 1){
+      mode = 'brand';
+      brand = Array.from(selected)[0];
     }
 
-    if(brand !== trendBrand){ trendPage = 0; }
-    trendHint.classList.add('hidden');
-    const full = seriesForBrand(brand);
+    // Reset paging if target changed
+    const targetKey = mode === 'brand' ? `brand:${brand}` : 'index';
+    if(targetKey !== trendBrand){ trendPage = 0; }
+    trendBrand = targetKey;
+
+    const full = (mode === 'brand') ? seriesForBrand(brand) : seriesForIndex();
 
     const total = full.dates.length;
     const W = TREND_WINDOW;
@@ -675,8 +703,8 @@
     const neu = full.neu.slice(start, end);
     const neg = full.neg.slice(start, end);
 
-    trendBrand = brand;
-    trendInfo.textContent = `CEO: ${brand}`;
+    trendHint.classList.add('hidden');
+    trendInfo.textContent = (mode === 'brand') ? `CEO: ${brand}` : 'INDEX: Average across CEOs';
     if(trendRange){
       const rangeText = labels.length ? `  |  DATE: ${labels[0]} → ${labels[labels.length-1]}` : '';
       trendRange.textContent = rangeText;
@@ -784,8 +812,8 @@
   });
   saveLocalBtn.addEventListener('click', saveSelectionLocal);
   exportCsvBtn.addEventListener('click', exportSelectionCsv);
-  modeCountsBtn.addEventListener('click', ()=>{ viewMode='counts';  localStorage.setItem('view_mode_ceo','counts');  updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); });
-  modePercentBtn.addEventListener('click', ()=>{ viewMode='percent'; localStorage.setItem('view_mode_ceo','percent'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); });
+  modeCountsBtn.addEventListener('click', ()=>{ viewMode='counts';  localStorage.setItem('view_mode_ceo','counts');  updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); updateTrend(); });
+  modePercentBtn.addEventListener('click', ()=>{ viewMode='percent'; localStorage.setItem('view_mode_ceo','percent'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); updateTrend(); });
 
   // Go!
   loadCountsCsv();
