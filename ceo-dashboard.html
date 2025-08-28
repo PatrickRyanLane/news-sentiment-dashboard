@@ -510,33 +510,44 @@
       </div>`;
   }
 
-  // ===== Boards drilldown =====
-  async function showBoards(ceo){
-    await loadBoards();
-    const key = String(ceo || '').trim().toLowerCase();
-    const rows = boardsByCeo.get(key) || [];
+// ==== Boards drilldown ====
+async function showBoards(ceo){
+  await loadBoards();
+  const key  = String(ceo || '').trim().toLowerCase();
+  const rows = boardsByCeo.get(key) || [];
 
-    modalTitle.textContent = `${ceo} — Active Boards`;
-    modalSubtitle.textContent = '';
+  modalTitle.textContent = `${ceo} — Active Boards`;
+  modalSubtitle.textContent = '';
+
+  if (!rows.length){
+    modalBody.innerHTML = `<p class="text-sm text-slate-600">No board memberships found for ${escapeHtml(ceo)}.</p>`;
     openModal();
-
-    if(!rows.length){
-      modalBody.innerHTML = `<p class="text-sm text-slate-600">No board memberships found for ${escapeHtml(ceo)}.</p>`;
-      return;
-    }
-
-    modalBody.innerHTML = `
-      <div class="space-y-4">
-        ${rows.map((r,i)=>`
-          <div class="p-3 border rounded-xl">
-            <div class="font-semibold">${escapeHtml(r.company || (r.domain || 'Board'))}</div>
-            ${r.domain ? `<div class="text-xs text-slate-500">${escapeHtml(r.domain)}</div>` : ''}
-            ${r.url ? `<a class="block mt-1 underline" target="_blank" rel="noopener" href="${r.url}">${escapeHtml(r.url)}</a>` : ''}
-          </div>
-        `).join('\n')}
-      </div>
-    `;
+    return;
   }
+
+  modalBody.innerHTML = `
+    <div class="space-y-4">
+      ${rows.map(r => {
+        const url = r.url || '#';
+        const domain = r.domain || extractDomain(url);
+        return `
+          <div class="p-4 border rounded-xl bg-white">
+            <div class="text-lg font-semibold mb-1">${escapeHtml(domain)}</div>
+            <a href="${url}" target="_blank" rel="noopener"
+               class="block text-sm underline break-all">${escapeHtml(url)}</a>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  openModal();
+}
+
+// helper: safe domain from URL (keep once in your file)
+function extractDomain(url){
+  try { return new URL(url).hostname; } catch { return ''; }
+}
+
 
   // ===== Trend (index average default) =====
   function allDatesSorted(){ return Array.from(new Set(allRows.map(r=>r.date))).sort(); }
