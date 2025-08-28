@@ -13,7 +13,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <style>
-    /* just a little breathing room for the trend */
     #trendWrap { height: 20rem; }
   </style>
 </head>
@@ -132,7 +131,7 @@
   const CSV_COUNTS   = 'data_ceos/daily_counts.csv';
   const CSV_ARTICLES = (date) => `data_ceos/articles/${date}.csv`; // per-day headlines
 
-  // Absolute fallback in case the page is opened from another origin/frame
+  // Absolute fallback for GH Pages
   const GH_USER = 'jonas-sickler';
   const GH_REPO = 'news-sentiment-dashboard';
   const GH_PAGES_BASE = `https://${GH_USER}.github.io/${GH_REPO}/`;
@@ -140,7 +139,7 @@
   const ROWS_TO_SHOW = 25;        // top by negative
   const TREND_WINDOW = 30;        // days per page
 
-  // Colors (per your spec)
+  // Colors
   const C_NEG = '#ffb199';
   const C_POS = '#b8e276';
   const C_NEU = '#cedcdd';
@@ -219,6 +218,13 @@
     return {val: String(part), title: `${pct} of ${total}`};
   }
   function parseDateMaybe(s){ const t = Date.parse(s); return isNaN(t) ? 0 : t; }
+
+  // -------- Strip trailing " -/–/—/| Publisher" for theme purposes --------
+  function stripPublisherSuffix(s){
+    return String(s || '')
+      .replace(/\s(?:-|–|—|\|)\s+[^\s].*?$/u, '')
+      .trim();
+  }
 
   // ================== Improved CEO THEME ENGINE ==================
   const THEME_MAX_WORDS = 5;
@@ -356,7 +362,7 @@
     return (val && String(val).trim().length) ? val : 'None';
   }
 
-  // Articles loader (per date)
+  // Articles loader (per date) — uses cleaned title for themes, keeps original for modal
   async function loadArticlesForDate(date){
     if(articlesCache[date]) return articlesCache[date];
     const rel = CSV_ARTICLES(date) + '?_=' + Date.now();
@@ -378,10 +384,15 @@
             const rawUrl = String(r.url || r.link || r.href || '');
             let domain = String(r.domain || '');
             if(!domain && rawUrl){ try{ domain = new URL(rawUrl).hostname; }catch{} }
+
+            const rawTitle   = String(r.title || r.headline || '').trim();
+            const cleanTitle = stripPublisherSuffix(rawTitle);
+
             return {
               brand,
               alias,
-              title: String(r.title || r.headline || '').trim(),
+              title: cleanTitle,                 // cleaned for theme/search
+              displayTitle: rawTitle,            // original for modal display
               url: rawUrl,
               domain,
               sentiment: String(r.sentiment || r.label || 'neutral'),
@@ -601,7 +612,9 @@
               <div class="text-xs text-slate-500">${r.domain || ''}</div>
               <div>${sentimentBadge(r.sentiment)}</div>
             </div>
-            <a href="${r.url}" target="_blank" rel="noopener" class="block mt-1 font-medium underline">${escapeHtml(r.title)}</a>
+            <a href="${r.url}" target="_blank" rel="noopener" class="block mt-1 font-medium underline">
+              ${escapeHtml(r.displayTitle || r.title)}
+            </a>
             ${r.published ? `<div class="text-xs text-slate-500 mt-1">${r.published}</div>` : ''}
           </div>`).join('\n')}
       </div>`;
@@ -730,7 +743,7 @@
       allRows = good.map(r => ({
         date: String(r.date),
         brand: String(r.brand),          // CEO name
-        company: String(r.company || ''),// NEW: company column from your script
+        company: String(r.company || ''),// company column from your script
         total: formatInt(r.total),
         positive: formatInt(r.positive),
         neutral: formatInt(r.neutral),
@@ -745,7 +758,7 @@
 
       renderDateOptions();
       computeRows();
-      // compute themes first so the table shows the improved phrases
+      // compute themes first so the table shows improved phrases
       ensureThemesForDate(currentDate).then(()=>{
         renderTable();
         renderSaved();
