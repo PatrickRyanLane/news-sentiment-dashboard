@@ -270,14 +270,13 @@ Farmers Insurance Exchange
 Caseys General Stores
 IQVIA
 Republic Services
-Fox
 Keurig Dr Pepper
 Reliance Inc
 Asbury Automotive Group
 Pacific Life
 Vistra
 Western & Southern Financial
-Andersons
+The Andersons Inc
 Nordstrom
 Omnicom Group
 Fidelity National Information Services
@@ -370,7 +369,7 @@ Huntington Bancshares
 Erie Insurance
 Carvana
 Dana Incorporated
-Alcoa
+Alcoa Corporation
 Equitable
 KLA
 Darden Restaurants
@@ -402,7 +401,7 @@ Westinghouse Air Brake Technologies
 Oshkosh
 Global Payments
 Lululemon athletica
-Albemarle
+Albemarle Corporation
 JetBlue Airways
 Seaboard
 Constellation Brands
@@ -985,3 +984,4 @@ Dropbox
 Exact Sciences
 BWX Technologies
 Clear Channel Outdoor Hldgs
+Ingram Micro
