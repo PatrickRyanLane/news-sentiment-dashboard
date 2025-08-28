@@ -270,7 +270,6 @@ Raul Nicholas Vargas Ochoa
 Darren Rebelez
 Ari Bousbib
 Jon Vander Ark
-Lachlan Murdoch
 Timothy Cofer
 Karla Lewis
 David Hult
@@ -985,3 +984,4 @@ Drew Houston
 Kevin T Conroy
 Rex D Geveden
 Scott R Wells
+Paul Bay
