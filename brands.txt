@@ -563,7 +563,7 @@ First American Financial
 Hanover Insurance Group
 Silgan
 Endeavor Group
-Moodys
+Moodys Corporation
 Coterra Energy
 Gartner
 Under Armour
@@ -809,7 +809,6 @@ AptarGroup
 Columbia Sportswear
 Roku
 Civitas Resources
-H&R Block
 Alpha Metallurgical Resources
 Patrick Industries
 Murphy Oil
