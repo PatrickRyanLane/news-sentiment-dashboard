@@ -4,26 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BRAND News Sentiment Dashboard</title>
-  <!-- Tailwind (CDN) -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Papa Parse (CSV parser) -->
+  <!-- Papa Parse -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <!-- Chart.js for stacked bar trend -->
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <style>
-    .sortable{ cursor:pointer; user-select:none; }
-    .sortable .arrow{ opacity:.4; margin-left:.25rem; }
-    .sortable.active .arrow{ opacity:1; }
-    #trendWrap { height: 20rem; }
-  </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
   <div class="max-w-7xl mx-auto p-6">
     <header class="mb-6">
       <h1 class="text-3xl font-bold">BRAND News Sentiment Dashboard</h1>
       <p class="text-sm text-slate-600">
-        Shows the top 25 Fortune 500 brands with the most negative sentiment in Google news.
-        Data sources: <code>data/daily_counts.csv</code> and <code>data/serps/brand_serps.csv</code>.
+        Shows the top 25 Fortune 500 brands by <em>negative</em> article count for a selected day.
+        Data source: <code>data/daily_counts.csv</code>. SERP data: <code>data/serps/brand_serps.csv</code>.
       </p>
     </header>
 
@@ -42,7 +36,7 @@
       </div>
     </section>
 
-    <!-- Save / display -->
+    <!-- Save / mode -->
     <section class="mb-6 p-4 border rounded-xl bg-white">
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <h2 class="text-lg font-semibold">Save highlighted brands</h2>
@@ -60,7 +54,7 @@
       </div>
     </section>
 
-    <!-- Trend (stacked bar) -->
+    <!-- Trend -->
     <section class="mb-6 p-4 border rounded-xl bg-white">
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-lg font-semibold">Sentiment trend</h2>
@@ -71,10 +65,8 @@
           <button id="trendNext" class="px-2 py-1 border rounded disabled:opacity-40" title="Newer 30 days">→</button>
         </div>
       </div>
-      <p id="trendHint" class="text-sm text-slate-500 mb-2 hidden">
-        Select exactly <span class="font-semibold">1</span> brand to display a trend. When none is selected, the top negative brand is shown by default.
-      </p>
-      <div id="trendWrap">
+      <p id="trendHint" class="text-sm text-slate-500 mb-2 hidden">Select exactly <span class="font-semibold">1</span> brand to display a trend. When none is selected, the top negative brand is shown by default.</p>
+      <div class="h-64">
         <canvas id="trendChart"></canvas>
       </div>
     </section>
@@ -85,13 +77,17 @@
         <thead class="bg-slate-100">
           <tr>
             <th class="p-3 text-left"><input type="checkbox" id="selectAll"></th>
+
+            <!-- NEW ORDER -->
             <th class="p-3 text-left">Brand</th>
-            <th id="thNegNews" class="p-3 text-left sortable">Negative <span class="arrow">▼</span></th>
-            <th class="p-3 text-left">Total</th>
             <th class="p-3 text-left">Theme</th>
-            <th id="thNegSerp" class="p-3 text-left sortable">Negative SERP (%)<span class="arrow">↕</span></th>
-            <th id="thCtrlSerp" class="p-3 text-left sortable">SERP Control (%)<span class="arrow">↕</span></th>
-            <th id="thRisk" class="p-3 text-left sortable">Risk<span class="arrow">↕</span></th>
+            <th id="thNeg" class="p-3 text-left">Negative News (%)</th>
+
+            <!-- SERP columns -->
+            <th class="p-3 text-left">Negative SERP (%)</th>
+            <th class="p-3 text-left">SERP Control (%)</th>
+            <th class="p-3 text-left">Risk</th>
+
             <th class="p-3 text-left">Headlines</th>
             <th class="p-3 text-left">SERP</th>
           </tr>
@@ -99,13 +95,9 @@
         <tbody id="tableBody"></tbody>
       </table>
       <p id="status" class="text-xs text-slate-500 mt-2"></p>
-      <details id="debugBox" class="mt-2 text-xs text-slate-500 hidden">
-        <summary class="cursor-pointer">Debug details</summary>
-        <pre id="debugText" class="whitespace-pre-wrap"></pre>
-      </details>
     </section>
 
-    <!-- Saved (local) -->
+    <!-- Saved -->
     <section class="mt-8">
       <h2 class="text-lg font-semibold mb-2">Saved (local) watchlist</h2>
       <div id="savedContainer" class="border rounded-xl bg-white p-4 text-sm">
@@ -135,84 +127,60 @@
 
 <script>
 (function(){
-  // ---------- Paths ----------
+  // ---------- CONFIG / PATHS ----------
   const CSV_COUNTS = 'data/daily_counts.csv';
-  const CSV_SERPS  = 'data/serps/brand_serps.csv';   // <— NEW
-  const GH_USER = 'jonas-sickler';
-  const GH_REPO = 'news-sentiment-dashboard';
-  const GH_PAGES_BASE = `https://${GH_USER}.github.io/${GH_REPO}/`;
   const CSV_ARTICLES = (date) => `data/articles/${date}.csv`;
+  const SERP_CSV = 'data/serps/brand_serps.csv';
 
-  // ---------- Elements ----------
-  const tableBody = document.getElementById('tableBody');
-  const modeCountsBtn = document.getElementById('modeCountsBtn');
-  const modePercentBtn = document.getElementById('modePercentBtn');
+  const ROWS_TO_SHOW = 25;
+
+  // ---------- STATE ----------
+  let allRows = [];          // from data/daily_counts.csv
+  let currentRows = [];      // filtered & sorted for date
+  let currentDate = null;
+  let selected = new Set();  // selected brands
+  let viewMode = localStorage.getItem('view_mode') || 'percent'; // 'counts' | 'percent'
+
+  // articles cache by date
+  const articlesCache = {};
+
+  // SERP index and dates
+  const serpIndex = Object.create(null); // serpIndex[date][brandLower] = rows[]
+  let serpDates = [];
+
+  // ---------- DOM ----------
   const dateSelect = document.getElementById('dateSelect');
   const brandFilter = document.getElementById('brandFilter');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const tableBody = document.getElementById('tableBody');
   const statusEl = document.getElementById('status');
   const selectAll = document.getElementById('selectAll');
+  const modeCountsBtn = document.getElementById('modeCountsBtn');
+  const modePercentBtn = document.getElementById('modePercentBtn');
   const saveLocalBtn = document.getElementById('saveLocalBtn');
   const exportCsvBtn = document.getElementById('exportCsvBtn');
+  const savedContainer = document.getElementById('savedContainer');
 
-  // Trend
+  // trend elements
   const trendCanvas = document.getElementById('trendChart');
-  const trendInfo   = document.getElementById('trendInfo');
-  const trendHint   = document.getElementById('trendHint');
-  const trendPrev   = document.getElementById('trendPrev');
-  const trendNext   = document.getElementById('trendNext');
-  const trendRange  = document.getElementById('trendRange');
+  const trendInfo = document.getElementById('trendInfo');
+  const trendRange = document.getElementById('trendRange');
+  const trendHint = document.getElementById('trendHint');
+  const trendPrev = document.getElementById('trendPrev');
+  const trendNext = document.getElementById('trendNext');
   const TREND_WINDOW = 30;
   let trendChart = null;
   let trendBrand = null;
-  let trendPage  = 0;
+  let trendPage = 0;
 
-  // Modal
+  // modal
   const modalBackdrop = document.getElementById('modalBackdrop');
-  const modalTitle    = document.getElementById('modalTitle');
+  const modalTitle = document.getElementById('modalTitle');
   const modalSubtitle = document.getElementById('modalSubtitle');
-  const modalBody     = document.getElementById('modalBody');
-  const modalClose    = document.getElementById('modalClose');
+  const modalBody = document.getElementById('modalBody');
+  const modalClose = document.getElementById('modalClose');
 
-  // Sorting state
-  const sortState = {
-    col: 'negNews',   // negNews | negSerp | ctrlSerp | risk
-    dir: 'desc'
-  };
-
-  // Data
-  let allRows = [];              // from counts CSV
-  let allSerpRows = [];          // from serps CSV (all dates)
-  let serpByDateBrand = new Map(); // key: date||'', value: Map(brand->rows[])
-  let currentDate = null;
-  let currentRows = [];          // table rows for current date
-  let selected = new Set();      // selected brands (checkboxes)
-  let viewMode = localStorage.getItem('view_mode') || 'percent';
-
-  const debugBox  = document.getElementById('debugBox');
-  const debugText = document.getElementById('debugText');
-  function logDebug(msg, extra){
-    const params = new URLSearchParams(location.search);
-    const DEBUG = params.get('debug') === '1';
-    if(DEBUG){
-      debugBox.classList.remove('hidden');
-      debugText.textContent += `\n${msg}` + (extra ? `\n${extra}` : '');
-      console.log('[dashboard]', msg, extra || '');
-    }
-  }
-
-  // ---------- Helpers ----------
-  function formatInt(x){ return Number(x || 0); }
-  function fmtPct(part, total, decimals = 0){
-    const t = Number(total || 0), p = Number(part || 0);
-    if(!t || isNaN(t)) return '0%';
-    const v = (p / t) * 100;
-    const s = v.toFixed(decimals);
-    return s.replace(/\.0+$/, '') + '%';
-  }
-  function escapeHtml(s){
-    return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;')
-      .replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
-  }
+  // ---------- HELPERS ----------
   function normalizeRowKeys(row){
     const out = {};
     for(const k in row){
@@ -221,6 +189,82 @@
     }
     return out;
   }
+  function escapeHtml(s){
+    return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+  }
+  function formatInt(x){ return Number(x || 0); }
+  function fmtPct(part, total, decimals = 0){
+    const t = Number(total || 0), p = Number(part || 0);
+    if(!t || isNaN(t)) return '0%';
+    const v = (p / t) * 100;
+    const s = v.toFixed(decimals);
+    return s.replace(/\.0+$/, '') + '%';
+  }
+  function headerLabel(base){ return viewMode === 'percent' ? `${base} (%)` : base; }
+  function updateHeaderLabels(){
+    const thNeg = document.getElementById('thNeg');
+    if(thNeg){ thNeg.textContent = 'Negative News (%)'; }
+  }
+  function updateModeButtons(){
+    const base = 'px-2 py-1 rounded-lg border';
+    if(modeCountsBtn){ modeCountsBtn.className = base + (viewMode==='counts' ? ' bg-slate-900 text-white' : ' bg-white'); }
+    if(modePercentBtn){ modePercentBtn.className = base + (viewMode==='percent' ? ' bg-slate-900 text-white' : ' bg-white'); }
+  }
+
+  // ---------- LOAD COUNTS CSV ----------
+  function renderDateOptions(){
+    const dates = Array.from(new Set(allRows.map(r => r.date))).sort();
+    dateSelect.innerHTML = dates.map(d => `<option value="${d}">${d}</option>`).join('\n');
+    currentDate = dates[dates.length - 1] || null;
+    if(currentDate) dateSelect.value = currentDate;
+    updateHeaderLabels();
+    updateModeButtons();
+  }
+
+  function computeRows(){
+    const filter = (brandFilter.value || '').toLowerCase();
+    const rows = allRows.filter(r => r.date === currentDate && r.brand);
+    rows.sort((a,b)=> formatInt(b.negative) - formatInt(a.negative));
+    const top = rows.filter(r => r.brand.toLowerCase().includes(filter)).slice(0, ROWS_TO_SHOW);
+    selected = new Set(Array.from(selected).filter(b => top.find(r => r.brand === b)));
+    currentRows = top;
+  }
+
+  // ---------- ARTICLES & DRILLDOWN ----------
+  async function loadArticlesForDate(date){
+    if(articlesCache[date]) return articlesCache[date];
+    const url = CSV_ARTICLES(date) + '?_=' + Date.now();
+    let text = '';
+    try{
+      const r = await fetch(url, {cache:'no-store'});
+      if(r.ok) text = await r.text();
+    }catch{}
+    if(!text){ articlesCache[date] = []; return []; }
+
+    const parsed = Papa.parse(text, {header: true});
+    const norm = (parsed.data || []).map(normalizeRowKeys);
+    const rows = norm
+      .filter(r => r && (r.brand || r.brand_name || r.canonical || r.company || r.alias_matched) && (r.title || r.headline))
+      .map(r=>{
+        const brand = String(r.brand || r.brand_name || r.canonical || r.company || '').trim();
+        const alias = String(r.alias_matched || r.alias || '').trim();
+        const rawUrl = String(r.url || r.link || r.href || '');
+        let domain = String(r.domain || '');
+        if(!domain && rawUrl){ try{ domain = new URL(rawUrl).hostname; }catch{} }
+        return {
+          brand,
+          alias,
+          title: String(r.title || r.headline || '').trim(),
+          url: rawUrl,
+          domain,
+          sentiment: String(r.sentiment || r.label || 'neutral'),
+          published: String(r.published || r.date || r.datetime || '')
+        };
+      });
+    articlesCache[date] = rows;
+    return rows;
+  }
+  function parseDateMaybe(s){ const t = Date.parse(s); return isNaN(t) ? 0 : t; }
 
   function sentimentBadge(s){
     const base = 'inline-block px-2 py-0.5 rounded-full text-xs';
@@ -229,185 +273,207 @@
     return `<span class="${base} bg-slate-100 text-slate-700">neutral</span>`;
   }
 
-  function headerButton(el, active){
-    if(!el) return;
-    el.classList.toggle('active', !!active);
-  }
+  async function showDrilldown(brand){
+    modalTitle.textContent = brand + ' — Headlines';
+    modalSubtitle.textContent = `Date: ${currentDate}`;
+    modalBody.innerHTML = '<p class="text-sm text-slate-500">Loading…</p>';
+    openModal();
 
-  function computeRiskLabel(negativeSerpPct, controlPct){
-    const neg = Number(negativeSerpPct) || 0;
-    const ctrl = Number(controlPct) || 0;
-    if (neg > 0) return 'High';
-    if (ctrl > 70) return 'Low';
-    return 'Medium';
-  }
+    const all = await loadArticlesForDate(currentDate);
+    const key = brand.trim().toLowerCase();
+    const rows = all.filter(r => (r.brand || '').trim().toLowerCase() === key || (r.alias || '').trim().toLowerCase() === key);
+    rows.sort((a,b)=>{
+      const order = (x)=> x.sentiment === 'negative' ? 2 : (x.sentiment === 'neutral' ? 1 : 0);
+      const d = order(b) - order(a);
+      if(d !== 0) return d;
+      return parseDateMaybe(b.published) - parseDateMaybe(a.published);
+    });
 
-  // ---------- CSV loading ----------
-  async function fetchTextCandidates(relPath){
-    const rel = new URL(relPath, location.href).href + (relPath.includes('?') ? '&' : '?') + '_=' + Date.now();
-    const abs = GH_PAGES_BASE + relPath + (relPath.includes('?') ? '&' : '?') + '_=' + Date.now();
-    const urls = [rel];
-    if(!rel.startsWith(GH_PAGES_BASE)) urls.push(abs);
-
-    for(const url of urls){
-      try{
-        const r = await fetch(url, {cache:'no-store', mode:'cors'});
-        if(!r.ok) continue;
-        const t = await r.text();
-        if(t && t.length) return t;
-      }catch(e){ /* ignore */ }
+    if(!rows.length){
+      modalBody.innerHTML = '<p class="text-sm text-slate-600">No articles found for this brand on this date.</p>';
+      return;
     }
+
+    // Drop publisher after " - " in titles for readability
+    function cleanTitle(t){
+      const i = t.lastIndexOf(' - ');
+      return i > 0 ? t.slice(0, i) : t;
+    }
+
+    modalBody.innerHTML = `
+      <div class="space-y-3">
+        ${rows.map(r=>`
+          <div class="p-3 border rounded-xl hover:bg-slate-50">
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-xs text-slate-500">${r.domain || ''}</div>
+              <div>${sentimentBadge(r.sentiment)}</div>
+            </div>
+            <a href="${r.url}" target="_blank" rel="noopener" class="block mt-1 font-medium underline">${escapeHtml(cleanTitle(r.title))}</a>
+            ${r.published ? `<div class="text-xs text-slate-500 mt-1">${r.published}</div>` : ''}
+          </div>`).join('\n')}
+      </div>`;
+  }
+
+  // ---------- SERP LOADER + POPUP ----------
+  function parseControl(v){
+    const s = String(v ?? '').trim().toLowerCase();
+    return s === 'true' || s === '1' || s === 'y' || s === 'yes';
+  }
+  function pick(r, keys){
+    for(const k of keys){ if (r[k] != null && String(r[k]).length) return r[k]; }
     return '';
   }
 
-  async function loadCountsCsv(){
-    statusEl.textContent = 'Loading…';
-
-    const t = await fetchTextCandidates(CSV_COUNTS);
-    if(!t){
-      statusEl.textContent = 'Error loading data/daily_counts.csv';
-      return;
-    }
-    const parsed = Papa.parse(t, {header:true, dynamicTyping:true});
-    const raw = (Array.isArray(parsed.data) ? parsed.data : []).map(normalizeRowKeys);
-    const good = raw.filter(r => r && r.date && r.brand);
-
-    allRows = good.map(r => ({
-      date: String(r.date),
-      brand: String(r.brand),
-      total: formatInt(r.total),
-      positive: formatInt(r.positive),
-      neutral: formatInt(r.neutral),
-      negative: formatInt(r.negative),
-      theme: r.theme ? String(r.theme) : 'none'
-    }));
-
-    if(!allRows.length){
-      statusEl.textContent = 'No rows parsed from data/daily_counts.csv.';
-      return;
-    }
-  }
-
   async function loadSerpsCsv(){
-    const t = await fetchTextCandidates(CSV_SERPS);
-    if(!t){ logDebug('SERP CSV missing', CSV_SERPS); return; }
+    if(serpDates.length) return;
+    const url = SERP_CSV + '?_=' + Date.now();
+    let text = '';
+    try{
+      const r = await fetch(url, {cache:'no-store'});
+      if(r.ok) text = await r.text();
+    }catch{}
+    if(!text) return;
 
-    const parsed = Papa.parse(t, {header:true});
-    const norm = (Array.isArray(parsed.data) ? parsed.data : []).map(normalizeRowKeys);
+    const parsed = Papa.parse(text, {header:true});
+    const rows = (parsed.data || []).map(normalizeRowKeys);
 
-    // Expected headers: brand, date?(optional), title, url, domain, controlled, sentiment, rank, snippet
-    allSerpRows = norm.filter(r => r && (r.brand || '').trim());
+    for(const raw of rows){
+      const date   = String(pick(raw, ['date'])).trim();
+      const brand  = String(pick(raw, ['brand'])).trim();
+      if(!date || !brand) continue;
 
-    // Build index by date->brand
-    serpByDateBrand = new Map();
-    for(const r of allSerpRows){
-      const d = r.date ? String(r.date) : ''; // if no date, bucket under '' (all-time)
-      const b = String(r.brand || '').trim();
-      const keyD = d;
-      if(!serpByDateBrand.has(keyD)) serpByDateBrand.set(keyD, new Map());
-      const mapB = serpByDateBrand.get(keyD);
-      if(!mapB.has(b)) mapB.set(b, []);
-      mapB.get(b).push(r);
+      const brandKey = brand.toLowerCase();
+      const title    = String(pick(raw, ['title'])).trim();
+      const link     = String(pick(raw, ['link','url'])).trim();
+      const domain   = String(pick(raw, ['root domain','root_domain','domain'])).trim();
+      const snippet  = String(pick(raw, ['snippet'])).trim();
+      const control  = parseControl(pick(raw, ['control']));
+      const sentiment= String(pick(raw, ['sentiment'])).trim().toLowerCase();
+      const rankVal  = Number(pick(raw, ['rank'])) || undefined;
+
+      const row = { date, brand, title, link, domain, snippet, control, sentiment, rank: rankVal };
+
+      if(!serpIndex[date]) serpIndex[date] = Object.create(null);
+      if(!serpIndex[date][brandKey]) serpIndex[date][brandKey] = [];
+      serpIndex[date][brandKey].push(row);
     }
-    logDebug('SERP rows loaded', String(allSerpRows.length));
+    serpDates = Object.keys(serpIndex).sort();
   }
 
-  // Per date/brand SERP summary
-  function serpSummaryFor(date, brand){
-    const brandKey = String(brand||'').trim();
-    const pool = [];
-    // Prefer exact date; if none present in file, fall back to ''
-    const m1 = serpByDateBrand.get(String(date)) || new Map();
-    const m2 = serpByDateBrand.get('') || new Map();
-    if(m1.has(brandKey)) pool.push(...m1.get(brandKey));
-    else if(m2.has(brandKey)) pool.push(...m2.get(brandKey));
-    if(!pool.length) return {negPct:0, ctrlPct:0, risk:'Medium', total:0};
-
-    // Only use first 10 by rank if provided
-    pool.sort((a,b)=> (Number(a.rank)||99) - (Number(b.rank)||99));
-    const rows = pool.slice(0, 10);
-
-    let total = 0, neg=0, ctrl=0;
-    for(const r of rows){
-      total++;
-      const s = String(r.sentiment||'').toLowerCase();
-      const c = /^true|yes|1$/i.test(String(r.controlled||''));
-      if(s === 'negative') neg++;
-      if(c) ctrl++;
+  function getSerpRowsFor(brand, date){
+    const key = String(brand || '').toLowerCase().trim();
+    if(!key) return [];
+    if(date && serpIndex[date] && serpIndex[date][key]) return serpIndex[date][key];
+    for(let i = serpDates.length - 1; i >= 0; i--){
+      const d = serpDates[i];
+      const bucket = serpIndex[d] && serpIndex[d][key];
+      if(bucket && bucket.length) return bucket;
     }
-    const negPct = total? Math.round(neg*100/total) : 0;
-    const ctrlPct = total? Math.round(ctrl*100/total) : 0;
-    return {negPct, ctrlPct, risk: computeRiskLabel(negPct, ctrlPct), total, rows};
+    return [];
   }
 
-  // ---------- Table rendering ----------
-  function computeRows(){
-    const filter = (brandFilter.value || '').toLowerCase();
-    const rows = allRows.filter(r => r.date === currentDate && r.brand);
-    rows.sort((a,b)=> formatInt(b.negative) - formatInt(a.negative)); // default sort
-    const top = rows.filter(r => r.brand.toLowerCase().includes(filter)).slice(0, 25);
+  // Aggregate per brand/date
+  function getSerpAgg(brand, date){
+    const rows = getSerpRowsFor(brand, date);
+    if(!rows.length) return {negPct: null, ctrlPct: null, risk: '—'};
+    const n = rows.length;
+    const neg = rows.filter(r => r.sentiment === 'negative').length;
+    const ctrl = rows.filter(r => r.control).length;
+    const negPct = (neg/n)*100;
+    const ctrlPct = (ctrl/n)*100;
 
-    // Enrich with SERP summaries
-    const enriched = top.map(r=>{
-      const s = serpSummaryFor(currentDate, r.brand);
-      return {...r, negSerpPct: s.negPct, ctrlSerpPct: s.ctrlPct, risk: s.risk, serpTotal:s.total};
+    // Risk rules
+    let risk = 'Medium';
+    if(negPct > 0.0001) risk = 'High';
+    else if(ctrlPct > 70) risk = 'Low';
+    else risk = 'Medium';
+
+    return {negPct, ctrlPct, risk, date: rows[0].date};
+  }
+
+  function chip(text, tone){
+    const tones = {
+      pos:  'bg-emerald-100 text-emerald-700',
+      neu:  'bg-slate-100 text-slate-700',
+      neg:  'bg-rose-100 text-rose-700',
+      ctrl: 'bg-sky-100 text-sky-700',
+      un:   'bg-amber-100 text-amber-700',
+    };
+    return `<span class="inline-block px-2 py-0.5 text-xs rounded-full ${tones[tone]||'bg-slate-100 text-slate-700'}">${text}</span>`;
+  }
+
+  async function showSerpPopup(brand){
+    await loadSerpsCsv();
+    const rows = getSerpRowsFor(brand, currentDate);
+    modalTitle.textContent = `${brand} — SERP`;
+    modalSubtitle.textContent = rows.length ? `Date: ${rows[0].date}` : '';
+    if(!rows.length){
+      modalBody.innerHTML = `<p class="text-sm text-slate-600">No SERP rows found for ${escapeHtml(brand)}.</p>`;
+      openModal(); return;
+    }
+    rows.sort((a,b)=>{
+      if(a.rank != null && b.rank != null) return a.rank - b.rank;
+      if(a.rank != null) return -1;
+      if(b.rank != null) return 1;
+      return 0;
     });
 
-    // Keep only previously-selected that are still visible
-    selected = new Set(Array.from(selected).filter(b => enriched.find(r => r.brand === b)));
-    currentRows = enriched;
-    applySort(); // apply any user sort (defaults to negNews desc)
+    modalBody.innerHTML = `
+      <div class="space-y-3">
+        ${rows.map(r=>{
+          const s = r.sentiment === 'negative' ? chip('negative','neg')
+                  : r.sentiment === 'positive' ? chip('positive','pos')
+                  : chip('neutral','neu');
+          const c = r.control ? chip('controlled','ctrl') : chip('uncontrolled','un');
+          const rank = (r.rank != null) ? `<span class="text-xs text-slate-500">#${r.rank}</span>` : '';
+          const dom  = r.domain ? `<div class="text-xs text-slate-500">${escapeHtml(r.domain)}</div>` : '';
+          const snip = r.snippet ? `<div class="text-sm text-slate-700 mt-1">${escapeHtml(r.snippet)}</div>` : '';
+          return `
+            <div class="p-3 border rounded-xl hover:bg-slate-50">
+              <div class="flex items-center gap-2 justify-between">
+                <div class="flex items-center gap-2">${s}${c}${rank}</div>
+                ${dom}
+              </div>
+              <a class="block mt-1 font-medium underline" href="${r.link}" target="_blank" rel="noopener">
+                ${escapeHtml(r.title || r.link)}
+              </a>
+              ${snip}
+            </div>`;
+        }).join('')}
+      </div>`;
+    openModal();
   }
 
-  function applySort(){
-    const riskOrder = {High:3, Medium:2, Low:1};
-    const col = sortState.col;
-    const dir = sortState.dir === 'asc' ? 1 : -1;
-
-    currentRows.sort((a,b)=>{
-      if(col === 'negNews'){
-        return (formatInt(a.negative) - formatInt(b.negative)) * dir;
-      }
-      if(col === 'negSerp'){
-        return (formatInt(a.negSerpPct) - formatInt(b.negSerpPct)) * dir;
-      }
-      if(col === 'ctrlSerp'){
-        return (formatInt(a.ctrlSerpPct) - formatInt(b.ctrlSerpPct)) * dir;
-      }
-      if(col === 'risk'){
-        return ((riskOrder[a.risk]||0) - (riskOrder[b.risk]||0)) * dir;
-      }
-      return 0;
-    }).reverse(); // we want desc when dir='desc'
-  }
-
+  // ---------- TABLE RENDER ----------
   function cellVal(part,total){
     if(viewMode === 'percent') return {val: fmtPct(part,total), title: `${part} of ${total}`};
     const pct = fmtPct(part,total);
     return {val: String(part), title: `${pct} of ${total}`};
   }
 
-  function headerLabel(base){ return viewMode === 'percent' ? `${base} (%)` : base; }
-  function updateModeButtons(){
-    const base = 'px-2 py-1 rounded-lg border';
-    modeCountsBtn.className = base + (viewMode==='counts'  ? ' bg-slate-900 text-white' : ' bg-white');
-    modePercentBtn.className = base + (viewMode==='percent' ? ' bg-slate-900 text-white' : ' bg-white');
-  }
+  function getThemeFor(row){ return (row.theme && String(row.theme).trim()) ? row.theme : 'none'; }
 
   function renderTable(){
     tableBody.innerHTML = currentRows.map((r)=>{
       const isSel = selected.has(r.brand);
       const n = cellVal(r.negative, r.total);
 
+      const agg = getSerpAgg(r.brand, currentDate);
+      const negSerp = (agg.negPct==null) ? '—' : `${Math.round(agg.negPct)}%`;
+      const ctrlSerp = (agg.ctrlPct==null) ? '—' : `${Math.round(agg.ctrlPct)}%`;
+      const risk = agg.risk;
+
       return `<tr class="border-t hover:bg-slate-50">
         <td class="p-3"><input type="checkbox" data-brand="${r.brand.replace(/\"/g,'&quot;')}" ${isSel?'checked':''}></td>
+
         <td class="p-3 font-medium"><button class="underline" data-view-brand="${r.brand.replace(/\"/g,'&quot;')}">${r.brand}</button></td>
+        <td class="p-3 text-slate-700">${escapeHtml(getThemeFor(r))}</td>
         <td class="p-3" title="${n.title}">${n.val}</td>
-        <td class="p-3">${r.total}</td>
-        <td class="p-3 text-slate-700">${escapeHtml(r.theme || 'None')}</td>
-        <td class="p-3">${r.negSerpPct}%</td>
-        <td class="p-3">${r.ctrlSerpPct}%</td>
-        <td class="p-3">${r.risk}</td>
+
+        <td class="p-3">${negSerp}</td>
+        <td class="p-3">${ctrlSerp}</td>
+        <td class="p-3">${risk}</td>
+
         <td class="p-3"><button class="px-2 py-1 border rounded-lg" data-view-brand="${r.brand.replace(/\"/g,'&quot;')}">View</button></td>
         <td class="p-3"><button class="px-2 py-1 border rounded-lg" data-serp-brand="${r.brand.replace(/\"/g,'&quot;')}">View</button></td>
       </tr>`;
@@ -419,6 +485,7 @@
   }
 
   function attachTableHandlers(){
+    // checkboxes
     tableBody.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
       cb.addEventListener('change', ()=>{
         const brand = cb.getAttribute('data-brand');
@@ -427,30 +494,32 @@
         updateTrend();
       });
     });
-    // Headlines modal
+    // Headlines
     tableBody.querySelectorAll('[data-view-brand]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const brand = btn.getAttribute('data-view-brand');
         showDrilldown(brand);
       });
     });
-    // SERP modal
-    tableBody.querySelectorAll('[data-serp-brand]').forEach(btn=>{
+    // SERP
+    tableBody.querySelectorAll('button[data-serp-brand]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
-        const brand = btn.getAttribute('data-serp-brand');
-        showSerpForBrand(brand);
+        const b = btn.getAttribute('data-serp-brand');
+        showSerpPopup(b);
       });
     });
   }
 
-  // ---------- Saved watchlist ----------
-  const savedContainer = document.getElementById('savedContainer');
+  // ---------- SAVED ----------
   function renderSaved(){
     const saved = JSON.parse(localStorage.getItem('saved_brands') || '[]');
     if(!saved.length){
       savedContainer.innerHTML = '<p class="text-slate-600">No saved items yet.</p>';
       return;
     }
+    const hNeg = headerLabel('Negative');
+    const hNeu = headerLabel('Neutral');
+    const hPos = headerLabel('Positive');
     savedContainer.innerHTML = `
       <div class="overflow-x-auto">
         <table class="min-w-full text-sm">
@@ -458,7 +527,9 @@
             <tr>
               <th class="p-2 text-left">Date</th>
               <th class="p-2 text-left">Brand</th>
-              <th class="p-2 text-left">Negative</th>
+              <th class="p-2 text-left">${hNeg}</th>
+              <th class="p-2 text-left">${hNeu}</th>
+              <th class="p-2 text-left">${hPos}</th>
               <th class="p-2 text-left">Total</th>
               <th class="p-2 text-left">Theme</th>
               <th class="p-2 text-left">Actions</th>
@@ -467,11 +538,15 @@
           <tbody>
             ${saved.map((s,i)=>{
               const n = cellVal(s.negative, s.total);
+              const u = cellVal(s.neutral, s.total);
+              const p = cellVal(s.positive, s.total);
               return `
               <tr class="border-t">
                 <td class="p-2">${s.date}</td>
                 <td class="p-2 font-medium">${s.brand}</td>
                 <td class="p-2" title="${n.title}">${n.val}</td>
+                <td class="p-2" title="${u.title}">${u.val}</td>
+                <td class="p-2" title="${p.title}">${p.val}</td>
                 <td class="p-2">${s.total}</td>
                 <td class="p-2">${escapeHtml(s.theme || 'none')}</td>
                 <td class="p-2"><button data-i="${i}" class="text-rose-600 underline">Remove</button></td>
@@ -503,135 +578,41 @@
     alert('Saved locally.');
   }
 
-  // ---------- Headlines modal ----------
-  const articlesCache = {};
-  async function loadArticlesForDate(date){
-    if(articlesCache[date]) return articlesCache[date];
-    const rel = CSV_ARTICLES(date) + '?_=' + Date.now();
-    const abs = GH_PAGES_BASE + CSV_ARTICLES(date) + (CSV_ARTICLES(date).includes('?') ? '&' : '?') + '_=' + Date.now();
-    const candidates = [rel];
-    if(!rel.startsWith(GH_PAGES_BASE)) candidates.push(abs);
-
-    for(const url of candidates){
-      try{
-        const resp = await fetch(url, {cache:'no-store'});
-        if(!resp.ok) continue;
-        const text = await resp.text();
-        const parsed = Papa.parse(text, { header: true });
-        const norm = (Array.isArray(parsed.data) ? parsed.data : []).map(normalizeRowKeys);
-        const rows = norm
-          .filter(r=> r && (r.brand || r.brand_name || r.canonical || r.company || r.alias_matched) && (r.title || r.headline))
-          .map(r=>{
-            const brand = String(r.brand || r.brand_name || r.canonical || r.company || '').trim();
-            const alias = String(r.alias_matched || r.alias || '').trim();
-            const rawUrl = String(r.url || r.link || r.href || '');
-            let domain = String(r.domain || '');
-            if(!domain && rawUrl){ try{ domain = new URL(rawUrl).hostname; }catch{} }
-            return {
-              brand,
-              alias,
-              title: String(r.title || r.headline || '').trim(),
-              url: rawUrl,
-              domain,
-              sentiment: String(r.sentiment || r.label || 'neutral'),
-              published: String(r.published || r.date || r.datetime || '')
-            };
-          });
-        articlesCache[date] = rows;
-        return rows;
-      }catch{}
-    }
-    articlesCache[date] = [];
-    return [];
-  }
-
-  function parseDateMaybe(s){ const t = Date.parse(s); return isNaN(t) ? 0 : t; }
-
-  async function showDrilldown(brand){
-    modalTitle.textContent = brand + ' — Headlines';
-    modalSubtitle.textContent = `Date: ${currentDate}`;
-    modalBody.innerHTML = '<p class="text-sm text-slate-500">Loading…</p>';
-    openModal();
-
-    const all = await loadArticlesForDate(currentDate);
-    const key = brand.trim().toLowerCase();
-    const rows = all.filter(r => (r.brand || '').trim().toLowerCase() === key || (r.alias || '').trim().toLowerCase() === key);
+  function exportSelectionCsv(){
+    const rows = allRows.filter(r => r.date === currentDate);
+    if(!rows.length){ alert('No data for this date.'); return; }
     rows.sort((a,b)=>{
-      const order = (x)=> x.sentiment === 'negative' ? 2 : (x.sentiment === 'neutral' ? 1 : 0);
-      const d = order(b) - order(a);
-      if(d !== 0) return d;
-      return parseDateMaybe(b.published) - parseDateMaybe(a.published);
+      const d = formatInt(b.negative) - formatInt(a.negative);
+      return d !== 0 ? d : String(a.brand).localeCompare(String(b.brand));
     });
 
-    if(!rows.length){
-      modalBody.innerHTML = '<p class="text-sm text-slate-600">No articles found for this brand on this date.</p>';
-      return;
-    }
+    const header = ['date','brand','total','positive','neutral','negative','theme'];
+    const body = rows.map(r=>[
+      r.date, r.brand, r.total, r.positive, r.neutral, r.negative,
+      '"' + String(getThemeFor(r) || '').replace(/"/g,'""') + '"'
+    ].join(','));
+    const bom = '\ufeff';
+    const csv = bom + [header.join(','), ...body].join('\r\n');
 
-    modalBody.innerHTML = `
-      <div class="space-y-3">
-        ${rows.map(r=>`
-          <div class="p-3 border rounded-xl hover:bg-slate-50">
-            <div class="flex items-center justify-between gap-3">
-              <div class="text-xs text-slate-500">${r.domain || ''}</div>
-              <div>${sentimentBadge(r.sentiment)}</div>
-            </div>
-            <a href="${r.url}" target="_blank" rel="noopener" class="block mt-1 font-medium underline">${escapeHtml(r.title)}</a>
-            ${r.published ? `<div class="text-xs text-slate-500 mt-1">${r.published}</div>` : ''}
-          </div>`).join('\n')}
-      </div>`;
+    try{
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `alldata_${currentDate}.csv`;
+      a.rel='noopener'; a.target='_blank'; a.style.display='none';
+      document.body.appendChild(a); a.click();
+      setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 800);
+    }catch(err){
+      console.error('CSV export failed', err);
+      alert('Download was blocked by the environment. Try opening in GitHub Pages and downloading there.');
+    }
   }
 
-  // ---------- SERP modal ----------
-  async function showSerpForBrand(brand){
-    modalTitle.textContent = `${brand} — Page 1 Results`;
-    modalSubtitle.textContent = `Date: ${currentDate}`;
-    modalBody.innerHTML = '<p class="text-sm text-slate-500">Loading…</p>';
-    openModal();
-
-    const s = serpSummaryFor(currentDate, brand);
-    const rows = s.rows || [];
-    if(!rows.length){
-      modalBody.innerHTML = `<p class="text-sm text-slate-600">No SERP rows found for ${escapeHtml(brand)}.</p>`;
-      return;
-    }
-
-    const badge = (label, tone) => `<span class="inline-block px-2 py-0.5 rounded-full text-xs ${tone}">${label}</span>`;
-    const sentimentB = (v)=>{
-      const k=String(v||'').toLowerCase();
-      if(k==='negative') return badge('negative','bg-rose-100 text-rose-700');
-      if(k==='positive') return badge('positive','bg-emerald-100 text-emerald-700');
-      return badge('neutral','bg-slate-100 text-slate-700');
-    };
-    const controlB = (c)=>{
-      const yes=/^true|yes|1$/i.test(String(c||''));
-      return yes ? badge('controlled','bg-sky-100 text-sky-700') : badge('uncontrolled','bg-amber-100 text-amber-800');
-    };
-
-    rows.sort((a,b)=> (Number(a.rank)||99) - (Number(b.rank)||99));
-    modalBody.innerHTML = `
-      <div class="space-y-3">
-        ${rows.map(r=>{
-          const title = r.title ? escapeHtml(r.title) : (r.url ? escapeHtml(r.url) : '(no title)');
-          const url = escapeHtml(r.url || '');
-          const domain = escapeHtml(r.domain || (r.url ? (new URL(r.url)).hostname : ''));
-          const rank = Number(r.rank)||'';
-          const snippet = r.snippet ? escapeHtml(r.snippet) : '';
-          return `
-            <div class="p-3 border rounded-xl hover:bg-slate-50">
-              <div class="flex items-center justify-between gap-3">
-                <div class="text-xs text-slate-500 flex items-center gap-2">${rank ? `#${rank}` : ''} ${domain}</div>
-                <div class="flex gap-2">${controlB(r.controlled)} ${sentimentB(r.sentiment)}</div>
-              </div>
-              <a href="${url}" target="_blank" rel="noopener" class="block mt-1 font-medium underline">${title}</a>
-              ${snippet ? `<div class="text-sm text-slate-700 mt-1">${snippet}</div>` : ''}
-            </div>`;
-        }).join('\n')}
-      </div>`;
-  }
-
-  // ---------- Trend ----------
+  // ---------- TREND ----------
+  if(trendPrev){ trendPrev.addEventListener('click', ()=>{ trendPage += 1; updateTrend(); }); }
+  if(trendNext){ trendNext.addEventListener('click', ()=>{ trendPage = Math.max(0, trendPage - 1); updateTrend(); }); }
   function allDatesSorted(){ return Array.from(new Set(allRows.map(r=>r.date))).sort(); }
+
   function seriesForBrand(brand){
     const dates = allDatesSorted();
     const byDate = new Map();
@@ -652,20 +633,22 @@
   }
 
   function updateTrend(){
-    const sel = Array.from(selected);
-    let brand = null;
-    if(sel.length === 1) brand = sel[0];
-    else if(sel.length === 0 && currentRows.length) brand = currentRows[0].brand;
+    const selCount = selected.size;
+    let brand = null; let auto = false;
+    if(selCount === 1){ brand = Array.from(selected)[0]; }
+    else if(selCount === 0 && currentRows.length){ brand = currentRows[0].brand; auto = true; }
     else {
       trendHint.classList.remove('hidden');
-      trendInfo.textContent = ''; trendRange.textContent = '';
+      trendInfo.textContent = '';
+      if(trendRange) trendRange.textContent = '';
       if(trendChart){ trendChart.destroy(); trendChart = null; }
       return;
     }
-    if(brand !== trendBrand) trendPage = 0;
-    trendHint.classList.add('hidden');
 
+    if(brand !== trendBrand){ trendPage = 0; }
+    trendHint.classList.add('hidden');
     const full = seriesForBrand(brand);
+
     const total = full.dates.length;
     const W = TREND_WINDOW;
     const maxPage = Math.max(0, Math.ceil(total / W) - 1);
@@ -680,9 +663,12 @@
 
     trendBrand = brand;
     trendInfo.textContent = `BRAND: ${brand}`;
-    trendRange.textContent = labels.length ? `  |  DATE: ${labels[0]} → ${labels[labels.length-1]}` : '';
-
+    if(trendRange){
+      const rangeText = labels.length ? `  |  DATE: ${labels[0]} → ${labels[labels.length-1]}` : '';
+      trendRange.textContent = rangeText;
+    }
     const showLabels = labels.length <= 7;
+
     const data = {
       labels,
       datasets: [
@@ -714,111 +700,57 @@
     trendChart = new Chart(trendCanvas.getContext('2d'), { type: 'bar', data, options });
   }
 
-  // ---------- Events ----------
-  function openModal(){ modalBackdrop.classList.remove('hidden'); }
-  function closeModal(){ modalBackdrop.classList.add('hidden'); }
-  modalClose.addEventListener('click', closeModal);
-  modalBackdrop.addEventListener('click', (e)=>{ if(e.target === modalBackdrop) closeModal(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
-
-  dateSelect.addEventListener('change', ()=>{ currentDate = dateSelect.value; computeRows(); renderTable(); });
-  brandFilter.addEventListener('input', ()=>{ computeRows(); renderTable(); });
-  document.getElementById('refreshBtn').addEventListener('click', async ()=>{
-    await Promise.all([loadCountsCsv(), loadSerpsCsv()]);
-    bootstrapAfterLoad();
-  });
-  if(saveLocalBtn) saveLocalBtn.addEventListener('click', saveSelectionLocal);
-  if(exportCsvBtn) exportCsvBtn.addEventListener('click', exportSelectionCsv);
-  selectAll.addEventListener('change', ()=>{
-    if(selectAll.checked){ currentRows.forEach(r=>selected.add(r.brand)); }
-    else { selected.clear(); }
-    renderTable(); updateTrend();
-  });
-  modeCountsBtn.addEventListener('click', ()=>{ viewMode = 'counts'; localStorage.setItem('view_mode','counts'); updateModeButtons(); renderTable(); updateTrend(); });
-  modePercentBtn.addEventListener('click', ()=>{ viewMode = 'percent'; localStorage.setItem('view_mode','percent'); updateModeButtons(); renderTable(); updateTrend(); });
-
-  if(trendPrev) trendPrev.addEventListener('click', ()=>{ trendPage += 1; updateTrend(); });
-  if(trendNext) trendNext.addEventListener('click', ()=>{ trendPage = Math.max(0, trendPage - 1); updateTrend(); });
-
-  // Sorting header clicks
-  const thNegNews = document.getElementById('thNegNews');
-  const thNegSerp = document.getElementById('thNegSerp');
-  const thCtrlSerp = document.getElementById('thCtrlSerp');
-  const thRisk    = document.getElementById('thRisk');
-  [thNegNews, thNegSerp, thCtrlSerp, thRisk].forEach(el=>{
-    el?.addEventListener('click', ()=>{
-      const map = {thNegNews:'negNews', thNegSerp:'negSerp', thCtrlSerp:'ctrlSerp', thRisk:'risk'};
-      const colKey = map[el.id];
-      if(sortState.col === colKey){
-        sortState.dir = (sortState.dir === 'asc' ? 'desc' : 'asc');
-      }else{
-        sortState.col = colKey;
-        sortState.dir = 'desc';
-      }
-      headerButton(thNegNews, sortState.col==='negNews');
-      headerButton(thNegSerp, sortState.col==='negSerp');
-      headerButton(thCtrlSerp, sortState.col==='ctrlSerp');
-      headerButton(thRisk,    sortState.col==='risk');
-      applySort();
-      renderTable();
-    });
-  });
-
-  // ---------- Export CSV (all brands for date) ----------
-  function exportSelectionCsv(){
-    const rows = allRows.filter(r => r.date === currentDate);
-    if(!rows.length){ alert('No data for this date.'); return; }
-    rows.sort((a,b)=>{
-      const d = formatInt(b.negative) - formatInt(a.negative);
-      return d !== 0 ? d : String(a.brand).localeCompare(String(b.brand));
-    });
-    const header = ['date','brand','total','positive','neutral','negative','theme','neg_serp_pct','ctrl_serp_pct','risk'];
-    const body = rows.map(r=>{
-      const s = serpSummaryFor(currentDate, r.brand);
-      return [
-        r.date, r.brand, r.total, r.positive, r.neutral, r.negative,
-        `"${String(r.theme||'').replace(/"/g,'""')}"`, s.negPct, s.ctrlPct, computeRiskLabel(s.negPct,s.ctrlPct)
-      ].join(',');
-    });
-    const bom = '\ufeff';
-    const csv = bom + [header.join(','), ...body].join('\r\n');
-    const filename = `brands_${currentDate}.csv`;
-
+  // ---------- LOAD COUNTS & INIT ----------
+  async function loadCountsCsv(){
+    statusEl.textContent = 'Loading…';
+    const url = CSV_COUNTS + '?_=' + Date.now();
+    let text = '';
     try{
-      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename; a.rel = 'noopener'; a.target = '_blank'; a.style.display='none';
-      document.body.appendChild(a); a.click();
-      setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 800);
-    }catch(err){
-      console.error('CSV export failed', err);
-      alert('Download was blocked by the environment.');
-    }
-  }
+      const r = await fetch(url, {cache:'no-store'}); if(r.ok) text = await r.text();
+    }catch{}
+    if(!text){ statusEl.textContent = 'Error loading data.'; return; }
 
-  // ---------- Bootstrap ----------
-  function renderDateOptions(){
-    const dates = Array.from(new Set(allRows.map(r => r.date))).sort();
-    dateSelect.innerHTML = dates.map(d => `<option value="${d}">${d}</option>`).join('\n');
-    currentDate = dates[dates.length - 1] || null;
-    if(currentDate) dateSelect.value = currentDate;
-    updateModeButtons();
-  }
+    const parsed = Papa.parse(text, { header: true, dynamicTyping: true });
+    const raw = (Array.isArray(parsed.data) ? parsed.data : []).map(normalizeRowKeys);
+    const good = raw.filter(r => r && r.date && r.brand);
+    allRows = good.map(r => ({
+      date: String(r.date),
+      brand: String(r.brand),
+      total: formatInt(r.total),
+      positive: formatInt(r.positive),
+      neutral: formatInt(r.neutral),
+      negative: formatInt(r.negative),
+      theme: r.theme ? String(r.theme) : 'none'
+    }));
 
-  function bootstrapAfterLoad(){
     renderDateOptions();
     computeRows();
     renderTable();
     renderSaved();
     statusEl.textContent = `${currentRows.length} brands shown for ${currentDate}. ${selected.size} selected.`;
+
+    // Preload SERP index once
+    loadSerpsCsv().catch(()=>{});
   }
 
-  (async function init(){
-    await Promise.all([loadCountsCsv(), loadSerpsCsv()]);
-    bootstrapAfterLoad();
-  })();
+  // events
+  dateSelect.addEventListener('change', ()=>{ currentDate = dateSelect.value; computeRows(); renderTable(); });
+  brandFilter.addEventListener('input', ()=>{ computeRows(); renderTable(); });
+  refreshBtn.addEventListener('click', loadCountsCsv);
+  selectAll.addEventListener('change', ()=>{
+    if(selectAll.checked){ currentRows.forEach(r=>selected.add(r.brand)); }
+    else { selected.clear(); }
+    renderTable(); updateTrend();
+  });
+  modeCountsBtn.addEventListener('click', ()=>{ viewMode = 'counts'; localStorage.setItem('view_mode','counts'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); updateTrend(); });
+  modePercentBtn.addEventListener('click', ()=>{ viewMode = 'percent'; localStorage.setItem('view_mode','percent'); updateHeaderLabels(); updateModeButtons(); renderTable(); renderSaved(); updateTrend(); });
+  modalClose.addEventListener('click', ()=> modalBackdrop.classList.add('hidden'));
+  modalBackdrop.addEventListener('click', (e)=>{ if(e.target === modalBackdrop) modalBackdrop.classList.add('hidden'); });
+  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') modalBackdrop.classList.add('hidden'); });
+  function openModal(){ modalBackdrop.classList.remove('hidden'); }
 
+  // go
+  loadCountsCsv();
 })();
 </script>
 </body>
