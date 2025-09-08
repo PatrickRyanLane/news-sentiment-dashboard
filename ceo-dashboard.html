@@ -7,6 +7,12 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable .arrow { margin-left: .35rem; font-size: .8em; opacity:.6 }
+  th.sortable[data-aria-sort="asc"]  .arrow::after  { content: "▲"; }
+  th.sortable[data-aria-sort="desc"] .arrow::after  { content: "▼"; }
+</style>
 </head>
 <body class="bg-slate-50 text-slate-900">
 <div class="max-w-7xl mx-auto p-6">
@@ -14,7 +20,7 @@
     <h1 class="text-3xl font-bold">CEO News Sentiment Dashboard</h1>
     <p class="text-sm text-slate-600">
       Shows the top Fortune 500 CEOs by negative article share for a selected day.
-      Data: <code>data_ceos/daily_counts.csv</code>. Click “Headlines” to see news; “SERP” to see organic results; “Boards” for board seats.
+      Data sources: <code>data_ceos/daily_counts.csv</code>, <code>data/serps/ceo_serps.csv</code>, <code>data/ceo_boards.csv</code>.
     </p>
   </header>
 
@@ -48,13 +54,13 @@
       <thead class="bg-slate-100">
         <tr>
           <th class="p-3 text-left w-10"><input type="checkbox" id="selectAll"></th>
-          <th class="p-3 text-left cursor-pointer" data-sort="ceo">CEO</th>
+          <th class="p-3 text-left sortable" data-sort="ceo">CEO <span class="arrow"></span></th>
           <th class="p-3 text-left">Company</th>
           <th class="p-3 text-left">Theme</th>
-          <th class="p-3 text-left cursor-pointer" data-sort="negNews">Negative News (%)</th>
-          <th class="p-3 text-left cursor-pointer" data-sort="negSerp">Negative SERP (%)</th>
-          <th class="p-3 text-left cursor-pointer" data-sort="ctrl">SERP Control (%)</th>
-          <th class="p-3 text-left cursor-pointer" data-sort="risk">Risk</th>
+          <th class="p-3 text-left sortable" data-sort="negNews">Negative News (%) <span class="arrow"></span></th>
+          <th class="p-3 text-left sortable" data-sort="negSerp">Negative SERP (%) <span class="arrow"></span></th>
+          <th class="p-3 text-left sortable" data-sort="ctrl">SERP Control (%) <span class="arrow"></span></th>
+          <th class="p-3 text-left sortable" data-sort="risk">Risk <span class="arrow"></span></th>
           <th class="p-3 text-left">Headlines</th>
           <th class="p-3 text-left">SERP</th>
           <th class="p-3 text-left">Boards</th>
@@ -99,7 +105,7 @@
   const CSV_COUNTS   = 'data_ceos/daily_counts.csv';
   const CSV_ARTICLES = (date) => `data_ceos/articles/${date}.csv`;
   const CSV_SERPS    = 'data/serps/ceo_serps.csv';
-  const CSV_BOARDS   = 'data_ceos/ceo_boards.csv';
+  const CSV_BOARDS   = 'data/ceo_boards.csv';        // FIXED: boards live in data/, not data_ceos/
   const PAGE_SIZE    = 25;
 
   // ---------------- Elements ----------------
@@ -146,12 +152,8 @@
 
   // ---------------- Utils ----------------
   function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
-  function fmtPct(n){ n = Number(n)||0; return (Math.round(n*10)/10).toString().replace(/\.0$/,'') + '%'; }
-  function parseBoolish(v){
-    if (typeof v === 'boolean') return v;
-    const s = String(v||'').trim().toLowerCase();
-    return s==='true' || s==='t' || s==='1' || s==='yes' || s==='y';
-  }
+  function fmtPctNum(n){ return Math.round((Number(n)||0)*10)/10; }
+  function fmtPct(n){ return fmtPctNum(n).toString().replace(/\.0$/,'') + '%'; }
   function sortRiskVal(r){ return r==='High'?3 : r==='Medium'?2 : 1; }
 
   function normalizeRowKeys(row){
@@ -161,6 +163,22 @@
       out[nk] = row[k];
     }
     return out;
+  }
+
+  function stripPublicationTail(t){ const i = t.lastIndexOf(' - '); return i>0? t.slice(0,i) : t; }
+
+  // Robust control parser: handles boolean-ish and labels like "controlled"/"uncontrolled"
+  function parseControl(v){
+    if (typeof v === 'boolean') return v;
+    const s = String(v||'').trim().toLowerCase();
+    if (!s) return false;
+    if (s==='true' || s==='t' || s==='1' || s==='yes' || s==='y') return true;
+    if (s==='false' || s==='f' || s==='0' || s==='no'  || s==='n') return false;
+    if (s.includes('controlled'))   return true;      // "controlled"
+    if (s.includes('uncontrolled')) return false;     // "uncontrolled"
+    // common synonyms
+    if (s.includes('official') || s.includes('owned') || s.includes('site')) return true;
+    return false;
   }
 
   // ---------------- Theme Engine ----------------
@@ -173,7 +191,6 @@
     'market','stock','shares','price','prices','quarter','q1','q2','q3','q4','year','yrs','vs','inc','corp','co','ltd','plc','ceo'
   ]);
   const NGRAM_MAX=4, MIN_PHRASE_COUNT=2, MAX_THEME_WORDS=5;
-  function stripPublicationTail(t){ const i = t.lastIndexOf(' - '); return i>0? t.slice(0,i) : t; }
   function tok(s){ return s.toLowerCase().replace(/[\u2019\u2018']/g,'').replace(/[^a-z0-9]+/g,' ').trim().split(/\s+/).filter(Boolean); }
   function removeNameCompany(tokens, ceo, company){
     const ban = new Set([...STOPWORDS]);
@@ -294,7 +311,7 @@
           title: String(r.title||'').trim(),
           link: String(r.link||'').trim(),
           snippet: String(r.snippet||'').trim(),
-          control: parseBoolish(r.control),
+          control: parseControl(r.control),
           sentiment: String(r.sentiment||'').trim().toLowerCase()
         });
       }
@@ -305,7 +322,7 @@
   async function loadBoardsOnce(){
     if(boardsLoaded) return;
     try{
-      const txt = await fetchText(CSV_BOARDS);
+      const txt = await fetchText(CSV_BOARDS);    // FIXED path used here
       const parsed = Papa.parse(txt,{header:true});
       for(const raw of (parsed.data||[])){
         const r = normalizeRowKeys(raw);
@@ -322,7 +339,6 @@
   }
 
   function serpAggForDate(date){
-    // cache per date (even though SERPs aren’t dated, this keeps flow consistent)
     if(!serpAggCache[date]) serpAggCache[date] = Object.create(null);
     return serpAggCache[date];
   }
@@ -335,7 +351,7 @@
       const rows = serpByCeo.get(key) || [];
       const n = rows.length || 0;
       const neg = n ? rows.filter(x=>x.sentiment==='negative').length : 0;
-      const ctrl = n ? rows.filter(x=>x.control).length : 0;
+      const ctrl = n ? rows.filter(x=>x.control===true).length : 0;   // ensure strict boolean
       cache[key] = {
         negPct: n ? (neg/n*100) : 0,
         ctrlPct: n ? (ctrl/n*100) : 0
@@ -349,6 +365,15 @@
     return 'Low';
   }
 
+  // ---------------- Sorting helpers ----------------
+  function setSortIndicators(){
+    document.querySelectorAll('th.sortable').forEach(th=>{
+      const k = th.getAttribute('data-sort');
+      const aria = (k===sortKey) ? sortDir : 'none';
+      th.setAttribute('data-aria-sort', aria);
+    });
+  }
+
   // ---------------- Render / Compute ----------------
   function applyFilterAndSort(){
     const f = (filterInput.value||'').trim().toLowerCase();
@@ -356,28 +381,30 @@
       (!f || r.ceo.toLowerCase().includes(f) || (r.company||'').toLowerCase().includes(f))
     );
 
-    // add serp metrics
+    // add serp metrics (from cache)
     const cache = serpAggForDate(currentDate);
     working = working.map(r=>{
       const m = cache[r.ceo.toLowerCase()] || {negPct:0, ctrlPct:0};
-      return {...r, negSerp:m.negPct, ctrl:m.ctrlPct, risk:riskFrom(m.negSerp, m.ctrl)};
+      const negNewsPct = r.total ? (r.negative/r.total*100) : 0;
+      return {...r, negNews:negNewsPct, negSerp:m.negPct, ctrl:m.ctrlPct, risk:riskFrom(m.negSerp, m.ctrl)};
     });
 
-    // sorting
-    const cmp = {
+    // sorting (full dataset)
+    const comparators = {
       ceo:      (a,b)=> a.ceo.localeCompare(b.ceo),
-      negNews:  (a,b)=> (a.negative/a.total) - (b.negative/b.total),
+      negNews:  (a,b)=> a.negNews - b.negNews,
       negSerp:  (a,b)=> a.negSerp - b.negSerp,
       ctrl:     (a,b)=> a.ctrl - b.ctrl,
       risk:     (a,b)=> sortRiskVal(a.risk) - sortRiskVal(b.risk)
-    }[sortKey];
-
+    };
+    const cmp = comparators[sortKey] || comparators.negNews;
     working.sort(cmp);
     if(sortDir==='desc') working.reverse();
 
     // pagination
     totalPages = Math.max(1, Math.ceil(working.length / PAGE_SIZE));
     currentPage = Math.min(currentPage, totalPages);
+    setSortIndicators();
   }
 
   function renderTable(){
@@ -385,14 +412,12 @@
     const slice = working.slice(start, start+PAGE_SIZE);
 
     tableBody.innerHTML = slice.map(r=>{
-      const negPct = r.total ? (r.negative/r.total*100) : 0;
-      const isSel = selected.has(r.ceo);
       return `<tr class="border-t hover:bg-slate-50">
-        <td class="p-3"><input type="checkbox" data-ceo="${escapeHtml(r.ceo)}" ${isSel?'checked':''}></td>
+        <td class="p-3"><input type="checkbox" data-ceo="${escapeHtml(r.ceo)}" ${selected.has(r.ceo)?'checked':''}></td>
         <td class="p-3 font-medium"><button class="underline" data-boards="${escapeHtml(r.ceo)}">${escapeHtml(r.ceo)}</button></td>
         <td class="p-3">${escapeHtml(r.company||'')}</td>
         <td class="p-3 text-slate-700">${escapeHtml(themeFor(r))}</td>
-        <td class="p-3" title="${r.negative} of ${r.total}">${fmtPct(negPct)}</td>
+        <td class="p-3" title="${r.negative} of ${r.total}">${fmtPct(r.negNews)}</td>
         <td class="p-3">${fmtPct(r.negSerp)}</td>
         <td class="p-3">${fmtPct(r.ctrl)}</td>
         <td class="p-3">${r.risk}</td>
@@ -460,7 +485,7 @@
         neg.push(t? r.negative/t*100 : 0);
       }
     }else{
-      // index average for current date window (last ~12 days for legibility)
+      // index average for last ~12 days for legibility
       const N = Math.min(12, allDates.length);
       labels = allDates.slice(-N);
       caption = 'Index average (no CEO selected)';
@@ -488,7 +513,7 @@
       responsive:true, maintainAspectRatio:false,
       scales:{ x:{stacked:true}, y:{stacked:true, beginAtZero:true, ticks:{callback:v=>v+'%'}} },
       plugins:{ legend:{position:'top'},
-        tooltip:{ callbacks:{ label:(ctx)=> `${ctx.dataset.label}: ${Math.round(ctx.parsed.y*10)/10}%` } }
+        tooltip:{ callbacks:{ label:(ctx)=> `${ctx.dataset.label}: ${fmtPctNum(ctx.parsed.y)}%` } }
       }
     };
 
@@ -543,7 +568,7 @@
     modalBody.innerHTML = rows.map(r=>`
       <div class="p-3 border rounded-xl mb-3">
         <div class="flex items-center justify-between">
-          <div class="text-xs text-slate-500">${escapeHtml((new URL(r.link)).hostname)}</div>
+          <div class="text-xs text-slate-500">${escapeHtml((() => { try {return new URL(r.link).hostname;} catch {return '';} })())}</div>
           <div class="flex gap-2">
             <span class="text-[11px] px-2 py-0.5 rounded-full ${r.control?'bg-emerald-100 text-emerald-700':'bg-slate-100 text-slate-700'}">${r.control?'controlled':'uncontrolled'}</span>
             <span class="text-[11px] px-2 py-0.5 rounded-full ${r.sentiment==='negative'?'bg-rose-100 text-rose-700':(r.sentiment==='positive'?'bg-emerald-100 text-emerald-700':'bg-slate-100 text-slate-700')}">${r.sentiment||'neutral'}</span>
@@ -579,7 +604,7 @@
   }
 
   // ---------------- Events / Init ----------------
-  document.querySelectorAll('th[data-sort]').forEach(th=>{
+  document.querySelectorAll('th.sortable').forEach(th=>{
     th.addEventListener('click', ()=>{
       const key = th.getAttribute('data-sort');
       if(sortKey===key){ sortDir = (sortDir==='asc'?'desc':'asc'); } else { sortKey=key; sortDir='desc'; }
@@ -621,7 +646,8 @@
     await loadSerpsOnce();
     await loadBoardsOnce();
     await ensureThemesForDate(currentDate);
-    applyFilterAndSort(); computeSerpAggs(currentDate); applyFilterAndSort(); renderTable();
+    applyFilterAndSort(); computeSerpAggs(currentDate); applyFilterAndSort();
+    renderTable();
   })();
 })();
 </script>
