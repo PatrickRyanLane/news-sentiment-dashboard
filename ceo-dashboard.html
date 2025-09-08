@@ -9,7 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
   th.sortable { cursor: pointer; user-select: none; }
-  th.sortable .arrow { margin-left: .35rem; font-size: .8em; opacity:.6 }
+  th.sortable .arrow { margin-left:.35rem; font-size:.8em; opacity:.6 }
   th.sortable[data-aria-sort="asc"]  .arrow::after  { content: "▲"; }
   th.sortable[data-aria-sort="desc"] .arrow::after  { content: "▼"; }
 </style>
@@ -19,7 +19,6 @@
   <header class="mb-6">
     <h1 class="text-3xl font-bold">CEO News Sentiment Dashboard</h1>
     <p class="text-sm text-slate-600">
-      Shows the top Fortune 500 CEOs by negative article share for a selected day.
       Data sources: <code>data_ceos/daily_counts.csv</code>, <code>data/serps/ceo_serps.csv</code>, <code>data/ceo_boards.csv</code>.
     </p>
   </header>
@@ -105,7 +104,7 @@
   const CSV_COUNTS   = 'data_ceos/daily_counts.csv';
   const CSV_ARTICLES = (date) => `data_ceos/articles/${date}.csv`;
   const CSV_SERPS    = 'data/serps/ceo_serps.csv';
-  const CSV_BOARDS   = 'data/ceo_boards.csv';        // FIXED: boards live in data/, not data_ceos/
+  const CSV_BOARDS   = 'data/ceo_boards.csv';
   const PAGE_SIZE    = 25;
 
   // ---------------- Elements ----------------
@@ -128,9 +127,9 @@
   const modalClose    = document.getElementById('modalClose');
 
   // ---------------- State ----------------
-  let allRows = [];     // every row from counts csv (all dates)
+  let allRows = [];     // all dates
   let currentDate = null;
-  let working = [];     // filtered and enriched rows (current date + filter)
+  let working = [];     // filtered + enriched for current date
   let selected = new Set(); // selected CEOs (for trend)
   let trendChart = null;
 
@@ -165,35 +164,28 @@
     return out;
   }
 
-  function stripPublicationTail(t){ const i = t.lastIndexOf(' - '); return i>0? t.slice(0,i) : t; }
+  function stripPublicationTail(t){
+    // remove trailing " - Publication"
+    const i = t.lastIndexOf(' - ');
+    return i>0 ? t.slice(0,i) : t;
+  }
 
-  // Robust control parser: handles boolean-ish and labels like "controlled"/"uncontrolled"
-// REPLACE your current parseControl with this:
-function parseControl(v) {
-  if (typeof v === 'boolean') return v;
+  // Robust control parser (bugfixed: checks "uncontrolled" before "controlled" and uses exacts)
+  function parseControl(v){
+    if (typeof v === 'boolean') return v;
+    const s = String(v || '').trim().toLowerCase();
+    if (!s) return false;
 
-  const s = String(v || '').trim().toLowerCase();
-  if (!s) return false;
+    // numerics & booleans
+    if (s === '1' || s === 'true' || s === 'yes' || s === 'y') return true;
+    if (s === '0' || s === 'false' || s === 'no'  || s === 'n') return false;
 
-  // Normalize simple numerics & booleans
-  if (s === '1' || s === 'true' || s === 'yes' || s === 'y') return true;
-  if (s === '0' || s === 'false' || s === 'no'  || s === 'n') return false;
+    // exact labels
+    if (s === 'uncontrolled' || s === 'not controlled') return false;
+    if (s === 'controlled' || s === 'official' || s === 'owned' || s === 'brand' || s === 'brand site') return true;
 
-  // Handle exact labels you use in CSV
-  if (s === 'uncontrolled' || s === 'not controlled') return false;
-
-  if (
-    s === 'controlled' ||
-    s === 'official'   ||
-    s === 'owned'      ||
-    s === 'brand'      ||
-    s === 'brand site'
-  ) return true;
-
-  // Be conservative by default
-  return false;
-}
-
+    return false;
+  }
 
   // ---------------- Theme Engine ----------------
   const themesByDate = Object.create(null); // themesByDate[date][ceo] = str
@@ -205,6 +197,7 @@ function parseControl(v) {
     'market','stock','shares','price','prices','quarter','q1','q2','q3','q4','year','yrs','vs','inc','corp','co','ltd','plc','ceo'
   ]);
   const NGRAM_MAX=4, MIN_PHRASE_COUNT=2, MAX_THEME_WORDS=5;
+
   function tok(s){ return s.toLowerCase().replace(/[\u2019\u2018']/g,'').replace(/[^a-z0-9]+/g,' ').trim().split(/\s+/).filter(Boolean); }
   function removeNameCompany(tokens, ceo, company){
     const ban = new Set([...STOPWORDS]);
@@ -236,13 +229,15 @@ function parseControl(v) {
     })[0][0];
     return best.split(' ').slice(0,MAX_THEME_WORDS).join(' ');
   }
+
   async function ensureThemesForDate(date){
     if(themesByDate[date]) return;
     const arts = await loadArticlesForDate(date);
     const negByCeo = new Map();
     for(const a of arts){
-      if((a.sentiment||'')!=='negative') continue;
-      const ceo=(a.ceo||a.brand||'').trim(); if(!ceo) continue;
+      // IMPORTANT: sentiment normalized to lowercase when loaded
+      if((a.sentiment||'') !== 'negative') continue;
+      const ceo=(a.ceo||'').trim(); if(!ceo) continue;
       if(!negByCeo.has(ceo)) negByCeo.set(ceo, []);
       negByCeo.get(ceo).push(a.title||'');
     }
@@ -256,7 +251,8 @@ function parseControl(v) {
   }
   function themeFor(row){
     const map = themesByDate[currentDate] || {};
-    return (map[row.ceo] || row.theme || 'None').trim() || 'None';
+    const t = (map[row.ceo] || row.theme || 'None').trim();
+    return t || 'None';
   }
 
   // ---------------- Data Loading ----------------
@@ -301,7 +297,8 @@ function parseControl(v) {
           title: String(r.title || r.headline || '').trim(),
           url: rawUrl,
           domain,
-          sentiment: String(r.sentiment || r.label || 'neutral')
+          // CRITICAL: normalize to lowercase so theme engine sees "negative"
+          sentiment: String(r.sentiment || r.label || 'neutral').toLowerCase()
         };
       });
     }catch(e){ console.warn('articles load failed', e); }
@@ -336,7 +333,7 @@ function parseControl(v) {
   async function loadBoardsOnce(){
     if(boardsLoaded) return;
     try{
-      const txt = await fetchText(CSV_BOARDS);    // FIXED path used here
+      const txt = await fetchText(CSV_BOARDS);
       const parsed = Papa.parse(txt,{header:true});
       for(const raw of (parsed.data||[])){
         const r = normalizeRowKeys(raw);
@@ -365,7 +362,7 @@ function parseControl(v) {
       const rows = serpByCeo.get(key) || [];
       const n = rows.length || 0;
       const neg = n ? rows.filter(x=>x.sentiment==='negative').length : 0;
-      const ctrl = n ? rows.filter(x=>x.control===true).length : 0;   // ensure strict boolean
+      const ctrl = n ? rows.filter(x=>x.control===true).length : 0;
       cache[key] = {
         negPct: n ? (neg/n*100) : 0,
         ctrlPct: n ? (ctrl/n*100) : 0
@@ -373,9 +370,10 @@ function parseControl(v) {
     }
   }
 
+  // UPDATED risk per your rules
   function riskFrom(negSerpPct, ctrlPct){
-    if(negSerpPct > 0) return 'High';
-    if(ctrlPct < 70)   return 'Medium';
+    if(negSerpPct > 0)    return 'High';
+    if(negSerpPct === 0 && ctrlPct < 35) return 'Medium';
     return 'Low';
   }
 
@@ -395,15 +393,16 @@ function parseControl(v) {
       (!f || r.ceo.toLowerCase().includes(f) || (r.company||'').toLowerCase().includes(f))
     );
 
-    // add serp metrics (from cache)
+    // add serp metrics (from cache) + compute risk
     const cache = serpAggForDate(currentDate);
     working = working.map(r=>{
       const m = cache[r.ceo.toLowerCase()] || {negPct:0, ctrlPct:0};
       const negNewsPct = r.total ? (r.negative/r.total*100) : 0;
-      return {...r, negNews:negNewsPct, negSerp:m.negPct, ctrl:m.ctrlPct, risk:riskFrom(m.negSerp, m.ctrl)};
+      const risk = riskFrom(m.negPct, m.ctrlPct);
+      return {...r, negNews:negNewsPct, negSerp:m.negPct, ctrl:m.ctrlPct, risk};
     });
 
-    // sorting (full dataset)
+    // sort over FULL dataset
     const comparators = {
       ceo:      (a,b)=> a.ceo.localeCompare(b.ceo),
       negNews:  (a,b)=> a.negNews - b.negNews,
@@ -471,7 +470,7 @@ function parseControl(v) {
       btn.addEventListener('click', ()=> showSerp(btn.getAttribute('data-serp')));
     });
 
-    // Boards modal (CEO name and button both open boards)
+    // Boards modal (CEO name + button open boards)
     tableBody.querySelectorAll('button[data-boards]').forEach(btn=>{
       btn.addEventListener('click', ()=> showBoards(btn.getAttribute('data-boards')));
     });
@@ -499,7 +498,7 @@ function parseControl(v) {
         neg.push(t? r.negative/t*100 : 0);
       }
     }else{
-      // index average for last ~12 days for legibility
+      // index average (last ~12 days for legibility)
       const N = Math.min(12, allDates.length);
       labels = allDates.slice(-N);
       caption = 'Index average (no CEO selected)';
