@@ -168,18 +168,32 @@
   function stripPublicationTail(t){ const i = t.lastIndexOf(' - '); return i>0? t.slice(0,i) : t; }
 
   // Robust control parser: handles boolean-ish and labels like "controlled"/"uncontrolled"
-  function parseControl(v){
-    if (typeof v === 'boolean') return v;
-    const s = String(v||'').trim().toLowerCase();
-    if (!s) return false;
-    if (s==='true' || s==='t' || s==='1' || s==='yes' || s==='y') return true;
-    if (s==='false' || s==='f' || s==='0' || s==='no'  || s==='n') return false;
-    if (s.includes('controlled'))   return true;      // "controlled"
-    if (s.includes('uncontrolled')) return false;     // "uncontrolled"
-    // common synonyms
-    if (s.includes('official') || s.includes('owned') || s.includes('site')) return true;
-    return false;
-  }
+// REPLACE your current parseControl with this:
+function parseControl(v) {
+  if (typeof v === 'boolean') return v;
+
+  const s = String(v || '').trim().toLowerCase();
+  if (!s) return false;
+
+  // Normalize simple numerics & booleans
+  if (s === '1' || s === 'true' || s === 'yes' || s === 'y') return true;
+  if (s === '0' || s === 'false' || s === 'no'  || s === 'n') return false;
+
+  // Handle exact labels you use in CSV
+  if (s === 'uncontrolled' || s === 'not controlled') return false;
+
+  if (
+    s === 'controlled' ||
+    s === 'official'   ||
+    s === 'owned'      ||
+    s === 'brand'      ||
+    s === 'brand site'
+  ) return true;
+
+  // Be conservative by default
+  return false;
+}
+
 
   // ---------------- Theme Engine ----------------
   const themesByDate = Object.create(null); // themesByDate[date][ceo] = str
