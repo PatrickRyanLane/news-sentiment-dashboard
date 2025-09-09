@@ -232,13 +232,13 @@ Kohls
 AutoZone
 Lam Research
 Corteva
-Peter Kiewit Sons'
+Peter Kiewit Sons
 Builders FirstSource
 Kyndryl
 EchoStar
 American Family Insurance
 Delek US
-Land O'Lakes
+Land OLakes
 Sempra
 Global Partners
 WW Grainger
@@ -254,7 +254,7 @@ Ally Financial
 BorgWarner
 Estée Lauder
 Loews
-O'Reilly Automotive
+OReilly Automotive
 Markel Group
 Stanley Black & Decker
 Micron Technology
