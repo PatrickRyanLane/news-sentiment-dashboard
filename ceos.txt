@@ -89,7 +89,7 @@ Elliott Hill
 Safra Catz
 AJ Jim Teague
 Richard Fairbank
-Wilfred Chiang
+Willie Chiang
 Michael Kasbar
 Peter Zaffino
 James Quincey
@@ -150,7 +150,7 @@ Lawrence Coben
 Robert Bradway
 John Ketchum
 Rainer Blair
-Daniel O'Day
+Daniel ODay
 Michael Manley
 Carlos Abrams-Rivera
 Philip Gallagher
@@ -218,7 +218,7 @@ Mark Millett
 Dan Amos
 Tony Cheng
 Karsanbhai
-Ronald P O'Hanley
+Ronald P OHanley
 Timothy Knavish
 David Burritt
 Maria Black
@@ -246,7 +246,7 @@ Bob Pragada
 Pedro Pizarro
 William Hornbuckle
 Andrew McMahon
-Christopher O'Herlihy
+Christopher OHerlihy
 James Cracchiolo
 Ryan Marshall
 Matthew Meloy
@@ -332,7 +332,7 @@ Mark George
 Andrew Marsh
 Robert Berkley
 Javier Rodriguez
-Michael O'Grady
+Michael OGrady
 James Snee
 Timothy J Donahue
 Joseph Ferraro
@@ -348,7 +348,7 @@ Ellen Cooper
 Bracken Darrell
 Erik Fyrwald
 Christopher Kastner
-Shane O'Kelly
+Shane OKelly
 Ralph LaRossa
 Kecia Steelman
 Michele Buck
@@ -608,7 +608,7 @@ Dave Davis
 Michael J Smith
 Strauss Zelnick
 John C Turner Jr
-David M O'Malley
+David M OMalley
 Frank A Lonegro
 James F Risoleo
 Ken Xie
@@ -779,7 +779,7 @@ Denise A Paulonis
 Clifford A Skelton
 Jean-Michel Ribieras
 Douglas F Bauer
-Shawn O'Connell
+Shawn OConnell
 Bill Meury
 Dale Francescon
 Michael Nierenberg

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>News Sentiment Dashboards (Combined)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .tab-active { background: #0f172a; color: #fff; }
+    .tab-inactive { background: #ffffff; color: #0f172a; }
+    .tab-btn { padding: .5rem .75rem; border-radius: .5rem; border: 1px solid #e5e7eb; }
+    .frame-shell { border: 1px solid #e5e7eb; border-radius: 1rem; background: #fff; }
+    .ext-link { font-size: .85rem; color: #475569; }
+    .ext-link a { text-decoration: underline; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <div class="max-w-7xl mx-auto p-6">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold">News Sentiment Dashboards</h1>
+      <p class="text-sm text-slate-600">Switch tabs to view the Brand or CEO dashboards. These are your existing pages, unchanged, embedded below.</p>
+    </header>
+
+    <!-- Tabs -->
+    <div class="flex items-center gap-2 mb-4">
+      <button id="tabBrand" class="tab-btn tab-active" data-tab="brand">Brand Dashboard</button>
+      <button id="tabCeo" class="tab-btn tab-inactive" data-tab="ceo">CEO Dashboard</button>
+      <div class="ml-auto ext-link" id="openLink"></div>
+    </div>
+
+    <!-- Frames -->
+    <section class="frame-shell">
+      <!-- Adjust the src paths if your filenames differ -->
+      <iframe id="frameBrand" src="dashboard.html?v=1" title="Brand Dashboard"
+              style="width:100%; border:0; display:block; height:80vh;"></iframe>
+      <iframe id="frameCeo" src="ceo-dashboard.html?v=1" title="CEO Dashboard"
+              style="width:100%; border:0; display:none; height:80vh;"></iframe>
+    </section>
+
+    <p class="text-xs text-slate-500 mt-3">
+      Tip: You can deep-link with <code>?tab=brand</code> or <code>?tab=ceo</code>. Your last selection is remembered.
+    </p>
+  </div>
+
+  <script>
+    (function(){
+      const btnBrand = document.getElementById('tabBrand');
+      const btnCeo   = document.getElementById('tabCeo');
+      const frameBrand = document.getElementById('frameBrand');
+      const frameCeo   = document.getElementById('frameCeo');
+      const openLink   = document.getElementById('openLink');
+
+      function setActiveTab(tab){
+        // persist
+        try { localStorage.setItem('combined_tab', tab); } catch {}
+
+        // toggle button styles
+        if(tab === 'brand'){
+          btnBrand.classList.add('tab-active'); btnBrand.classList.remove('tab-inactive');
+          btnCeo.classList.add('tab-inactive'); btnCeo.classList.remove('tab-active');
+          frameBrand.style.display = 'block';
+          frameCeo.style.display = 'none';
+          setOpenLink('Brand', frameBrand.src);
+        }else{
+          btnCeo.classList.add('tab-active'); btnCeo.classList.remove('tab-inactive');
+          btnBrand.classList.add('tab-inactive'); btnBrand.classList.remove('tab-active');
+          frameCeo.style.display = 'block';
+          frameBrand.style.display = 'none';
+          setOpenLink('CEO', frameCeo.src);
+        }
+        // try resize now (in case already loaded)
+        requestResize();
+      }
+
+      function setOpenLink(label, href){
+        openLink.innerHTML = `Open full page: <a target="_blank" rel="noopener" href="${href}">${label} dashboard</a>`;
+      }
+
+      // Auto-resize iframes (same-origin, so we can read heights)
+      function resizeFrame(iframe){
+        try{
+          const doc = iframe.contentDocument || iframe.contentWindow?.document;
+          if(!doc) return;
+          const h = Math.max(
+            doc.body?.scrollHeight || 0,
+            doc.documentElement?.scrollHeight || 0,
+            800
+          );
+          // Cap height to avoid runaway growth; allow scroll within iframe if very long
+          iframe.style.height = Math.min(h + 40, 2000) + 'px';
+        }catch(e){
+          // Cross-origin? Shouldn't happen on GH Pages within same repo, but ignore if so.
+        }
+      }
+
+      function requestResize(){
+        resizeFrame(frameBrand);
+        resizeFrame(frameCeo);
+      }
+
+      // Wire up
+      btnBrand.addEventListener('click', ()=> setActiveTab('brand'));
+      btnCeo.addEventListener('click',   ()=> setActiveTab('ceo'));
+
+      // Resize when iframes load and also on window resize
+      frameBrand.addEventListener('load', requestResize);
+      frameCeo.addEventListener('load', requestResize);
+      window.addEventListener('resize', ()=> { clearTimeout(window.__rfT); window.__rfT = setTimeout(requestResize, 150); });
+
+      // Initial tab: query string > localStorage > brand
+      const params = new URLSearchParams(location.search);
+      const qsTab = params.get('tab');
+      const saved = (()=>{ try { return localStorage.getItem('combined_tab'); } catch { return null; }})();
+      const initial = (qsTab === 'ceo' || qsTab === 'brand') ? qsTab : (saved || 'brand');
+      setActiveTab(initial);
+    })();
+  </script>
+</body>
+</html>
