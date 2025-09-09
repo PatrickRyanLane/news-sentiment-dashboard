@@ -208,18 +208,24 @@ function hostMatchesSuffix(host, suffix) {
       ceo:(r.CEO||'').trim()
     })).filter(r=>r.company);
     byCompany = new Map(roster.map(r=>[keyCompany(r.company), r]));
-    isControlledLink = (url)=>{
-      try{
-        const d = new URL(url).hostname.toLowerCase();
-        for(const r of roster){
-          if(!r.root) continue;
-          if(d===r.root) return true;
-          if(d.endsWith('.'+r.root)) return true;
-        }
-      }catch{}
-      return false;
-    };
-  }
+    isControlledLink = (url) => {
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+
+    // Treat these networks / stores as controlled
+    if (CONTROLLED_HOST_SUFFIXES.some(sfx => hostMatchesSuffix(host, sfx))) {
+      return true;
+    }
+
+    // Treat roster root domains (and their subdomains) as controlled
+    for (const r of roster) {
+      const root = (r.root || '').toLowerCase().trim();
+      if (!root) continue;
+      if (hostMatchesSuffix(host, root)) return true;
+    }
+  } catch {}
+  return false;
+};
 
   // ===== SERPs (aggregate by brand) =====
   async function loadSerps(){
