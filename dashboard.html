@@ -181,6 +181,22 @@
   function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
 
   // ===== Roster =====
+  // Add this near the top-level (above loadRoster or inside it before assigning isControlledLink)
+const CONTROLLED_HOST_SUFFIXES = [
+  // Social & app stores to always treat as controlled
+  'linkedin.com',
+  'facebook.com',
+  'x.com',          // X (formerly Twitter)
+  'twitter.com',    // (keep legacy just in case)
+  'instagram.com',
+  'apps.apple.com', // Apple App Store
+  'play.google.com' // Google Play
+];
+
+function hostMatchesSuffix(host, suffix) {
+  return host === suffix || host.endsWith('.' + suffix);
+}
+
   async function loadRoster(){
     const txt = await (await fetch(CSV_ROSTER+'?_='+Date.now(), {cache:'no-store'})).text();
     const {data} = Papa.parse(txt, {header:true});
