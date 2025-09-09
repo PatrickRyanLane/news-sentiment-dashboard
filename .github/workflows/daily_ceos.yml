@@ -48,6 +48,10 @@ jobs:
       - name: Ensure CEO data folders exist
         run: mkdir -p data_ceos/articles
 
+       - name: Build CEO inputs from roster
+        run: |
+          python scripts/build_inputs_from_roster.py
+
       - name: Run daily CEO sentiment (if script exists)
         if: ${{ hashFiles('news_sentiment_ceos.py') != '' }}
         run: python news_sentiment_ceos.py
