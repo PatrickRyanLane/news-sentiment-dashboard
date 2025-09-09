@@ -20,6 +20,7 @@ import re
 import csv
 import time
 import html
+import json
 import feedparser
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
@@ -27,8 +28,14 @@ from zoneinfo import ZoneInfo
 from urllib.parse import urlparse, parse_qsl, unquote, urlencode
 
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import requests
 
 # ------------- Config -----------------
+NEGATIVE_THRESHOLD = 0.4  # 40%
+ALERT_COOLDOWN_DAYS = 180 # 6 months
+WEBHOOK_URL = os.environ.get("SENTIMENT_WEBHOOK_URL")
+KIT_API_KEY = os.environ.get("KIT_API_KEY")
+KIT_TAG_ID = os.environ.get("KIT_TAG_ID")
 HL   = "en-US"          # Google News interface language
 GL   = "US"             # geography
 CEID = "US:en"          # country:lang
@@ -151,6 +158,25 @@ def merged_brand_map() -> dict[str, list[str]]:
     for b in brands_txt:
         base.setdefault(b, [])
     return base
+
+def read_last_alert_dates() -> dict[str, str]:
+    """Reads the last alert dates from data/last_alert_dates.json."""
+    path = os.path.join("data", "last_alert_dates.json")
+    if not os.path.exists(path):
+        return {}
+    with open(path, "r", encoding="utf-8") as f:
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}
+
+def write_last_alert_dates(dates: dict[str, str]) -> None:
+    """Writes the last alert dates to data/last_alert_dates.json."""
+    os.makedirs("data", exist_ok=True)
+    path = os.path.join("data", "last_alert_dates.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(dates, f, indent=2)
+
 
 # --------- Google News helpers (URL-safe) ----------
 _NON_ALNUM = re.compile(r"[^A-Za-z0-9-]")
@@ -279,6 +305,62 @@ def write_articles_csv(for_date: str, rows: list[dict]) -> None:
                 r.get("published",""),
             ])
 
+def send_webhook_alert(brand: str, neg: int, tot: int, last_alert_dates: dict[str, str]) -> None:
+    """Send a webhook if the negative threshold is met and not in cooldown."""
+    if tot > 0 and (neg / tot) >= NEGATIVE_THRESHOLD:
+        # Cooldown check
+        last_alert_date_str = last_alert_dates.get(brand)
+        if last_alert_date_str:
+            last_alert_date = datetime.fromisoformat(last_alert_date_str).date()
+            if (datetime.now(EASTERN).date() - last_alert_date).days < ALERT_COOLDOWN_DAYS:
+                print(f"Skipping alert for {brand} due to cooldown.")
+                return
+
+        pct = round((neg / tot) * 100)
+        
+        if WEBHOOK_URL:
+            payload = {
+                "text": f"Alert: {brand} has {neg}/{tot} ({pct}%) negative articles."
+            }
+            try:
+                response = requests.post(WEBHOOK_URL, json=payload)
+                response.raise_for_status()  # Raise an exception for bad status codes
+                print(f"Sent alert for {brand} to {WEBHOOK_URL}")
+                last_alert_dates[brand] = now_eastern_date_str()
+            except requests.exceptions.RequestException as e:
+                print(f"Error sending webhook for {brand}: {e}")
+        
+        if KIT_API_KEY and KIT_TAG_ID:
+            try:
+                tag_id = int(KIT_TAG_ID)
+                send_kit_broadcast(brand, neg, tot, pct, tag_id)
+                last_alert_dates[brand] = now_eastern_date_str()
+            except ValueError:
+                print(f"Error: KIT_TAG_ID '{KIT_TAG_ID}' is not a valid integer.")
+
+def send_kit_broadcast(brand: str, neg: int, tot: int, pct: int, tag_id: int) -> None:
+    """Send a broadcast to a specific tag in Kit."""
+    if not KIT_API_KEY:
+        return
+
+    url = "https://api.kit.com/v4/broadcasts"
+    headers = {
+        "Authorization": f"Bearer {KIT_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "subject": f"High Negative Sentiment Alert for {brand}",
+        "content": f"<p>{brand} has {neg}/{tot} ({pct}%) negative articles.</p>",
+        "tag_ids": [tag_id]
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status()
+        print(f"Sent Kit broadcast for {brand}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending Kit broadcast for {brand}: {e}")
+
 def compute_counts_and_themes(for_date: str, article_rows: list[dict]) -> list[dict]:
     """
     Aggregate per brand for 'for_date'.
@@ -294,12 +376,15 @@ def compute_counts_and_themes(for_date: str, article_rows: list[dict]) -> list[d
             continue
         by_brand[b].append(r)
 
+    last_alert_dates = read_last_alert_dates()
     out_rows: list[dict] = []
     for brand, items in by_brand.items():
         pos = sum(1 for x in items if (x.get("sentiment") or "") == "positive")
         neu = sum(1 for x in items if (x.get("sentiment") or "") == "neutral")
         neg = sum(1 for x in items if (x.get("sentiment") or "") == "negative")
         tot = pos + neu + neg
+
+        send_webhook_alert(brand, neg, tot, last_alert_dates)
 
         negative_titles = [x.get("title","") for x in items if (x.get("sentiment") or "") == "negative"]
         theme = top_ngram_from_titles(brand, negative_titles, MIN_THEME_FREQ)
@@ -316,6 +401,7 @@ def compute_counts_and_themes(for_date: str, article_rows: list[dict]) -> list[d
             "theme": theme,
         })
 
+    write_last_alert_dates(last_alert_dates)
     out_rows.sort(key=lambda r: (-int(r["negative"]), r["brand"].lower()))
     return out_rows
 
