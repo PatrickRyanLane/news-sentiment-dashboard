@@ -52,6 +52,9 @@ jobs:
 
       - name: Run daily sentiment (if script exists)
         if: ${{ hashFiles('news_sentiment.py') != '' }}
+        env:
+          KIT_API_KEY: ${{ secrets.KIT_API_KEY }}
+          KIT_TAG_ID: ${{ secrets.KIT_TAG_ID }}
         run: python news_sentiment.py
 
       - name: Commit & push changes (if any)

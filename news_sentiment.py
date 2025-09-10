@@ -305,33 +305,27 @@ def write_articles_csv(for_date: str, rows: list[dict]) -> None:
                 r.get("published",""),
             ])
 
-def send_kit_alert(brand: str, neg: int, tot: int, last_alert_dates: dict[str, str]) -> None:
-    """Send a Kit broadcast if the negative threshold is met and not in cooldown."""
+def send_kit_summary_broadcast(brands_to_alert: list[dict]) -> bool:
+    """Send a single broadcast to Kit for multiple brands. Returns True on success."""
     if not (KIT_API_KEY and KIT_TAG_ID):
-        return
+        return False
 
-    if tot > 0 and (neg / tot) >= NEGATIVE_THRESHOLD:
-        # Cooldown check
-        last_alert_date_str = last_alert_dates.get(brand)
-        if last_alert_date_str:
-            last_alert_date = datetime.fromisoformat(last_alert_date_str).date()
-            if (datetime.now(EASTERN).date() - last_alert_date).days < ALERT_COOLDOWN_DAYS:
-                print(f"Skipping alert for {brand} due to cooldown.")
-                return
-
+    brand_count = len(brands_to_alert)
+    subject = f"High Negative Sentiment Alert for {brand_count} Brand(s)"
+    
+    content_html = "<p>The following brands have high negative sentiment:</p><ul>"
+    for brand_info in brands_to_alert:
+        brand = brand_info['brand']
+        neg = brand_info['neg']
+        tot = brand_info['tot']
         pct = round((neg / tot) * 100)
-        
-        try:
-            tag_id = int(KIT_TAG_ID)
-            # Only update cooldown if the broadcast was sent successfully
-            if send_kit_broadcast(brand, neg, tot, pct, tag_id):
-                last_alert_dates[brand] = now_eastern_date_str()
-        except ValueError:
-            print(f"Error: KIT_TAG_ID '{KIT_TAG_ID}' is not a valid integer.")
+        content_html += f"<li><strong>{brand}:</strong> {neg}/{tot} ({pct}%) negative articles.</li>"
+    content_html += "</ul>"
 
-def send_kit_broadcast(brand: str, neg: int, tot: int, pct: int, tag_id: int) -> bool:
-    """Send a broadcast to a specific tag in Kit. Returns True on success."""
-    if not KIT_API_KEY:
+    try:
+        tag_id = int(KIT_TAG_ID)
+    except ValueError:
+        print(f"Error: KIT_TAG_ID '{KIT_TAG_ID}' is not a valid integer.")
         return False
 
     url = "https://api.kit.com/v4/broadcasts"
@@ -340,18 +334,18 @@ def send_kit_broadcast(brand: str, neg: int, tot: int, pct: int, tag_id: int) ->
         "Content-Type": "application/json"
     }
     payload = {
-        "subject": f"High Negative Sentiment Alert for {brand}",
-        "content": f"<p>{brand} has {neg}/{tot} ({pct}%) negative articles.</p>",
+        "subject": subject,
+        "content": content_html,
         "tag_ids": [tag_id]
     }
 
     try:
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
-        print(f"Sent Kit broadcast for {brand}")
+        print(f"Sent Kit summary broadcast for {brand_count} brands.")
         return True
     except requests.exceptions.RequestException as e:
-        print(f"Error sending Kit broadcast for {brand}: {e}")
+        print(f"Error sending Kit summary broadcast: {e}")
         return False
 
 def compute_counts_and_themes(for_date: str, article_rows: list[dict]) -> list[dict]:
@@ -371,13 +365,23 @@ def compute_counts_and_themes(for_date: str, article_rows: list[dict]) -> list[d
 
     last_alert_dates = read_last_alert_dates()
     out_rows: list[dict] = []
+    brands_to_alert: list[dict] = []
+
     for brand, items in by_brand.items():
         pos = sum(1 for x in items if (x.get("sentiment") or "") == "positive")
         neu = sum(1 for x in items if (x.get("sentiment") or "") == "neutral")
         neg = sum(1 for x in items if (x.get("sentiment") or "") == "negative")
         tot = pos + neu + neg
 
-        send_kit_alert(brand, neg, tot, last_alert_dates)
+        # Check if brand meets alert criteria
+        if tot > 0 and (neg / tot) >= NEGATIVE_THRESHOLD:
+            last_alert_date_str = last_alert_dates.get(brand)
+            if last_alert_date_str:
+                last_alert_date = datetime.fromisoformat(last_alert_date_str).date()
+                if (datetime.now(EASTERN).date() - last_alert_date).days >= ALERT_COOLDOWN_DAYS:
+                    brands_to_alert.append({"brand": brand, "neg": neg, "tot": tot})
+            else:
+                brands_to_alert.append({"brand": brand, "neg": neg, "tot": tot})
 
         negative_titles = [x.get("title","") for x in items if (x.get("sentiment") or "") == "negative"]
         theme = top_ngram_from_titles(brand, negative_titles, MIN_THEME_FREQ)
@@ -393,6 +397,13 @@ def compute_counts_and_themes(for_date: str, article_rows: list[dict]) -> list[d
             "negative": neg,
             "theme": theme,
         })
+
+    # Send one summary broadcast if there are any alerts
+    if brands_to_alert:
+        if send_kit_summary_broadcast(brands_to_alert):
+            # Update cooldown dates for all alerted brands
+            for alert_info in brands_to_alert:
+                last_alert_dates[alert_info['brand']] = now_eastern_date_str()
 
     write_last_alert_dates(last_alert_dates)
     out_rows.sort(key=lambda r: (-int(r["negative"]), r["brand"].lower()))
