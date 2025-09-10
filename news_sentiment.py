@@ -330,7 +330,7 @@ def send_kit_summary_broadcast(brands_to_alert: list[dict]) -> bool:
 
     url = "https://api.kit.com/v4/broadcasts"
     headers = {
-        "Authorization": f"Bearer {KIT_API_KEY}",
+        "X-Kit-Api-Key": KIT_API_KEY,
         "Content-Type": "application/json"
     }
     payload = {
