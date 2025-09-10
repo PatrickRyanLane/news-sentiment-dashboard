@@ -49,9 +49,7 @@
         <h2 class="text-lg font-semibold">Sentiment trend</h2>
         <div class="flex items-center gap-2 text-xs text-slate-500" id="trendInfo"></div>
       </div>
-      <div id="trendWrap">
-        <canvas id="trendChart"></canvas>
-      </div>
+      <div id="trendWrap"><canvas id="trendChart"></canvas></div>
     </section>
 
     <!-- Table -->
@@ -79,7 +77,6 @@
         <tbody id="tableBody"></tbody>
       </table>
 
-      <!-- Pagination -->
       <div class="mt-3 flex items-center gap-2">
         <button id="prevBtn" class="px-3 py-1.5 border rounded disabled:opacity-40">Prev</button>
         <button id="nextBtn" class="px-3 py-1.5 border rounded disabled:opacity-40">Next</button>
@@ -111,7 +108,7 @@
 
 <script>
 (() => {
-  // ----------- Config -----------
+  // ------- Config -------
   const GH_USER = 'jonas-sickler';
   const GH_REPO = 'news-sentiment-dashboard';
   const GH_PAGES_BASE = `https://${GH_USER}.github.io/${GH_REPO}/`;
@@ -122,7 +119,7 @@
 
   const PAGE_SIZE = 25;
 
-  // ----------- Elements -----------
+  // ------- Elements -------
   const dateSelect  = document.getElementById('dateSelect');
   const filterInput = document.getElementById('filterInput');
   const refreshBtn  = document.getElementById('refreshBtn');
@@ -145,14 +142,14 @@
   const modalBody     = document.getElementById('modalBody');
   const modalClose    = document.getElementById('modalClose');
 
-  // ----------- State -----------
+  // ------- State -------
   let roster = [];
   let counts = [];
   let serps  = [];
 
   let companyToSector = new Map();
 
-  let allDates = [];    // normalized YYYY-MM-DD
+  let allDates = [];
   let currentDate = null;
 
   let sectorsRows = [];
@@ -165,13 +162,10 @@
 
   let chart = null;
 
-  // ----------- Utils -----------
-  function normalizeKey(k){ return String(k||'').replace(/^\ufeff/, '').trim().toLowerCase(); }
-  function normHeaders(row){
-    const out = {};
-    for(const k in row){ out[normalizeKey(k)] = row[k]; }
-    return out;
-  }
+  // ------- Utils -------
+  const normKey = k => String(k||'').replace(/^\ufeff/, '').trim().toLowerCase();
+  function normHeaders(row){ const out={}; for(const k in row){ out[normKey(k)] = row[k]; } return out; }
+
   function fetchCSV(path){
     const rel = new URL(path, location.href).href + (path.includes('?')?'&':'?') + '_=' + Date.now();
     const abs = GH_PAGES_BASE + path + (path.includes('?')?'&':'?') + '_=' + Date.now();
@@ -194,15 +188,10 @@
   function asYMD(x){
     const s = String(x||'').trim();
     if(!s) return '';
-    // Fast path: already "YYYY-MM-DD..."
     const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
     if(m) return m[1];
     const t = Date.parse(s);
-    if(!isNaN(t)){
-      const d = new Date(t);
-      return d.toISOString().slice(0,10);
-    }
-    // last fallback: strip anything after first space or T
+    if(!isNaN(t)){ return new Date(t).toISOString().slice(0,10); }
     return s.split(/[ T]/)[0];
   }
 
@@ -215,8 +204,8 @@
       .trim();
   }
 
-  function pct(n,d,dp=0){ if(!d) return 0; const v=(n/d)*100; return +v.toFixed(dp); }
-  function fmtPct(v){ return `${Math.round(v)}%`; }
+  const pct = (n,d,dp=0)=> d? +( (n/d)*100 ).toFixed(dp) : 0;
+  const fmtPct = v => `${Math.round(v)}%`;
 
   function riskLabel(negSerpPct, controlPct){
     if(negSerpPct > 0) return {label:'High', rank:3};
@@ -233,9 +222,9 @@
     }[color] || 'bg-slate-100 text-slate-700';
     return `<span class="inline-block px-2 py-0.5 rounded-full text-[11px] ${cls}">${txt}</span>`;
   }
-  function esc(s){ return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+  const esc = s => String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 
-  // ----------- Load -----------
+  // ------- Load -------
   async function loadAll(){
     statusEl.textContent = 'Loading CSVs…';
     [roster, counts, serps] = await Promise.all([
@@ -244,40 +233,44 @@
       fetchCSV(CSV_SERPS)
     ]);
 
-    // Normalize dates + trim names right away
+    // Normalize news rows
     counts = counts
-      .filter(r=>r && r.date && r.brand)
+      .filter(r=> r && r.date && r.brand)
       .map(r=> ({...r,
         date: asYMD(r.date),
         brand: String(r.brand).trim()
       }));
 
-    serps = serps
-      .filter(r=> r && (r.date || r['date'] || r['Date']))
-      .map(r=>{
-        const date = asYMD(r.date || r['date'] || r['Date']);
-        const brand = String(r.brand || r['brand'] || r['Brand'] || '').trim();
-        return {...r, date, brand};
-      });
+    // Normalize SERPs; date may be missing or a single fixed value
+    serps = serps.map(r=>{
+      const date = asYMD(r.date || r['date'] || r['Date'] || '');
+      const brand = String(r.brand || r['Brand'] || '').trim();
+      return {...r, date, brand};
+    });
 
     // Roster company -> sector map
     companyToSector = new Map();
     for(const r of roster){
       const comp = (r.company || r.brand || r.name || r['company name'] || '').trim();
       const sect = (r.sector || r.industry || 'Unknown').trim();
-      if(comp){ companyToSector.set(normName(comp), sect); }
+      if(comp) companyToSector.set(normName(comp), sect);
     }
 
-    // Dates (from news)
+    // Dates from news (if none, we can't build the page)
     const dates = Array.from(new Set(counts.map(r=> r.date))).sort();
     allDates = dates;
     currentDate = dates[dates.length-1] || null;
-
     renderDateOptions();
+
     computeSectors();
     renderTable();
     renderTrend();
-    statusEl.textContent = `Loaded ${roster.length} roster rows, ${counts.length} news rows, ${serps.length} SERP rows.`;
+
+    // Status
+    const uniqueSerpDates = new Set(serps.map(s=> s.date).filter(Boolean));
+    const serpMode = uniqueSerpDates.size > 3 ? 'date-filtered' : 'date-agnostic';
+    statusEl.textContent =
+      `Roster: ${roster.length} • News: ${counts.length} • SERPs: ${serps.length} (${serpMode})`;
   }
 
   function renderDateOptions(){
@@ -285,14 +278,13 @@
     if(currentDate) dateSelect.value = currentDate;
   }
 
-  // ----------- Sector compute -----------
   function companySectorForBrand(brand){
     const key = normName(brand);
-    if(companyToSector.has(key)) return companyToSector.get(key);
-    return 'Unknown';
+    return companyToSector.get(key) || 'Unknown';
   }
 
   function computeSectors(){
+    // Aggregate news by sector for the selected date
     const newsBySector = new Map();
     for(const r of counts){
       if(r.date !== currentDate) continue;
@@ -304,16 +296,21 @@
       newsBySector.set(sec, acc);
     }
 
+    // Decide SERP date behavior:
+    // If the SERP file has many distinct dates ( > 3 ), we filter by currentDate.
+    // Otherwise we treat SERPs as date-agnostic and aggregate across all rows.
+    const uniqueSerpDates = new Set(serps.map(s=> s.date).filter(Boolean));
+    const serpFilterByDate = uniqueSerpDates.size > 3;
+
     const serpBySector = new Map();
     for(const s of serps){
-      if(s.date !== currentDate) continue; // <-- normalized compare
+      if(serpFilterByDate && s.date && s.date !== currentDate) continue;
       const sec = companySectorForBrand(s.brand || '');
-      const tot  = 1;
-      const isNeg = String(s.sentiment || s['sentiment'] || s['Sentiment'] || '').toLowerCase() === 'negative' ? 1 : 0;
-      const ctrl = /^(true|yes|1)$/i.test(String(s.control || s['control'] || s['Control'] || 'false')) ? 1 : 0;
+      const isNeg = String(s.sentiment || s['Sentiment'] || '').toLowerCase() === 'negative' ? 1 : 0;
+      const ctrl  = /^(true|yes|1)$/i.test(String(s.control || s['Control'] || 'false')) ? 1 : 0;
 
       const acc = serpBySector.get(sec) || {tot:0,neg:0,ctrl:0};
-      acc.tot  += tot;
+      acc.tot  += 1;
       acc.neg  += isNeg;
       acc.ctrl += ctrl;
       serpBySector.set(sec, acc);
@@ -345,12 +342,7 @@
     applyFilterAndSort();
   }
 
-  // ----------- Filter / sort / paginate -----------
-  let filteredRows = [];
-  let page = 0;
-  let sortKey = 'negNewsPct';
-  let sortDir = 'desc';
-
+  // ------- Filter / sort / paginate -------
   function applyFilterAndSort(){
     const q = (filterInput.value || '').trim().toLowerCase();
     filteredRows = sectorsRows.filter(r => !q || r.sector.toLowerCase().includes(q));
@@ -360,10 +352,9 @@
   }
 
   function sortRows(){
-    const k = sortKey;
     const dir = sortDir === 'asc' ? 1 : -1;
     filteredRows.sort((a,b)=>{
-      let va = a[k], vb = b[k];
+      let va = a[sortKey], vb = b[sortKey];
       if(typeof va === 'string') va = va.toLowerCase();
       if(typeof vb === 'string') vb = vb.toLowerCase();
       if(va < vb) return -1*dir;
@@ -383,13 +374,13 @@
     renderTrend();
   }
 
-  // ----------- Render table -----------
+  // ------- Render table -------
   function fmtPctRound(v){ return isFinite(v) ? `${Math.round(v)}%` : '—'; }
   function renderTable(){
     const start = page * PAGE_SIZE;
     const rows = filteredRows.slice(start, start + PAGE_SIZE);
 
-    const html = rows.map(r=>{
+    tableBody.innerHTML = rows.map(r=>{
       const isSel = selected.has(r.sector);
       return `<tr class="border-t hover:bg-slate-50">
         <td class="p-3"><input type="checkbox" data-sector="${r.sector.replace(/"/g,'&quot;')}" ${isSel?'checked':''}></td>
@@ -402,8 +393,6 @@
       </tr>`;
     }).join('\n');
 
-    tableBody.innerHTML = html;
-
     tableBody.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
       cb.addEventListener('change', ()=>{
         const sec = cb.getAttribute('data-sector');
@@ -413,28 +402,24 @@
     });
 
     tableBody.querySelectorAll('button[data-serp]').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const sec = btn.getAttribute('data-serp');
-        showSectorSerps(sec);
-      });
+      btn.addEventListener('click', ()=> showSectorSerps(btn.getAttribute('data-serp')));
     });
 
     const visibleAllChecked = rows.length && rows.every(r=> selected.has(r.sector));
     selectAll.checked = visibleAllChecked;
   }
 
-  // ----------- Trend -----------
+  // ------- Trend -------
   function seriesFor(sectorsSet){
-    const useSectors = sectorsSet && sectorsSet.size ? sectorsSet : null;
+    const use = sectorsSet && sectorsSet.size ? sectorsSet : null;
     const labels = allDates.slice(-30);
     const pos=[], neu=[], neg=[];
-
     for(const d of labels){
       let ap={pos:0,neu:0,neg:0};
       for(const r of counts){
         if(r.date!==d) continue;
         const sec = companySectorForBrand(r.brand || '');
-        if(useSectors && !useSectors.has(sec)) continue;
+        if(use && !use.has(sec)) continue;
         ap.pos += +r.positive||0;
         ap.neu += +r.neutral||0;
         ap.neg += +r.negative||0;
@@ -448,10 +433,10 @@
   }
 
   function renderTrend(){
-    const sel = new Set(selected);
-    const oneName = sel.size===1 ? Array.from(sel)[0] : null;
-    const s = seriesFor(sel);
-    trendInfo.textContent = (oneName ? `SECTOR: ${oneName}` : 'INDEX average (all/selected) over last 30 days');
+    const s = seriesFor(selected);
+    trendInfo.textContent = selected.size===1
+      ? `SECTOR: ${Array.from(selected)[0]}`
+      : 'INDEX average (all/selected) over last 30 days';
 
     const data = {
       labels: s.labels,
@@ -466,19 +451,18 @@
       maintainAspectRatio: false,
       scales: {
         x: { stacked:true, ticks:{ maxRotation:0, autoSkip:true, maxTicksLimit:8 } },
-        y: { stacked:true, beginAtZero:true, ticks:{ callback:(v)=> v+'%' } }
+        y: { stacked:true, beginAtZero:true, ticks:{ callback:v=> v+'%' } }
       },
       plugins: {
         legend: { position:'top' },
         tooltip: { callbacks:{ label:(ctx)=> `${ctx.dataset.label}: ${ctx.parsed.y}%` } }
       }
     };
-
     if(chart) chart.destroy();
     chart = new Chart(trendCanvas.getContext('2d'), {type:'bar', data, options});
   }
 
-  // ----------- SERP modal -----------
+  // ------- SERP modal -------
   function openModal(){ modalBackdrop.classList.remove('hidden'); }
   function closeModal(){ modalBackdrop.classList.add('hidden'); }
   modalClose.addEventListener('click', closeModal);
@@ -490,13 +474,17 @@
     modalSubtitle.textContent = `Date: ${currentDate}`;
     openModal();
 
+    // Use the same “date-agnostic unless many dates” rule
+    const uniqueSerpDates = new Set(serps.map(s=> s.date).filter(Boolean));
+    const serpFilterByDate = uniqueSerpDates.size > 3;
+
     const rows = serps.filter(s=>{
-      if(s.date !== currentDate) return false;
+      if(serpFilterByDate && s.date && s.date !== currentDate) return false;
       return companySectorForBrand(s.brand || '') === sector;
     });
 
     if(!rows.length){
-      modalBody.innerHTML = '<p class="text-sm text-slate-600">No SERP rows found for this sector on this date.</p>';
+      modalBody.innerHTML = '<p class="text-sm text-slate-600">No SERP rows found for this sector.</p>';
       return;
     }
 
@@ -513,12 +501,12 @@
         <div class="font-semibold">${esc(brand)}</div>
         <div class="mt-2 space-y-2">
           ${list.map(item=>{
-            const root = item['root domain'] || item['rootdomain'] || item.rootdomain || '';
-            const title = item.title || item['title'] || item['Title'] || '';
-            const link  = item.link || item['link'] || item['Link'] || '#';
-            const snip  = item.snippet || item['snippet'] || item['Snippet'] || '';
-            const ctrl  = /^(true|yes|1)$/i.test(String(item.control||item['control']||item['Control']||'false'));
-            const sent  = String(item.sentiment||item['sentiment']||item['Sentiment']||'').toLowerCase();
+            const root = item['root domain'] || item.rootdomain || '';
+            const title = item.title || item['Title'] || '';
+            const link  = item.link || item['Link'] || '#';
+            const snip  = item.snippet || item['Snippet'] || '';
+            const ctrl  = /^(true|yes|1)$/i.test(String(item.control||item['Control']||'false'));
+            const sent  = String(item.sentiment||item['Sentiment']||'').toLowerCase();
             const bCtrl = ctrl ? badge('controlled','blue') : badge('uncontrolled','gray');
             const bSent = sent==='negative' ? badge('negative','red') : (sent==='positive'?badge('positive','green'):badge('neutral','gray'));
             return `<div class="p-3 border rounded-xl">
@@ -537,16 +525,9 @@
     modalBody.innerHTML = html.join('\n');
   }
 
-  // ----------- Events -----------
+  // ------- Events -------
   refreshBtn.addEventListener('click', loadAll);
-
-  dateSelect.addEventListener('change', ()=>{
-    currentDate = dateSelect.value;
-    computeSectors();
-    renderTable();
-    renderTrend();
-  });
-
+  dateSelect.addEventListener('change', ()=>{ currentDate = dateSelect.value; computeSectors(); renderTable(); renderTrend(); });
   filterInput.addEventListener('input', applyFilterAndSort);
 
   document.querySelectorAll('.th-sort').forEach(th=>{
@@ -578,7 +559,7 @@
   prevBtn.addEventListener('click', ()=>{ if(page>0){ page--; updatePagination(); } });
   nextBtn.addEventListener('click', ()=>{ page++; updatePagination(); });
 
-  // ----------- Init -----------
+  // ------- Init -------
   loadAll();
 })();
 </script>
