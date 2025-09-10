@@ -61,7 +61,7 @@
           <tr>
             <th class="p-3 text-left"><input type="checkbox" id="selectAll"></th>
             <th class="p-3 text-left">Sector</th>
-            <th class="p-3 text-left th-sort" data-sort="negNewsPct">
+            <th class="p-3 text-left th-sort active" data-sort="negNewsPct">
               Negative News (%) <span class="arrow">▾</span>
             </th>
             <th class="p-3 text-left th-sort" data-sort="negSerpPct">
@@ -111,31 +111,32 @@
 
 <script>
 (() => {
-  // ----------- Config / constants -----------
+  // ----------- Config -----------
   const GH_USER = 'jonas-sickler';
   const GH_REPO = 'news-sentiment-dashboard';
   const GH_PAGES_BASE = `https://${GH_USER}.github.io/${GH_REPO}/`;
 
-  const CSV_ROSTER   = 'data/roster.csv';
-  const CSV_COUNTS   = 'data/daily_counts.csv';
-  const CSV_SERPS    = 'data/serps/brand_serps.csv';
+  const CSV_ROSTER = 'data/roster.csv';
+  const CSV_COUNTS = 'data/daily_counts.csv';
+  const CSV_SERPS  = 'data/serps/brand_serps.csv';
 
   const PAGE_SIZE = 25;
 
   // ----------- Elements -----------
-  const dateSelect   = document.getElementById('dateSelect');
-  const filterInput  = document.getElementById('filterInput');
-  const refreshBtn   = document.getElementById('refreshBtn');
-  const selectAll    = document.getElementById('selectAll');
-  const tableBody    = document.getElementById('tableBody');
-  const statusEl     = document.getElementById('status');
+  const dateSelect  = document.getElementById('dateSelect');
+  const filterInput = document.getElementById('filterInput');
+  const refreshBtn  = document.getElementById('refreshBtn');
+  const selectAll   = document.getElementById('selectAll');
 
-  const prevBtn      = document.getElementById('prevBtn');
-  const nextBtn      = document.getElementById('nextBtn');
-  const pageInfo     = document.getElementById('pageInfo');
+  const tableBody   = document.getElementById('tableBody');
+  const statusEl    = document.getElementById('status');
 
-  const trendCanvas  = document.getElementById('trendChart');
-  const trendInfo    = document.getElementById('trendInfo');
+  const prevBtn     = document.getElementById('prevBtn');
+  const nextBtn     = document.getElementById('nextBtn');
+  const pageInfo    = document.getElementById('pageInfo');
+
+  const trendCanvas = document.getElementById('trendChart');
+  const trendInfo   = document.getElementById('trendInfo');
 
   // Modal
   const modalBackdrop = document.getElementById('modalBackdrop');
@@ -145,56 +146,66 @@
   const modalClose    = document.getElementById('modalClose');
 
   // ----------- State -----------
-  let roster = [];          // rows from roster.csv
-  let counts = [];          // rows from daily_counts.csv
-  let serps  = [];          // rows from brand_serps.csv
+  let roster = [];
+  let counts = [];
+  let serps  = [];
 
-  let companyToSector = new Map(); // normalized company -> sector
+  let companyToSector = new Map();
 
-  let allDates = [];        // sorted list of dates from counts
+  let allDates = [];    // normalized YYYY-MM-DD
   let currentDate = null;
 
-  let sectorsRows = [];     // computed per-sector rows for currentDate
-  let filteredRows = [];    // after filter text
-  let selected = new Set(); // selected sector names
+  let sectorsRows = [];
+  let filteredRows = [];
+  let selected = new Set();
   let page = 0;
 
   let sortKey = 'negNewsPct';
-  let sortDir = 'desc'; // 'asc' | 'desc'
+  let sortDir = 'desc';
 
   let chart = null;
 
-  // ----------- Utilities -----------
+  // ----------- Utils -----------
   function normalizeKey(k){ return String(k||'').replace(/^\ufeff/, '').trim().toLowerCase(); }
   function normHeaders(row){
     const out = {};
     for(const k in row){ out[normalizeKey(k)] = row[k]; }
     return out;
   }
-
   function fetchCSV(path){
-    // Try relative first, then GH Pages absolute
     const rel = new URL(path, location.href).href + (path.includes('?')?'&':'?') + '_=' + Date.now();
     const abs = GH_PAGES_BASE + path + (path.includes('?')?'&':'?') + '_=' + Date.now();
     const candidates = [rel];
     if(!rel.startsWith(GH_PAGES_BASE)) candidates.push(abs);
-
-    return (async () => {
+    return (async ()=>{
       for(const url of candidates){
         try{
           const r = await fetch(url, {cache:'no-store', mode:'cors'});
           if(!r.ok) continue;
           const text = await r.text();
           const parsed = Papa.parse(text, {header:true, dynamicTyping:true});
-          const rows = (parsed.data||[]).map(normHeaders);
-          return rows;
+          return (parsed.data||[]).map(normHeaders);
         }catch(_e){}
       }
       return [];
     })();
   }
 
-  // name normalization to join brand/company
+  function asYMD(x){
+    const s = String(x||'').trim();
+    if(!s) return '';
+    // Fast path: already "YYYY-MM-DD..."
+    const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
+    if(m) return m[1];
+    const t = Date.parse(s);
+    if(!isNaN(t)){
+      const d = new Date(t);
+      return d.toISOString().slice(0,10);
+    }
+    // last fallback: strip anything after first space or T
+    return s.split(/[ T]/)[0];
+  }
+
   function normName(s){
     return String(s||'')
       .toLowerCase()
@@ -204,32 +215,27 @@
       .trim();
   }
 
-  function pct(n, d, dp=0){
-    if(!d) return 0;
-    const v = (n/d)*100;
-    return +v.toFixed(dp);
-  }
+  function pct(n,d,dp=0){ if(!d) return 0; const v=(n/d)*100; return +v.toFixed(dp); }
+  function fmtPct(v){ return `${Math.round(v)}%`; }
 
   function riskLabel(negSerpPct, controlPct){
     if(negSerpPct > 0) return {label:'High', rank:3};
     if(negSerpPct === 0 && controlPct < 70) return {label:'Medium', rank:2};
     return {label:'Low', rank:1};
   }
-
   function badge(txt, color){
     const cls = {
-      green:  'bg-emerald-100 text-emerald-700',
-      gray:   'bg-slate-100 text-slate-700',
-      red:    'bg-rose-100 text-rose-700',
-      blue:   'bg-sky-100 text-sky-700',
-      amber:  'bg-amber-100 text-amber-800'
+      green:'bg-emerald-100 text-emerald-700',
+      gray: 'bg-slate-100 text-slate-700',
+      red:  'bg-rose-100 text-rose-700',
+      blue: 'bg-sky-100 text-sky-700',
+      amber:'bg-amber-100 text-amber-800'
     }[color] || 'bg-slate-100 text-slate-700';
     return `<span class="inline-block px-2 py-0.5 rounded-full text-[11px] ${cls}">${txt}</span>`;
   }
+  function esc(s){ return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
 
-  function fmtPct(v){ return `${Math.round(v)}%`; }
-
-  // ----------- Load & prepare -----------
+  // ----------- Load -----------
   async function loadAll(){
     statusEl.textContent = 'Loading CSVs…';
     [roster, counts, serps] = await Promise.all([
@@ -238,18 +244,32 @@
       fetchCSV(CSV_SERPS)
     ]);
 
-    // Build company -> sector map (normalized)
+    // Normalize dates + trim names right away
+    counts = counts
+      .filter(r=>r && r.date && r.brand)
+      .map(r=> ({...r,
+        date: asYMD(r.date),
+        brand: String(r.brand).trim()
+      }));
+
+    serps = serps
+      .filter(r=> r && (r.date || r['date'] || r['Date']))
+      .map(r=>{
+        const date = asYMD(r.date || r['date'] || r['Date']);
+        const brand = String(r.brand || r['brand'] || r['Brand'] || '').trim();
+        return {...r, date, brand};
+      });
+
+    // Roster company -> sector map
     companyToSector = new Map();
     for(const r of roster){
-      const comp = r.company || r.brand || r.name || r['company name'];
-      const sect = r.sector || r.industry || 'Unknown';
-      if(comp){
-        companyToSector.set(normName(comp), String(sect).trim());
-      }
+      const comp = (r.company || r.brand || r.name || r['company name'] || '').trim();
+      const sect = (r.sector || r.industry || 'Unknown').trim();
+      if(comp){ companyToSector.set(normName(comp), sect); }
     }
 
-    // Dates
-    const dates = Array.from(new Set(counts.map(r=> String(r.date||'').trim()).filter(Boolean))).sort();
+    // Dates (from news)
+    const dates = Array.from(new Set(counts.map(r=> r.date))).sort();
     allDates = dates;
     currentDate = dates[dates.length-1] || null;
 
@@ -265,25 +285,18 @@
     if(currentDate) dateSelect.value = currentDate;
   }
 
-  // ----------- Compute sector rows for current date -----------
+  // ----------- Sector compute -----------
   function companySectorForBrand(brand){
-    // Try direct brand->company match by normalization
     const key = normName(brand);
     if(companyToSector.has(key)) return companyToSector.get(key);
-
-    // Heuristic: some brands may include words not in roster, try relaxed:
-    // (We already normalized away common suffixes; this is best-effort)
     return 'Unknown';
   }
 
   function computeSectors(){
-    // Aggregate NEWS by sector for selected date: sum pos/neu/neg
-    const newsBySector = new Map(); // sector -> {pos,neu,neg}
+    const newsBySector = new Map();
     for(const r of counts){
-      if(String(r.date) !== String(currentDate)) continue;
-      const brand = r.brand || r.name || '';
-      if(!brand) continue;
-      const sec = companySectorForBrand(brand);
+      if(r.date !== currentDate) continue;
+      const sec = companySectorForBrand(r.brand || '');
       const acc = newsBySector.get(sec) || {pos:0,neu:0,neg:0};
       acc.pos += +r.positive || 0;
       acc.neu += +r.neutral || 0;
@@ -291,19 +304,13 @@
       newsBySector.set(sec, acc);
     }
 
-    // Aggregate SERPs by sector for same date
-    const serpBySector = new Map(); // sector -> {tot, neg, ctrl}
+    const serpBySector = new Map();
     for(const s of serps){
-      const d = s.date || s['Date'] || '';
-      if(String(d) !== String(currentDate)) continue;
-
-      const b = s.brand || s['Brand'] || '';
-      if(!b) continue;
-      const sec = companySectorForBrand(b);
-
+      if(s.date !== currentDate) continue; // <-- normalized compare
+      const sec = companySectorForBrand(s.brand || '');
       const tot  = 1;
-      const isNeg = String(s.sentiment || s['Sentiment'] || '').toLowerCase() === 'negative' ? 1 : 0;
-      const ctrl = /^(true|yes|1)$/i.test(String(s.control || s['Control'] || 'false')) ? 1 : 0;
+      const isNeg = String(s.sentiment || s['sentiment'] || s['Sentiment'] || '').toLowerCase() === 'negative' ? 1 : 0;
+      const ctrl = /^(true|yes|1)$/i.test(String(s.control || s['control'] || s['Control'] || 'false')) ? 1 : 0;
 
       const acc = serpBySector.get(sec) || {tot:0,neg:0,ctrl:0};
       acc.tot  += tot;
@@ -312,7 +319,6 @@
       serpBySector.set(sec, acc);
     }
 
-    // Build sector rows
     const sectors = new Set([...newsBySector.keys(), ...serpBySector.keys()]);
     const rows = [];
     for(const sec of sectors){
@@ -335,16 +341,19 @@
       });
     }
 
-    // Keep for table & trend (filtering/sorting applied later)
     sectorsRows = rows;
     applyFilterAndSort();
   }
 
-  // ----------- Filtering / sorting / pagination -----------
+  // ----------- Filter / sort / paginate -----------
+  let filteredRows = [];
+  let page = 0;
+  let sortKey = 'negNewsPct';
+  let sortDir = 'desc';
+
   function applyFilterAndSort(){
     const q = (filterInput.value || '').trim().toLowerCase();
     filteredRows = sectorsRows.filter(r => !q || r.sector.toLowerCase().includes(q));
-
     sortRows();
     page = 0;
     updatePagination();
@@ -367,16 +376,15 @@
     const total = filteredRows.length;
     const maxPage = Math.max(0, Math.ceil(total / PAGE_SIZE) - 1);
     page = Math.min(page, maxPage);
-
     prevBtn.disabled = (page <= 0);
     nextBtn.disabled = (page >= maxPage);
     pageInfo.textContent = total ? `Page ${page+1} of ${maxPage+1} • ${total} sectors` : '';
-
     renderTable();
-    renderTrend(); // trend reflects current selection / filter
+    renderTrend();
   }
 
   // ----------- Render table -----------
+  function fmtPctRound(v){ return isFinite(v) ? `${Math.round(v)}%` : '—'; }
   function renderTable(){
     const start = page * PAGE_SIZE;
     const rows = filteredRows.slice(start, start + PAGE_SIZE);
@@ -386,9 +394,9 @@
       return `<tr class="border-t hover:bg-slate-50">
         <td class="p-3"><input type="checkbox" data-sector="${r.sector.replace(/"/g,'&quot;')}" ${isSel?'checked':''}></td>
         <td class="p-3 font-medium">${r.sector}</td>
-        <td class="p-3">${fmtPct(r.negNewsPct)}</td>
-        <td class="p-3">${fmtPct(r.negSerpPct)}</td>
-        <td class="p-3">${fmtPct(r.controlPct)}</td>
+        <td class="p-3">${fmtPctRound(r.negNewsPct)}</td>
+        <td class="p-3">${fmtPctRound(r.negSerpPct)}</td>
+        <td class="p-3">${fmtPctRound(r.controlPct)}</td>
         <td class="p-3">${r.risk === 'High' ? badge('High','red') : (r.risk==='Medium'?badge('Medium','amber'):badge('Low','green'))}</td>
         <td class="p-3"><button class="px-2 py-1 border rounded-lg" data-serp="${r.sector.replace(/"/g,'&quot;')}">View</button></td>
       </tr>`;
@@ -396,7 +404,6 @@
 
     tableBody.innerHTML = html;
 
-    // Checkbox handlers
     tableBody.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
       cb.addEventListener('change', ()=>{
         const sec = cb.getAttribute('data-sector');
@@ -405,7 +412,6 @@
       });
     });
 
-    // SERP modal handlers
     tableBody.querySelectorAll('button[data-serp]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const sec = btn.getAttribute('data-serp');
@@ -413,26 +419,21 @@
       });
     });
 
-    // Update select-all state (checks only visible page)
     const visibleAllChecked = rows.length && rows.every(r=> selected.has(r.sector));
     selectAll.checked = visibleAllChecked;
   }
 
   // ----------- Trend -----------
   function seriesFor(sectorsSet){
-    // Build per-day totals across selected sectors (or all when empty)
     const useSectors = sectorsSet && sectorsSet.size ? sectorsSet : null;
-
-    // dates already sorted
-    const labels = allDates.slice(-30); // last 30 days window
+    const labels = allDates.slice(-30);
     const pos=[], neu=[], neg=[];
 
     for(const d of labels){
       let ap={pos:0,neu:0,neg:0};
       for(const r of counts){
-        if(String(r.date)!==d) continue;
-        const brand = r.brand || '';
-        const sec = companySectorForBrand(brand);
+        if(r.date!==d) continue;
+        const sec = companySectorForBrand(r.brand || '');
         if(useSectors && !useSectors.has(sec)) continue;
         ap.pos += +r.positive||0;
         ap.neu += +r.neutral||0;
@@ -447,10 +448,8 @@
   }
 
   function renderTrend(){
-    // Decide which sectors to chart
-    const sel = new Set(selected); // names
+    const sel = new Set(selected);
     const oneName = sel.size===1 ? Array.from(sel)[0] : null;
-
     const s = seriesFor(sel);
     trendInfo.textContent = (oneName ? `SECTOR: ${oneName}` : 'INDEX average (all/selected) over last 30 days');
 
@@ -466,16 +465,12 @@
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        x: { stacked:true, ticks:{ maxRotation:0, autoSkip:true, maxTicksLimit: 8 } },
+        x: { stacked:true, ticks:{ maxRotation:0, autoSkip:true, maxTicksLimit:8 } },
         y: { stacked:true, beginAtZero:true, ticks:{ callback:(v)=> v+'%' } }
       },
       plugins: {
         legend: { position:'top' },
-        tooltip: {
-          callbacks:{
-            label: (ctx)=> `${ctx.dataset.label}: ${ctx.parsed.y}%`
-          }
-        }
+        tooltip: { callbacks:{ label:(ctx)=> `${ctx.dataset.label}: ${ctx.parsed.y}%` } }
       }
     };
 
@@ -490,19 +485,14 @@
   modalBackdrop.addEventListener('click', (e)=>{ if(e.target===modalBackdrop) closeModal(); });
   window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
 
-  function esc(s){ return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
-
   function showSectorSerps(sector){
     modalTitle.textContent = `${sector} — SERPs`;
     modalSubtitle.textContent = `Date: ${currentDate}`;
     openModal();
 
-    // Gather SERPs for this sector on current date
     const rows = serps.filter(s=>{
-      const d = String(s.date||s['Date']||'');
-      const b = String(s.brand||s['Brand']||'');
-      if(d !== String(currentDate)) return false;
-      return companySectorForBrand(b) === sector;
+      if(s.date !== currentDate) return false;
+      return companySectorForBrand(s.brand || '') === sector;
     });
 
     if(!rows.length){
@@ -510,10 +500,9 @@
       return;
     }
 
-    // Group by brand for readability
     const byBrand = new Map();
     for(const r of rows){
-      const b = String(r.brand||r['Brand']||'Unknown');
+      const b = String(r.brand||'Unknown');
       if(!byBrand.has(b)) byBrand.set(b, []);
       byBrand.get(b).push(r);
     }
@@ -524,12 +513,12 @@
         <div class="font-semibold">${esc(brand)}</div>
         <div class="mt-2 space-y-2">
           ${list.map(item=>{
-            const root = item['Root Domain'] || item.rootdomain || '';
-            const title = item.title || item['Title'] || '';
-            const link  = item.link || item['Link'] || '#';
-            const snip  = item.snippet || item['Snippet'] || '';
-            const ctrl  = /^(true|yes|1)$/i.test(String(item.control||item['Control']||'false'));
-            const sent  = String(item.sentiment||item['Sentiment']||'').toLowerCase();
+            const root = item['root domain'] || item['rootdomain'] || item.rootdomain || '';
+            const title = item.title || item['title'] || item['Title'] || '';
+            const link  = item.link || item['link'] || item['Link'] || '#';
+            const snip  = item.snippet || item['snippet'] || item['Snippet'] || '';
+            const ctrl  = /^(true|yes|1)$/i.test(String(item.control||item['control']||item['Control']||'false'));
+            const sent  = String(item.sentiment||item['sentiment']||item['Sentiment']||'').toLowerCase();
             const bCtrl = ctrl ? badge('controlled','blue') : badge('uncontrolled','gray');
             const bSent = sent==='negative' ? badge('negative','red') : (sent==='positive'?badge('positive','green'):badge('neutral','gray'));
             return `<div class="p-3 border rounded-xl">
@@ -548,10 +537,8 @@
     modalBody.innerHTML = html.join('\n');
   }
 
-  // ----------- Event wiring -----------
-  refreshBtn.addEventListener('click', async ()=>{
-    await loadAll();
-  });
+  // ----------- Events -----------
+  refreshBtn.addEventListener('click', loadAll);
 
   dateSelect.addEventListener('change', ()=>{
     currentDate = dateSelect.value;
@@ -560,11 +547,8 @@
     renderTrend();
   });
 
-  filterInput.addEventListener('input', ()=>{
-    applyFilterAndSort();
-  });
+  filterInput.addEventListener('input', applyFilterAndSort);
 
-  // Sorting headers
   document.querySelectorAll('.th-sort').forEach(th=>{
     th.addEventListener('click', ()=>{
       const key = th.getAttribute('data-sort');
@@ -582,15 +566,11 @@
     });
   });
 
-  // Select all (visible page)
   selectAll.addEventListener('change', ()=>{
     const start = page * PAGE_SIZE;
     const rows = filteredRows.slice(start, start + PAGE_SIZE);
-    if(selectAll.checked){
-      rows.forEach(r=> selected.add(r.sector));
-    }else{
-      rows.forEach(r=> selected.delete(r.sector));
-    }
+    if(selectAll.checked){ rows.forEach(r=> selected.add(r.sector)); }
+    else { rows.forEach(r=> selected.delete(r.sector)); }
     renderTable();
     renderTrend();
   });
