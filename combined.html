@@ -1,119 +1,215 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>News Sentiment Dashboards (Combined)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Combined News Sentiment Dashboards</title>
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    .tab-active { background: #0f172a; color: #fff; }
-    .tab-inactive { background: #ffffff; color: #0f172a; }
-    .tab-btn { padding: .5rem .75rem; border-radius: .5rem; border: 1px solid #e5e7eb; }
-    .frame-shell { border: 1px solid #e5e7eb; border-radius: 1rem; background: #fff; }
-    .ext-link { font-size: .85rem; color: #475569; }
-    .ext-link a { text-decoration: underline; }
+    .tab-btn { @apply px-3 py-2 rounded-lg border bg-white text-slate-700; }
+    .tab-btn.active { @apply bg-slate-900 text-white; }
+    .hint { @apply text-xs text-slate-500; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
   <div class="max-w-7xl mx-auto p-6">
-    <header class="mb-6">
-      <h1 class="text-3xl font-bold">News Sentiment Dashboards</h1>
-      <p class="text-sm text-slate-600">Switch tabs to view the Brand or CEO dashboards. These are your existing pages, unchanged, embedded below.</p>
+    <header class="mb-4">
+      <h1 class="text-3xl font-bold">Combined News Sentiment Dashboards</h1>
+      <p class="hint mt-1">
+        Tabs embed your existing pages. You can override the base URL below (use your GitHub Pages URL).
+      </p>
     </header>
 
-    <!-- Tabs -->
-    <div class="flex items-center gap-2 mb-4">
-      <button id="tabBrand" class="tab-btn tab-active" data-tab="brand">Brand Dashboard</button>
-      <button id="tabCeo" class="tab-btn tab-inactive" data-tab="ceo">CEO Dashboard</button>
-      <div class="ml-auto ext-link" id="openLink"></div>
-    </div>
-
-    <!-- Frames -->
-    <section class="frame-shell">
-      <!-- Adjust the src paths if your filenames differ -->
-      <iframe id="frameBrand" src="dashboard.html?v=1" title="Brand Dashboard"
-              style="width:100%; border:0; display:block; height:80vh;"></iframe>
-      <iframe id="frameCeo" src="ceo-dashboard.html?v=1" title="CEO Dashboard"
-              style="width:100%; border:0; display:none; height:80vh;"></iframe>
+    <!-- Base URL control -->
+    <section class="mb-4 p-4 bg-white border rounded-xl">
+      <div class="flex flex-col md:flex-row gap-3 items-start md:items-end">
+        <div class="grow w-full">
+          <label class="block text-sm font-medium mb-1" for="baseUrl">Base URL</label>
+          <input id="baseUrl" type="url" placeholder="https://jonas-sickler.github.io/news-sentiment-dashboard/"
+                 class="w-full border rounded-lg p-2"
+                 />
+          <p id="usingBase" class="hint mt-1"></p>
+        </div>
+        <div class="flex items-end gap-2">
+          <button id="applyBase" class="px-3 py-2 rounded-lg bg-slate-900 text-white">Apply</button>
+          <button id="resetBase" class="px-3 py-2 rounded-lg border">Reset</button>
+        </div>
+      </div>
     </section>
 
-    <p class="text-xs text-slate-500 mt-3">
-      Tip: You can deep-link with <code>?tab=brand</code> or <code>?tab=ceo</code>. Your last selection is remembered.
+    <!-- Tabs -->
+    <section class="mb-3">
+      <div class="flex gap-2 flex-wrap">
+        <button class="tab-btn active" data-tab="brands">Brands</button>
+        <button class="tab-btn" data-tab="ceos">CEOs</button>
+        <button class="tab-btn" data-tab="sectors">Sectors</button>
+        <span id="openExternalWrap" class="ml-auto">
+          <a id="openExternal" target="_blank" rel="noopener"
+             class="underline text-sm text-slate-600">Open current tab in a new tab</a>
+        </span>
+      </div>
+    </section>
+
+    <!-- Frame wrapper -->
+    <section class="bg-white border rounded-xl overflow-hidden">
+      <div class="flex items-center justify-between p-3 border-b">
+        <div class="hint">
+          <span id="frameStatus">Loading…</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="tallerBtn" class="px-2 py-1 border rounded">Taller</button>
+          <button id="shorterBtn" class="px-2 py-1 border rounded">Shorter</button>
+        </div>
+      </div>
+      <iframe id="dashFrame"
+              src="about:blank"
+              style="width:100%; height:1200px; border:0;"
+              referrerpolicy="no-referrer-when-downgrade"
+              loading="eager"></iframe>
+    </section>
+
+    <p class="hint mt-2">
+      Tip: If the frame is on the same origin (e.g., this file is served from your GitHub Pages site),
+      the height will auto-adjust to fit the page content. Otherwise, use the “Taller/Shorter” buttons or open
+      the view in a new tab.
     </p>
   </div>
 
-  <script>
-    (function(){
-      const btnBrand = document.getElementById('tabBrand');
-      const btnCeo   = document.getElementById('tabCeo');
-      const frameBrand = document.getElementById('frameBrand');
-      const frameCeo   = document.getElementById('frameCeo');
-      const openLink   = document.getElementById('openLink');
+<script>
+(() => {
+  // ---- Defaults (change if your file names differ) ----
+  const DEFAULT_PAGES = {
+    brands : 'dashboard.html',
+    ceos   : 'ceo-dashboard.html',
+    sectors: 'sectors.html'
+  };
 
-      function setActiveTab(tab){
-        // persist
-        try { localStorage.setItem('combined_tab', tab); } catch {}
+  // Parse URL params for base override, or read localStorage
+  const urlParams  = new URLSearchParams(location.search);
+  const savedBase  = localStorage.getItem('combined_base_url') || '';
+  const initialBase = urlParams.get('base') || savedBase || '';
 
-        // toggle button styles
-        if(tab === 'brand'){
-          btnBrand.classList.add('tab-active'); btnBrand.classList.remove('tab-inactive');
-          btnCeo.classList.add('tab-inactive'); btnCeo.classList.remove('tab-active');
-          frameBrand.style.display = 'block';
-          frameCeo.style.display = 'none';
-          setOpenLink('Brand', frameBrand.src);
-        }else{
-          btnCeo.classList.add('tab-active'); btnCeo.classList.remove('tab-inactive');
-          btnBrand.classList.add('tab-inactive'); btnBrand.classList.remove('tab-active');
-          frameCeo.style.display = 'block';
-          frameBrand.style.display = 'none';
-          setOpenLink('CEO', frameCeo.src);
-        }
-        // try resize now (in case already loaded)
-        requestResize();
-      }
+  // If you changed filenames, you can also optionally pass ?brands=..., ?ceos=..., ?sectors=...
+  const pages = {
+    brands : urlParams.get('brands')  || DEFAULT_PAGES.brands,
+    ceos   : urlParams.get('ceos')    || DEFAULT_PAGES.ceos,
+    sectors: urlParams.get('sectors') || DEFAULT_PAGES.sectors
+  };
 
-      function setOpenLink(label, href){
-        openLink.innerHTML = `Open full page: <a target="_blank" rel="noopener" href="${href}">${label} dashboard</a>`;
-      }
+  // Pass through other query params to the embedded pages (e.g., ?date=2025-08-16&debug=1)
+  function passthroughSearch() {
+    const keep = new URLSearchParams(location.search);
+    ['base','brands','ceos','sectors'].forEach(k => keep.delete(k));
+    const s = keep.toString();
+    return s ? ('?'+s) : '';
+  }
 
-      // Auto-resize iframes (same-origin, so we can read heights)
-      function resizeFrame(iframe){
-        try{
-          const doc = iframe.contentDocument || iframe.contentWindow?.document;
-          if(!doc) return;
-          const h = Math.max(
-            doc.body?.scrollHeight || 0,
-            doc.documentElement?.scrollHeight || 0,
-            800
-          );
-          // Cap height to avoid runaway growth; allow scroll within iframe if very long
-          iframe.style.height = Math.min(h + 40, 2000) + 'px';
-        }catch(e){
-          // Cross-origin? Shouldn't happen on GH Pages within same repo, but ignore if so.
-        }
-      }
+  // Elements
+  const frame       = document.getElementById('dashFrame');
+  const frameStatus = document.getElementById('frameStatus');
+  const baseInput   = document.getElementById('baseUrl');
+  const usingBase   = document.getElementById('usingBase');
+  const applyBase   = document.getElementById('applyBase');
+  const resetBase   = document.getElementById('resetBase');
+  const openExternal = document.getElementById('openExternal');
+  const tallerBtn   = document.getElementById('tallerBtn');
+  const shorterBtn  = document.getElementById('shorterBtn');
 
-      function requestResize(){
-        resizeFrame(frameBrand);
-        resizeFrame(frameCeo);
-      }
+  const tabBtns = [...document.querySelectorAll('.tab-btn')];
 
-      // Wire up
-      btnBrand.addEventListener('click', ()=> setActiveTab('brand'));
-      btnCeo.addEventListener('click',   ()=> setActiveTab('ceo'));
+  let currentTab = localStorage.getItem('combined_active_tab') || 'brands';
+  let baseUrl = initialBase;
 
-      // Resize when iframes load and also on window resize
-      frameBrand.addEventListener('load', requestResize);
-      frameCeo.addEventListener('load', requestResize);
-      window.addEventListener('resize', ()=> { clearTimeout(window.__rfT); window.__rfT = setTimeout(requestResize, 150); });
+  // UI init
+  baseInput.value = baseUrl;
+  reflectBaseUsed();
 
-      // Initial tab: query string > localStorage > brand
-      const params = new URLSearchParams(location.search);
-      const qsTab = params.get('tab');
-      const saved = (()=>{ try { return localStorage.getItem('combined_tab'); } catch { return null; }})();
-      const initial = (qsTab === 'ceo' || qsTab === 'brand') ? qsTab : (saved || 'brand');
-      setActiveTab(initial);
-    })();
-  </script>
+  function reflectBaseUsed(){
+    usingBase.textContent = baseUrl
+      ? `Using: ${baseUrl}`
+      : 'Using relative paths (this file’s location)';
+  }
+
+  function resolveSrc(pagePath){
+    const path = (baseUrl ? baseUrl.replace(/\/+$/,'') + '/' : '') + pagePath.replace(/^\/+/,'');
+    return path + passthroughSearch();
+  }
+
+  function setActiveTab(tab){
+    currentTab = tab;
+    localStorage.setItem('combined_active_tab', tab);
+    tabBtns.forEach(b=>{
+      b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+    });
+    const page = pages[tab];
+    const src = resolveSrc(page);
+    frameStatus.textContent = 'Loading…';
+    frame.src = src;
+    openExternal.href = src;
+  }
+
+  // Handle base changes
+  applyBase.addEventListener('click', ()=>{
+    baseUrl = (baseInput.value || '').trim();
+    localStorage.setItem('combined_base_url', baseUrl);
+    reflectBaseUsed();
+    setActiveTab(currentTab); // reload
+  });
+  resetBase.addEventListener('click', ()=>{
+    baseUrl = '';
+    baseInput.value = '';
+    localStorage.removeItem('combined_base_url');
+    reflectBaseUsed();
+    setActiveTab(currentTab);
+  });
+
+  // Tab clicks
+  tabBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=> setActiveTab(btn.getAttribute('data-tab')));
+  });
+
+  // Manual height controls
+  tallerBtn.addEventListener('click', ()=>{
+    const h = parseInt(frame.style.height||'1200',10);
+    frame.style.height = (h+300) + 'px';
+  });
+  shorterBtn.addEventListener('click', ()=>{
+    const h = parseInt(frame.style.height||'1200',10);
+    frame.style.height = Math.max(600, h-300) + 'px';
+  });
+
+  // Try auto-resize if same-origin
+  let resizeTimer = null;
+  function tryAutoResize(){
+    // If cross-origin, accessing contentDocument will throw; guard with try/catch
+    try{
+      const doc = frame.contentDocument;
+      if(!doc || !doc.body) return;
+      const desired = Math.max(900, doc.documentElement.scrollHeight, doc.body.scrollHeight);
+      frame.style.height = desired + 'px';
+      frameStatus.textContent = 'Loaded';
+    }catch(_e){
+      // cross-origin, leave status but don't error
+      frameStatus.textContent = 'Loaded (use Taller/Shorter if needed)';
+    }
+  }
+  frame.addEventListener('load', ()=>{
+    frameStatus.textContent = 'Loaded';
+    clearInterval(resizeTimer);
+    // Poll a few times after load to catch charts rendering
+    let count = 0;
+    resizeTimer = setInterval(()=>{
+      tryAutoResize();
+      if(++count >= 10) clearInterval(resizeTimer);
+    }, 500);
+  });
+
+  // Boot
+  setActiveTab(currentTab);
+})();
+</script>
 </body>
 </html>
