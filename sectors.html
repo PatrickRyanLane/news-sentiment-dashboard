@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Sectors News Sentiment Dashboard</title>
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Papa Parse -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    .th-sort { cursor:pointer; user-select:none }
+    .th-sort .arrow { opacity:.35; margin-left:.25rem }
+    .th-sort.active .arrow { opacity:1 }
+    #trendWrap { height:22rem; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <div class="max-w-7xl mx-auto p-6">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold">Sectors News Sentiment Dashboard</h1>
+      <p class="text-sm text-slate-600">
+        Sources: <code>data/roster.csv</code>, <code>data/daily_counts.csv</code>, <code>data/serps/brand_serps.csv</code>.
+      </p>
+    </header>
+
+    <!-- Controls -->
+    <section class="mb-4 grid gap-3 md:grid-cols-3">
+      <div>
+        <label class="block text-sm font-medium mb-1">Pick date</label>
+        <select id="dateSelect" class="w-full border rounded-lg p-2 bg-white"></select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Filter sectors</label>
+        <input id="filterInput" type="text" placeholder="Type to filter…" class="w-full border rounded-lg p-2"/>
+      </div>
+      <div class="flex items-end gap-2">
+        <button id="refreshBtn" class="px-3 py-2 rounded-lg bg-slate-900 text-white">Refresh</button>
+      </div>
+    </section>
+
+    <!-- Trend -->
+    <section class="mb-6 p-4 border rounded-xl bg-white">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-lg font-semibold">Sentiment trend</h2>
+        <div class="text-xs text-slate-500 space-x-2">
+          <span id="trendInfo"></span><span id="trendRange"></span>
+          <button id="trendPrev" class="px-2 py-1 border rounded disabled:opacity-40" title="Older">←</button>
+          <button id="trendNext" class="px-2 py-1 border rounded disabled:opacity-40" title="Newer">→</button>
+        </div>
+      </div>
+      <p id="trendHint" class="text-sm text-slate-500 mb-2 hidden">
+        Select exactly <span class="font-semibold">1</span> sector to display its trend.  
+        With none selected, we show the <span class="font-semibold">index average</span>.
+      </p>
+      <div id="trendWrap"><canvas id="trendChart"></canvas></div>
+    </section>
+
+    <!-- Table -->
+    <section class="overflow-x-auto">
+      <table class="min-w-full text-sm bg-white rounded-xl overflow-hidden border">
+        <thead class="bg-slate-100">
+          <tr>
+            <th class="p-3 text-left"><input type="checkbox" id="selectAll"></th>
+            <th class="p-3 text-left">Sector</th>
+            <th class="p-3 text-left th-sort" data-sort="negNewsPct">Negative News (%) <span class="arrow">▾</span></th>
+            <th class="p-3 text-left th-sort" data-sort="negSerpPct">Negative SERP (%) <span class="arrow">▾</span></th>
+            <th class="p-3 text-left th-sort" data-sort="controlPct">SERP Control (%) <span class="arrow">▾</span></th>
+            <th class="p-3 text-left th-sort" data-sort="risk">Risk <span class="arrow">▾</span></th>
+            <th class="p-3 text-left">SERP</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-between mt-3">
+        <p id="status" class="text-xs text-slate-500"></p>
+        <div class="flex items-center gap-2">
+          <button id="prevPage" class="px-3 py-1 border rounded disabled:opacity-40">Prev</button>
+          <span id="pageInfo" class="text-xs text-slate-600"></span>
+          <button id="nextPage" class="px-3 py-1 border rounded disabled:opacity-40">Next</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalBackdrop" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="w-full max-w-3xl bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="flex items-center justify-between p-4 border-b">
+          <div>
+            <h3 id="modalTitle" class="text-xl font-bold">Modal</h3>
+            <p id="modalSubtitle" class="text-sm text-slate-600"></p>
+          </div>
+          <button id="modalClose" class="px-3 py-1.5 rounded-lg border">Close</button>
+        </div>
+        <div id="modalBody" class="max-h-[70vh] overflow-y-auto p-4">
+          <p class="text-sm text-slate-500">Loading…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // ===== Paths =====
+  const CSV_COUNTS   = 'data/daily_counts.csv';
+  const CSV_ARTICLES = (date) => `data/articles/${date}.csv`; // not used in table, reserved for future drilldowns
+  const CSV_SERPS    = 'data/serps/brand_serps.csv';
+  const CSV_ROSTER   = 'data/roster.csv';
+
+  // ===== DOM =====
+  const dateSelect   = document.getElementById('dateSelect');
+  const filterInput  = document.getElementById('filterInput');
+  const refreshBtn   = document.getElementById('refreshBtn');
+  const selectAll    = document.getElementById('selectAll');
+  const tbody        = document.getElementById('tableBody');
+  const statusEl     = document.getElementById('status');
+  const pageInfoEl   = document.getElementById('pageInfo');
+  const prevPageBtn  = document.getElementById('prevPage');
+  const nextPageBtn  = document.getElementById('nextPage');
+
+  const trendCanvas  = document.getElementById('trendChart');
+  const trendInfo    = document.getElementById('trendInfo');
+  const trendRange   = document.getElementById('trendRange');
+  const trendPrev    = document.getElementById('trendPrev');
+  const trendNext    = document.getElementById('trendNext');
+  const trendHint    = document.getElementById('trendHint');
+  let trendChart     = null;
+
+  const modalBackdrop= document.getElementById('modalBackdrop');
+  const modalTitle   = document.getElementById('modalTitle');
+  const modalSubtitle= document.getElementById('modalSubtitle');
+  const modalBody    = document.getElementById('modalBody');
+  const modalClose   = document.getElementById('modalClose');
+
+  // ===== State =====
+  const PAGE_SIZE = 25;
+  let allCountsRows = [];
+  let allDates = [];
+  let currentDate = null;
+
+  let roster = [];                // [{company, root, sector, ceo}]
+  let byCompany = new Map();      // keyCompany -> roster row
+
+  // SERP aggregates by sector
+  let serpBySector = new Map();   // sector -> { total, neg, ctrl }
+  let serpRaw = [];               // raw serp rows (for modal)
+
+  // Sector rows (computed for currentDate)
+  let selected = new Set();
+  let sortKey = 'negNewsPct';
+  let sortDir = 'desc';
+  let filterText = '';
+  let pageIndex = 0;
+
+  // ===== Utils =====
+  function normalizeKeys(row){
+    const out={}; for(const k in row){ out[String(k||'').replace(/^\ufeff/,'').trim().toLowerCase()] = row[k]; }
+    return out;
+  }
+  function keyCompany(s){ return String(s||'').trim().toLowerCase(); }
+  function toNum(x){ x=Number(x||0); return isFinite(x)?x:0; }
+  function fmtPct(n){ n=Number(n||0); if(!isFinite(n)) n=0; return n.toFixed(0)+'%'; }
+  function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
+
+  // ===== Roster =====
+  async function loadRoster(){
+    const txt = await (await fetch(CSV_ROSTER+'?_='+Date.now(), {cache:'no-store'})).text();
+    const {data} = Papa.parse(txt, {header:true});
+    roster = (data||[]).map(r=>({
+      company:(r.Company||'').trim(),
+      root:(r.Website||'').trim().toLowerCase(),
+      sector:(r.Sector||'').trim(),
+      ceo:(r.CEO||'').trim()
+    })).filter(r=>r.company && r.sector);
+    byCompany = new Map(roster.map(r=>[keyCompany(r.company), r]));
+  }
+
+  // ===== News counts =====
+  async function loadCounts(){
+    const txt = await (await fetch(CSV_COUNTS+'?_='+Date.now(), {cache:'no-store'})).text();
+    const {data} = Papa.parse(txt, {header:true, dynamicTyping:true});
+    const rows = (data||[]).map(normalizeKeys).filter(r=>r.date && r.brand);
+    allCountsRows = rows.map(r=>({
+      date:String(r.date),
+      brand:String(r.brand),
+      total:toNum(r.total),
+      pos:toNum(r.positive),
+      neu:toNum(r.neutral),
+      neg:toNum(r.negative)
+    }));
+    allDates = Array.from(new Set(allCountsRows.map(r=>r.date))).sort();
+    currentDate = allDates[allDates.length-1] || null;
+  }
+
+  // ===== SERPs (aggregate by sector) =====
+  function parseBoolControl(v){
+    const s=String(v||'').trim().toLowerCase();
+    return (s==='true'||s==='1'||s==='yes'||s==='controlled');
+  }
+  async function loadSerps(){
+    serpBySector = new Map();
+    serpRaw = [];
+    const txt = await (await fetch(CSV_SERPS+'?_='+Date.now(), {cache:'no-store'})).text();
+    const {data} = Papa.parse(txt, {header:true});
+    for(const raw of (data||[])){
+      const r = normalizeKeys(raw);
+      const brand = (r.brand || r.company || '').trim();
+      if(!brand) continue;
+      const sector = (byCompany.get(keyCompany(brand))||{}).sector || '';
+      if(!sector) continue;
+
+      // Optional date filter (if your SERP CSV includes a "Date" column)
+      const hasDateCol = !!(r.date);
+      if(hasDateCol){
+        if(!currentDate || String(r.date).trim() !== String(currentDate)) continue;
+      }
+
+      const url = (r.link||r.url||'').trim();
+      const sentiment = (r.sentiment||'').trim().toLowerCase();
+      const control = parseBoolControl(r.control);
+
+      const agg = serpBySector.get(sector) || { total:0, neg:0, ctrl:0 };
+      agg.total++;
+      if(sentiment==='negative') agg.neg++;
+      if(control) agg.ctrl++;
+      serpBySector.set(sector, agg);
+
+      serpRaw.push({
+        sector,
+        brand,
+        title: r.title || '',
+        url,
+        sentiment,
+        control,
+        snippet: r.snippet || r.description || '',
+      });
+    }
+  }
+
+  // ===== Build sector rows for table (currentDate) =====
+  function computeSectorRows(){
+    // Aggregate news by sector for current date
+    const newsAgg = new Map(); // sector -> {total,pos,neu,neg}
+    for(const r of allCountsRows){
+      if(r.date !== currentDate) continue;
+      const rosterRow = byCompany.get(keyCompany(r.brand));
+      if(!rosterRow) continue;
+      const sec = rosterRow.sector;
+      const obj = newsAgg.get(sec) || {total:0,pos:0,neu:0,neg:0};
+      obj.total += r.total; obj.pos += r.pos; obj.neu += r.neu; obj.neg += r.neg;
+      newsAgg.set(sec, obj);
+    }
+
+    // Combine with SERP agg
+    const sectors = new Set([...newsAgg.keys(), ...serpBySector.keys()]);
+    const rows = [];
+    for(const sec of sectors){
+      const n = newsAgg.get(sec) || {total:0,pos:0,neu:0,neg:0};
+      const s = serpBySector.get(sec) || {total:0,neg:0,ctrl:0};
+      const negNewsPct = n.total ? (n.neg/n.total*100) : 0;
+      const negSerpPct = s.total ? (s.neg/s.total*100) : 0;
+      const controlPct = s.total ? (s.ctrl/s.total*100) : 0;
+      const risk = (negSerpPct>0) ? 'High' : ((negSerpPct===0 && controlPct<35) ? 'Medium' : 'Low');
+      rows.push({
+        sector: sec,
+        negNewsPct, negSerpPct, controlPct, risk,
+        _news: n, _serp: s
+      });
+    }
+    return rows;
+  }
+
+  // ===== Sorting / filtering / pagination =====
+  let sortKey = 'negNewsPct';
+  let sortDir = 'desc';
+  let filterText = '';
+  let pageIndex = 0;
+  const PAGE_SIZE = 25;
+
+  function sortRows(rows){
+    const dir = (sortDir==='asc')?1:-1;
+    return rows.sort((a,b)=>{
+      if(sortKey==='risk'){
+        const rank={High:3,Medium:2,Low:1};
+        return (rank[a.risk]-rank[b.risk])*dir;
+      }
+      return ((a[sortKey]||0)-(b[sortKey]||0))*dir;
+    });
+  }
+  function applyFilter(rows){
+    if(!filterText) return rows;
+    const q = filterText.toLowerCase();
+    return rows.filter(r=> (r.sector||'').toLowerCase().includes(q));
+  }
+  function paginate(rows){
+    const start=pageIndex*PAGE_SIZE; return rows.slice(start,start+PAGE_SIZE);
+  }
+
+  // ===== Render table =====
+  function renderTable(){
+    let rows = computeSectorRows();
+    rows = applyFilter(rows);
+    const totalCount = rows.length;
+    rows = sortRows(rows);
+    const pageRows = paginate(rows);
+
+    document.querySelectorAll('.th-sort').forEach(th=>{
+      th.classList.remove('active'); th.querySelector('.arrow').textContent='▾';
+      if(th.dataset.sort===sortKey){ th.classList.add('active'); th.querySelector('.arrow').textContent=(sortDir==='asc'?'▴':'▾'); }
+    });
+
+    tbody.innerHTML = pageRows.map(r=>{
+      const checked = selected.has(r.sector) ? 'checked':'';
+      return `<tr class="border-t hover:bg-slate-50">
+        <td class="p-3"><input type="checkbox" data-sector="${escapeHtml(r.sector)}" ${checked}></td>
+        <td class="p-3 font-medium">${escapeHtml(r.sector)}</td>
+        <td class="p-3" title="${r._news.neg}/${r._news.total}">${fmtPct(r.negNewsPct)}</td>
+        <td class="p-3">${ r._serp.total ? fmtPct(r.negSerpPct) : '—' }</td>
+        <td class="p-3">${ r._serp.total ? fmtPct(r.controlPct) : '—' }</td>
+        <td class="p-3">${r.risk}</td>
+        <td class="p-3"><button class="px-2 py-1 border rounded-lg" data-view-serp="${escapeHtml(r.sector)}">View</button></td>
+      </tr>`;
+    }).join('\n');
+
+    statusEl.textContent = `${totalCount} sectors on ${currentDate}. Page ${pageIndex+1} of ${Math.max(1, Math.ceil(totalCount/PAGE_SIZE))}`;
+    pageInfoEl.textContent = `Page ${pageIndex+1}`;
+    prevPageBtn.disabled = pageIndex===0;
+    nextPageBtn.disabled = (pageIndex+1) >= Math.ceil(totalCount/PAGE_SIZE);
+
+    attachRowHandlers();
+    updateTrend();
+  }
+
+  function attachRowHandlers(){
+    tbody.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+      cb.addEventListener('change', ()=>{
+        const sec = cb.getAttribute('data-sector');
+        if(cb.checked) selected.add(sec); else selected.delete(sec);
+        updateTrend();
+      });
+    });
+    tbody.querySelectorAll('[data-view-serp]').forEach(btn=>{
+      btn.addEventListener('click', ()=> showSerp(btn.getAttribute('data-view-serp')));
+    });
+  }
+
+  // ===== Trend (sector or index average) =====
+  function sectorSeries(sector){
+    // Build per-date sums for this sector
+    const byDate = new Map(); // date -> {T,P,N,G}
+    for(const r of allCountsRows){
+      const rosterRow = byCompany.get(keyCompany(r.brand));
+      if(!rosterRow || rosterRow.sector!==sector) continue;
+      const o = byDate.get(r.date) || {T:0,P:0,N:0,G:0};
+      o.T += r.total; o.P += r.pos; o.N += r.neu; o.G += r.neg;
+      byDate.set(r.date, o);
+    }
+    const dates=[...allDates], pos=[], neu=[], neg=[];
+    for(const d of dates){
+      const o = byDate.get(d) || {T:0,P:0,N:0,G:0};
+      pos.push(o.T? +(o.P/o.T*100).toFixed(1):0);
+      neu.push(o.T? +(o.N/o.T*100).toFixed(1):0);
+      neg.push(o.T? +(o.G/o.T*100).toFixed(1):0);
+    }
+    return {dates,pos,neu,neg};
+  }
+  function indexSeries(){
+    const pos=[],neu=[],neg=[];
+    for(const d of allDates){
+      const rows=allCountsRows.filter(r=>r.date===d);
+      const T=rows.reduce((s,r)=>s+(r.total||0),0);
+      const P=rows.reduce((s,r)=>s+(r.pos||0),0);
+      const N=rows.reduce((s,r)=>s+(r.neu||0),0);
+      const G=rows.reduce((s,r)=>s+(r.neg||0),0);
+      pos.push(T? +(P/T*100).toFixed(1):0);
+      neu.push(T? +(N/T*100).toFixed(1):0);
+      neg.push(T? +(G/T*100).toFixed(1):0);
+    }
+    return {dates:[...allDates],pos,neu,neg};
+  }
+
+  const TREND_WINDOW=30; let trendPage=0;
+  function updateTrend(){
+    let mode='index', target=null;
+    if(selected.size===1){ mode='sector'; target=[...selected][0]; }
+
+    const full = (mode==='sector') ? sectorSeries(target) : indexSeries();
+    trendHint.classList.toggle('hidden', mode==='sector');
+
+    const total=full.dates.length, W=TREND_WINDOW;
+    const maxPage=Math.max(0,Math.ceil(total/W)-1);
+    if(trendPage>maxPage) trendPage=maxPage;
+    const end=Math.max(0,total-W*trendPage);
+    const start=Math.max(0,end-W);
+
+    const labels=full.dates.slice(start,end);
+    const pos=full.pos.slice(start,end);
+    const neu=full.neu.slice(start,end);
+    const neg=full.neg.slice(start,end);
+
+    trendInfo.textContent = (mode==='sector') ? `SECTOR: ${target}` : `INDEX AVERAGE`;
+    trendRange.textContent = labels.length? ` | DATE: ${labels[0]} → ${labels[labels.length-1]}` : '';
+
+    const data={ labels, datasets:[
+      {label:'Positive', data:pos, backgroundColor:'#98c15b', stack:'s'},
+      {label:'Neutral',  data:neu, backgroundColor:'#dae5e6', stack:'s'},
+      {label:'Negative', data:neg, backgroundColor:'#ffb199', stack:'s'},
+    ]};
+    const options={ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'top'}, tooltip:{ callbacks:{ label:(c)=>`${c.dataset.label}: ${c.parsed.y}%` } } },
+      scales:{ x:{stacked:true}, y:{stacked:true, beginAtZero:true, ticks:{callback:v=>v+'%'}} }
+    };
+    if(trendChart) trendChart.destroy();
+    trendChart=new Chart(trendCanvas.getContext('2d'),{type:'bar',data,options});
+  }
+  trendPrev.addEventListener('click',()=>{ trendPage+=1; updateTrend(); });
+  trendNext.addEventListener('click',()=>{ trendPage=Math.max(0,trendPage-1); updateTrend(); });
+
+  // ===== SERP modal (list all sector rows; date-scoped if CSV has Date) =====
+  async function showSerp(sector){
+    modalTitle.textContent = `${sector} — SERP`;
+    modalSubtitle.textContent = currentDate ? `Date: ${currentDate}` : '';
+    modalBody.innerHTML = '<p class="text-sm text-slate-500">Loading…</p>';
+    openModal();
+
+    // Filter raw rows by sector (and date if serp has date col)
+    const list = serpRaw.filter(r => r.sector === sector);
+    if(!list.length){
+      modalBody.innerHTML = `<p class="text-sm text-slate-600">No SERP rows found for ${escapeHtml(sector)}.</p>`;
+      return;
+    }
+
+    modalBody.innerHTML = list.map(r=>{
+      let domain=''; try{ domain=new URL(r.url).hostname; }catch{}
+      return `<div class="p-3 border rounded-xl hover:bg-slate-50 mb-2">
+        <div class="flex items-center justify-between">
+          <div class="text-xs text-slate-500">${escapeHtml(domain)}</div>
+          <div class="flex gap-2">
+            <span class="text-xs ${r.control?'text-emerald-700 bg-emerald-100':'text-rose-700 bg-rose-100'} px-2 py-0.5 rounded-full">${r.control?'controlled':'uncontrolled'}</span>
+            <span class="text-xs ${r.sentiment==='negative'?'text-rose-700 bg-rose-100':(r.sentiment==='positive'?'text-emerald-700 bg-emerald-100':'text-slate-700 bg-slate-100')} px-2 py-0.5 rounded-full">${escapeHtml(r.sentiment||'neutral')}</span>
+          </div>
+        </div>
+        <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(r.brand)}</div>
+        <a class="block mt-1 underline font-medium" target="_blank" rel="noopener" href="${r.url}">${escapeHtml(r.title||'View result')}</a>
+        ${r.snippet? `<div class="text-xs text-slate-600 mt-1">${escapeHtml(r.snippet)}</div>`:''}
+      </div>`;
+    }).join('\n');
+  }
+
+  // ===== Modal helpers =====
+  function openModal(){ modalBackdrop.classList.remove('hidden'); }
+  function closeModal(){ modalBackdrop.classList.add('hidden'); }
+  modalClose.addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', (e)=>{ if(e.target===modalBackdrop) closeModal(); });
+  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+  // ===== Event bindings =====
+  dateSelect.addEventListener('change', async ()=>{
+    currentDate = dateSelect.value;
+    pageIndex=0; renderTable();
+  });
+  filterInput.addEventListener('input', ()=>{ filterText=filterInput.value||''; pageIndex=0; renderTable(); });
+  refreshBtn.addEventListener('click', async ()=>{ await init(); });
+
+  selectAll.addEventListener('change', ()=>{
+    if(selectAll.checked){
+      tbody.querySelectorAll('input[type="checkbox"]').forEach(cb=>{ cb.checked=true; selected.add(cb.getAttribute('data-sector')); });
+    }else{
+      selected.clear();
+      tbody.querySelectorAll('input[type="checkbox"]').forEach(cb=> cb.checked=false);
+    }
+    updateTrend();
+  });
+
+  prevPageBtn.addEventListener('click', ()=>{ if(pageIndex>0){ pageIndex--; renderTable(); } });
+  nextPageBtn.addEventListener('click', ()=>{ pageIndex++; renderTable(); });
+
+  document.querySelectorAll('.th-sort').forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const key = th.dataset.sort;
+      if(sortKey===key){ sortDir=(sortDir==='asc'?'desc':'asc'); }
+      else { sortKey=key; sortDir='desc'; }
+      pageIndex=0; renderTable();
+    });
+  });
+
+  // ===== Init =====
+  async function init(){
+    await loadRoster();
+    await loadCounts();
+    await loadSerps();
+
+    dateSelect.innerHTML = allDates.map(d=>`<option value="${d}">${d}</option>`).join('');
+    if(currentDate) dateSelect.value=currentDate;
+
+    selected.clear(); filterText=''; filterInput.value='';
+    sortKey='negNewsPct'; sortDir='desc'; pageIndex=0;
+
+    renderTable();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
