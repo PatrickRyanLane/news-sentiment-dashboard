@@ -323,15 +323,16 @@ def send_kit_alert(brand: str, neg: int, tot: int, last_alert_dates: dict[str, s
         
         try:
             tag_id = int(KIT_TAG_ID)
-            send_kit_broadcast(brand, neg, tot, pct, tag_id)
-            last_alert_dates[brand] = now_eastern_date_str()
+            # Only update cooldown if the broadcast was sent successfully
+            if send_kit_broadcast(brand, neg, tot, pct, tag_id):
+                last_alert_dates[brand] = now_eastern_date_str()
         except ValueError:
             print(f"Error: KIT_TAG_ID '{KIT_TAG_ID}' is not a valid integer.")
 
-def send_kit_broadcast(brand: str, neg: int, tot: int, pct: int, tag_id: int) -> None:
-    """Send a broadcast to a specific tag in Kit."""
+def send_kit_broadcast(brand: str, neg: int, tot: int, pct: int, tag_id: int) -> bool:
+    """Send a broadcast to a specific tag in Kit. Returns True on success."""
     if not KIT_API_KEY:
-        return
+        return False
 
     url = "https://api.kit.com/v4/broadcasts"
     headers = {
@@ -348,8 +349,10 @@ def send_kit_broadcast(brand: str, neg: int, tot: int, pct: int, tag_id: int) ->
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
         print(f"Sent Kit broadcast for {brand}")
+        return True
     except requests.exceptions.RequestException as e:
         print(f"Error sending Kit broadcast for {brand}: {e}")
+        return False
 
 def compute_counts_and_themes(for_date: str, article_rows: list[dict]) -> list[dict]:
     """
@@ -374,7 +377,7 @@ def compute_counts_and_themes(for_date: str, article_rows: list[dict]) -> list[d
         neg = sum(1 for x in items if (x.get("sentiment") or "") == "negative")
         tot = pos + neu + neg
 
-        send_webhook_alert(brand, neg, tot, last_alert_dates)
+        send_kit_alert(brand, neg, tot, last_alert_dates)
 
         negative_titles = [x.get("title","") for x in items if (x.get("sentiment") or "") == "negative"]
         theme = top_ngram_from_titles(brand, negative_titles, MIN_THEME_FREQ)
