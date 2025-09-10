@@ -33,7 +33,7 @@ import requests
 # ------------- Config -----------------
 NEGATIVE_THRESHOLD = 0.4  # 40%
 ALERT_COOLDOWN_DAYS = 180 # 6 months
-WEBHOOK_URL = os.environ.get("SENTIMENT_WEBHOOK_URL")
+
 KIT_API_KEY = os.environ.get("KIT_API_KEY")
 KIT_TAG_ID = os.environ.get("KIT_TAG_ID")
 HL   = "en-US"          # Google News interface language
@@ -305,8 +305,11 @@ def write_articles_csv(for_date: str, rows: list[dict]) -> None:
                 r.get("published",""),
             ])
 
-def send_webhook_alert(brand: str, neg: int, tot: int, last_alert_dates: dict[str, str]) -> None:
-    """Send a webhook if the negative threshold is met and not in cooldown."""
+def send_kit_alert(brand: str, neg: int, tot: int, last_alert_dates: dict[str, str]) -> None:
+    """Send a Kit broadcast if the negative threshold is met and not in cooldown."""
+    if not (KIT_API_KEY and KIT_TAG_ID):
+        return
+
     if tot > 0 and (neg / tot) >= NEGATIVE_THRESHOLD:
         # Cooldown check
         last_alert_date_str = last_alert_dates.get(brand)
@@ -318,25 +321,12 @@ def send_webhook_alert(brand: str, neg: int, tot: int, last_alert_dates: dict[st
 
         pct = round((neg / tot) * 100)
         
-        if WEBHOOK_URL:
-            payload = {
-                "text": f"Alert: {brand} has {neg}/{tot} ({pct}%) negative articles."
-            }
-            try:
-                response = requests.post(WEBHOOK_URL, json=payload)
-                response.raise_for_status()  # Raise an exception for bad status codes
-                print(f"Sent alert for {brand} to {WEBHOOK_URL}")
-                last_alert_dates[brand] = now_eastern_date_str()
-            except requests.exceptions.RequestException as e:
-                print(f"Error sending webhook for {brand}: {e}")
-        
-        if KIT_API_KEY and KIT_TAG_ID:
-            try:
-                tag_id = int(KIT_TAG_ID)
-                send_kit_broadcast(brand, neg, tot, pct, tag_id)
-                last_alert_dates[brand] = now_eastern_date_str()
-            except ValueError:
-                print(f"Error: KIT_TAG_ID '{KIT_TAG_ID}' is not a valid integer.")
+        try:
+            tag_id = int(KIT_TAG_ID)
+            send_kit_broadcast(brand, neg, tot, pct, tag_id)
+            last_alert_dates[brand] = now_eastern_date_str()
+        except ValueError:
+            print(f"Error: KIT_TAG_ID '{KIT_TAG_ID}' is not a valid integer.")
 
 def send_kit_broadcast(brand: str, neg: int, tot: int, pct: int, tag_id: int) -> None:
     """Send a broadcast to a specific tag in Kit."""
