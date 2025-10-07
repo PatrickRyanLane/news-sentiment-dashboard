@@ -6,6 +6,9 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
+# Import our new hybrid classifier
+from sentiment_classifier import classify_sentiment
+
 # Updated paths to use rosters/main-roster.csv and new output directory
 BASE = Path(__file__).parent.parent
 MAIN_ROSTER = BASE / "rosters" / "main-roster.csv"
@@ -14,17 +17,11 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Tunables (env overrides)
 MAX_PER_ALIAS = int(os.getenv("ARTICLES_MAX_PER_ALIAS", "50"))
+USE_DISTILBERT = os.getenv("USE_DISTILBERT", "true").lower() in ("true", "1", "yes")
 
 def google_news_rss(q):
     qs = urllib.parse.quote(q)
     return f"https://news.google.com/rss/search?q={qs}&hl=en-US&gl=US&ceid=US:en"
-
-def classify(headline, analyzer):
-    s = analyzer.polarity_scores(headline or "")
-    c = s["compound"]
-    if c >= 0.25:  return "positive"
-    if c <= -0.05: return "negative"
-    return "neutral"
 
 def fetch_one(brand, analyzer, date, pause=1.2):
     url = google_news_rss(f'"{brand}"')
@@ -41,14 +38,20 @@ def fetch_one(brand, analyzer, date, pause=1.2):
         except Exception:
             pass
         source = (item.source.text or "").strip() if item.source else ""
-        sent   = classify(title, analyzer)
+        
+        # Use hybrid classifier
+        result = classify_sentiment(title, analyzer, use_distilbert=USE_DISTILBERT)
+        
         out.append({
             "company": brand,
             "title": title,
             "url": link,
             "source": source,
             "date": date,
-            "sentiment": sent
+            "sentiment": result["sentiment"],
+            "confidence": f"{result['confidence']:.3f}",
+            "method": result["method"],
+            "vader_compound": f"{result['vader_compound']:.3f}"
         })
     time.sleep(pause)  # be respectful
     return out[:MAX_PER_ALIAS]  # cap results
@@ -89,6 +92,11 @@ def main():
         default=None,
         help="Date to use for the data file (YYYY-MM-DD). Defaults to today."
     )
+    parser.add_argument(
+        "--no-distilbert",
+        action="store_true",
+        help="Disable distilBERT and use VADER only"
+    )
     args = parser.parse_args()
     
     # Use provided date or default to today
@@ -96,6 +104,9 @@ def main():
         date = args.date
     else:
         date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Override distilBERT setting if flag provided
+    use_distilbert = USE_DISTILBERT and not args.no_distilbert
     
     # Set output file path based on date
     out_file = OUT_DIR / f"{date}-brand-articles-modal.csv"
@@ -107,6 +118,7 @@ def main():
     brands = load_companies_from_roster()
     print(f"Loaded {len(brands)} companies from {MAIN_ROSTER}")
     print(f"Processing articles for date: {date}")
+    print(f"Using distilBERT for low-confidence cases: {use_distilbert}")
     
     analyzer = SentimentIntensityAnalyzer()
 
@@ -117,11 +129,27 @@ def main():
         except Exception as e:
             print(f"[WARN] {b}: {e}", file=sys.stderr)
 
+    # Enhanced output with confidence metrics
     with out_file.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=["company","title","url","source","date","sentiment"])
+        fieldnames = ["company", "title", "url", "source", "date", "sentiment", 
+                      "confidence", "method", "vader_compound"]
+        w = csv.DictWriter(f, fieldnames=fieldnames)
         w.writeheader()
         w.writerows(rows)
-    print(f"Wrote {out_file} ({len(rows)} rows)")
+    
+    # Print summary statistics
+    total = len(rows)
+    if total > 0:
+        distilbert_count = sum(1 for r in rows if r["method"] == "distilbert")
+        vader_count = total - distilbert_count
+        avg_confidence = sum(float(r["confidence"]) for r in rows) / total
+        
+        print(f"\nWrote {out_file} ({total} rows)")
+        print(f"  VADER-only: {vader_count} ({vader_count/total*100:.1f}%)")
+        print(f"  DistilBERT: {distilbert_count} ({distilbert_count/total*100:.1f}%)")
+        print(f"  Avg confidence: {avg_confidence:.3f}")
+    else:
+        print(f"Wrote {out_file} (0 rows)")
 
 if __name__ == "__main__":
     main()
