@@ -26,6 +26,9 @@
   --stroke: #0e2230;          /* border stroke */
   --chip: #12343e;
   --chipBorder: #174550;
+  
+  --stock-pos:#22c55e; 
+  --stock-neg:#ef4444;
 }
 
 *{box-sizing:border-box}
@@ -90,10 +93,19 @@ button:hover{filter:brightness(1.08)}
 table{width:100%;border-collapse:separate;border-spacing:0 6px}
 thead th{font-size:12px;color:var(--muted);text-align:left;padding:6px 8px}
 tbody td{padding:10px 8px;background:#1f2121;border-top:1px solid #0f1831;border-bottom:1px solid #0f1831}
+tbody tr{cursor:pointer;transition:background-color 0.15s}
+tbody tr:hover{background:rgba(88,219,237,.08)}
 tbody tr td:first-child{border-left:1px solid #0f1831;border-radius:10px 0 0 10px}
 tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 0}
 .right{text-align:right}
 .center{text-align:center}
+
+/* Stock styling */
+.stock-price{font-family:'Courier New',monospace;font-weight:500;color:var(--text)}
+.stock-change{font-weight:600}
+.stock-change.positive{color:var(--stock-pos)}
+.stock-change.negative{color:var(--stock-neg)}
+
 .pill{font-size:12px;border-radius:999px;padding:3px 8px;border:1px solid var(--chipBorder);background:var(--chip);color:#cfe0ff}
 .pill.low  { background:rgba(130,198,24,.15); color:#82c618; }   /* green */
 .pill.med  { background:rgba(207,219,221,.25); color:#cfdbdd; } /* grey/neutral */
@@ -115,7 +127,7 @@ tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 
   .table-card{ padding:8px }                               /* a bit tighter padding */
   .table-hint{ font-size:12px }
   thead th, tbody td{ padding:8px 10px }                   /* smaller cell padding */
-  table{ min-width: 980px }                                 /* force scroll width */
+  table{ min-width: 1120px }                                 /* force scroll width */
 
   /* Slightly smaller pills/buttons for space */
   .pill{ font-size:11px; padding:3px 8px }
@@ -164,6 +176,8 @@ tbody td:first-child{
 .modal header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #12203d}
 .modal header h3{margin:0;font-size:16px}
 .modal .content{padding:16px}
+.close{color:#aaa;float:right;font-size:28px;font-weight:bold;cursor:pointer;line-height:20px}
+.close:hover,.close:focus{color:var(--text)}
 .badges{display:flex;gap:8px;margin-top:8px}
 .badge{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid transparent}
 .badge.positive{
@@ -192,6 +206,10 @@ tbody td:first-child{
   border-color:rgba(255,130,97,.35);
 }
 .muted{color:var(--muted)}
+
+/* Stock chart modal */
+#stockChartModal .box{max-width:1000px}
+#stockChart{width:100%;height:400px}
 
 /* SERP card layout */
 .serp-cards{display:grid;gap:12px;margin-top:12px}
@@ -249,32 +267,35 @@ tbody td:first-child{
   </div>
 
   <div class="table-card">
-  <div class="table-scroll">
-    <table>
-      <thead>
-        <tr>
-          <th>CEO</th>
-          <th>Company</th>
-          <th data-key="neg_news" class="right">Negative News % ▲▼</th>
-          <th data-key="neg_serp" class="right">Negative SERP % ▲▼</th>
-          <th data-key="ctrl_pct" class="right">SERP Control % ▲▼</th>
-          <th data-key="risk" class="center">Risk ▲▼</th>
-          <th class="center">Headlines</th>
-          <th class="center">SERP</th>
-          <th class="center">Boards</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </div>
+    <p class="table-hint">Select a CEO using the checkbox to view their trend lines. Click any row to see the company's 90-day stock chart.</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>CEO</th>
+            <th>Company</th>
+            <th class="right">Stock Price</th>
+            <th class="right">7-Day Change</th>
+            <th data-key="neg_news" class="right">Negative News % ▲▼</th>
+            <th data-key="neg_serp" class="right">Negative SERP % ▲▼</th>
+            <th data-key="ctrl_pct" class="right">SERP Control % ▲▼</th>
+            <th data-key="risk" class="center">Risk ▲▼</th>
+            <th class="center">Headlines</th>
+            <th class="center">SERP</th>
+            <th class="center">Boards</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
 
-  <div class="pagination">
-    <button id="prevBtn">Prev</button>
-    <div>Page <span id="pageNo">1</span> / <span id="pageTotal">1</span></div>
-    <button id="nextBtn">Next</button>
+    <div class="pagination">
+      <button id="prevBtn">Prev</button>
+      <div>Page <span id="pageNo">1</span> / <span id="pageTotal">1</span></div>
+      <button id="nextBtn">Next</button>
+    </div>
   </div>
 </div>
-
 
 <!-- Modal -->
 <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -284,6 +305,19 @@ tbody td:first-child{
       <button id="modalClose">Close</button>
     </header>
     <div class="content" id="modalContent"></div>
+  </div>
+</div>
+
+<!-- Stock Chart Modal -->
+<div id="stockChartModal" class="modal" role="dialog" aria-modal="true">
+  <div class="box">
+    <header>
+      <h3 id="stockChartTitle">Stock Price History</h3>
+      <span class="close" onclick="closeStockChart()">&times;</span>
+    </header>
+    <div class="content">
+      <canvas id="stockChart"></canvas>
+    </div>
   </div>
 </div>
 
@@ -313,7 +347,8 @@ let currentSort = { key:null, dir:1 };
 let currentPage = 1;
 const PAGE_SIZE = 25;
 
-let newsChart, serpChart;
+let newsChart, serpChart, stockChart;
+let globalStockData = {};
 
 // NEW caches for per-date table sources
 const _articlesCache = new Map();   // date -> Map(ceo -> {company, theme, neg_pct})
@@ -325,7 +360,7 @@ let dateWindowStart = null;       // index of first date in window (global, shar
 
 /********************** Utils **********************/
 const isISODate = s => /^\d{4}-\d{2}-\d{2}$/.test(String(s||'').trim());
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const esc = (s) => String(s ?? '').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":"&#39;"}[m]));
 function fmtPct(v){ 
   return (v==null) ? 'N/A' : Math.round(v*100) + '%'; 
 }
@@ -335,6 +370,126 @@ const canonName = s => String(s || '')
   .toLowerCase()
   .replace(/\s+/g, ' ')
   .trim();
+
+/********************** Stock Data **********************/
+async function loadStockData() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    let stockData = {};
+    
+    try {
+      const response = await fetch(`data/stock_prices/${today}-stock-data.csv`, {cache:'no-store'});
+      const text = await response.text();
+      stockData = parseStockCSV(text);
+    } catch {
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      const response = await fetch(`data/stock_prices/${yesterday}-stock-data.csv`, {cache:'no-store'});
+      const text = await response.text();
+      stockData = parseStockCSV(text);
+    }
+    
+    return stockData;
+  } catch (error) {
+    console.warn('Could not load stock data:', error);
+    return {};
+  }
+}
+
+function parseStockCSV(csvText) {
+  const lines = csvText.trim().split('\n');
+  const stockData = {};
+  
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    
+    const values = line.split(',');
+    if (values.length < 7) continue;
+    
+    const company = values[1];
+    stockData[company] = {
+      ticker: values[0],
+      company: values[1],
+      openingPrice: parseFloat(values[2]) || null,
+      sevenDayChange: parseFloat(values[3]) || null,
+      priceHistory: values[4] ? values[4].split('|').map(p => parseFloat(p)).filter(p => !isNaN(p)) : [],
+      dateHistory: values[5] ? values[5].split('|') : [],
+      lastUpdated: values[6]
+    };
+  }
+  
+  return stockData;
+}
+
+function showStockChart(company) {
+  const stock = globalStockData[company];
+  if (!stock || !stock.priceHistory || !stock.priceHistory.length) {
+    alert('No stock data available for this company');
+    return;
+  }
+  
+  const modal = document.getElementById('stockChartModal');
+  document.getElementById('stockChartTitle').textContent = 
+    `${company} (${stock.ticker}) - 90-Day Price History`;
+  modal.classList.add('open');
+  
+  if (stockChart) stockChart.destroy();
+  
+  const ctx = document.getElementById('stockChart').getContext('2d');
+  const isPositive = (stock.sevenDayChange !== null && stock.sevenDayChange >= 0);
+  
+  stockChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: stock.dateHistory,
+      datasets: [{
+        label: 'Closing Price ($)',
+        data: stock.priceHistory,
+        borderColor: isPositive ? '#22c55e' : '#ef4444',
+        backgroundColor: isPositive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+        borderWidth: 2,
+        tension: 0.1,
+        fill: true,
+        pointRadius: 2,
+        pointHoverRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return '$' + context.parsed.y.toFixed(2);
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: false,
+          ticks: {
+            callback: function(value) {
+              return '$' + value.toFixed(2);
+            }
+          }
+        },
+        x: {
+          ticks: {
+            maxTicksLimit: 10,
+            autoSkip: true
+          }
+        }
+      }
+    }
+  });
+}
+
+function closeStockChart() {
+  document.getElementById('stockChartModal').classList.remove('open');
+}
 
 /* ===== NEW: pager helpers ===== */
 function clampDateStart(total){
@@ -528,7 +683,7 @@ async function getSerpAggForDate(d){
 
 /********************** UI bootstrap **********************/
 async function init(){
-  await Promise.all([loadRoster(), loadCounts(), loadSerpDaily(), loadBoards()]);
+  await Promise.all([loadRoster(), loadCounts(), loadSerpDaily(), loadBoards(), loadStockData().then(data => globalStockData = data)]);
   // date options from the chart sources (existing behavior)
   const dateSet = new Set([
     ...allCountsRows.map(r => r.date),
@@ -565,7 +720,13 @@ async function init(){
     if (newsChart) newsChart.resize();
     if (serpChart) serpChart.resize();
   });
-  [newsCanvas.parentElement, serpCanvas.parentElement].forEach(el => ro.observe(el));  
+  [newsCanvas.parentElement, serpCanvas.parentElement].forEach(el => ro.observe(el));
+  
+  window.onclick = function(event) {
+    if (event.target === document.getElementById('stockChartModal')) {
+      closeStockChart();
+    }
+  };
 }
 
 /********************** Data → view rows **********************/
@@ -617,12 +778,12 @@ async function renderAll(){
   } else if (selectedCeo && !rows.some(r => r.ceo === selectedCeo)) {
     // If the previously selected CEO is no longer visible, clear it
     selectedCeo = null;
+  }
+
+  renderTable();
+  renderCharts(); // charts keep using existing aggregated sources
 }
 
-renderTable();
-renderCharts(); // charts keep using existing aggregated sources
-
-}
 function riskRank(risk) {
   if (risk === 'High') return 3;
   if (risk === 'Medium') return 2;
@@ -636,27 +797,43 @@ function renderTable(){
 
   // sorting
   if (currentSort.key){
-  rows.sort((a,b)=>{
-    const ka = a[currentSort.key], kb = b[currentSort.key];
+    rows.sort((a,b)=>{
+      const ka = a[currentSort.key], kb = b[currentSort.key];
 
-    if (currentSort.key === 'risk') {
-      return currentSort.dir * (riskRank(ka) - riskRank(kb));
-    }
+      if (currentSort.key === 'risk') {
+        return currentSort.dir * (riskRank(ka) - riskRank(kb));
+      }
 
-    if (typeof ka === 'string') {
-      return currentSort.dir * ka.localeCompare(kb);
-    }
-    return currentSort.dir * ((ka ?? -1) - (kb ?? -1));
-  });
-}
+      if (typeof ka === 'string') {
+        return currentSort.dir * ka.localeCompare(kb);
+      }
+      return currentSort.dir * ((ka ?? -1) - (kb ?? -1));
+    });
+  }
 
   const start = (currentPage-1)*PAGE_SIZE;
   const pageRows = rows.slice(start, start+PAGE_SIZE);
   tbody.innerHTML = pageRows.map(r=>{
     const checked = (selectedCeo && selectedCeo===r.ceo) ? 'checked' : '';
-    return `<tr>
-      <td><input type="checkbox" data-ceo="${esc(r.ceo)}" class="brandCheck" ${checked} /> ${esc(r.ceo)}</td>
+    const stock = globalStockData[r.company];
+    let stockPriceHtml = '<span class="muted">N/A</span>';
+    let stockChangeHtml = '<span class="muted">N/A</span>';
+    
+    if (stock && stock.openingPrice !== null) {
+      stockPriceHtml = `<span class="stock-price">$${stock.openingPrice.toFixed(2)}</span>`;
+      
+      if (stock.sevenDayChange !== null) {
+        const changeClass = stock.sevenDayChange >= 0 ? 'positive' : 'negative';
+        const changeSymbol = stock.sevenDayChange >= 0 ? '▲' : '▼';
+        stockChangeHtml = `<span class="stock-change ${changeClass}">${changeSymbol} ${Math.abs(stock.sevenDayChange).toFixed(2)}%</span>`;
+      }
+    }
+    
+    return `<tr data-company="${esc(r.company)}">
+      <td><input type="checkbox" data-ceo="${esc(r.ceo)}" class="brandCheck" ${checked} onclick="event.stopPropagation()" /> ${esc(r.ceo)}</td>
       <td>${esc(r.company)}</td>
+      <td class="right">${stockPriceHtml}</td>
+      <td class="right">${stockChangeHtml}</td>
       <td class="right">${fmtPct(r.neg_news)}</td>
       <td class="right">${fmtPct(r.neg_serp)}</td>
       <td class="right">${fmtPct(r.ctrl_pct)}</td>
@@ -669,11 +846,22 @@ function renderTable(){
                 : '<span class="pill low">Low</span>')
           : '<span class="muted">N/A</span>'
       }</td>
-      <td class="center"><button class="headBtn" data-ceo="${esc(r.ceo)}">View</button></td>
-      <td class="center"><button class="serpBtn" data-ceo="${esc(r.ceo)}" data-company="${esc(r.company)}">View</button></td>
-      <td class="center"><button class="boardsBtn" data-ceo="${esc(r.ceo)}">View</button></td>
+      <td class="center"><button class="headBtn" data-ceo="${esc(r.ceo)}" onclick="event.stopPropagation()">View</button></td>
+      <td class="center"><button class="serpBtn" data-ceo="${esc(r.ceo)}" data-company="${esc(r.company)}" onclick="event.stopPropagation()">View</button></td>
+      <td class="center"><button class="boardsBtn" data-ceo="${esc(r.ceo)}" onclick="event.stopPropagation()">View</button></td>
     </tr>`;
   }).join('');
+
+  tbody.querySelectorAll('tr').forEach(row => {
+    const company = row.getAttribute('data-company');
+    row.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('brandCheck') && 
+          e.target.tagName !== 'BUTTON' &&
+          !e.target.closest('button')) {
+        showStockChart(company);
+      }
+    });
+  });
 
   // events
   tbody.querySelectorAll('.brandCheck').forEach(cb=>{
@@ -831,46 +1019,46 @@ function renderCharts(){
     data: {
       labels: d,
       datasets: [
-  // Daily (solid)
-  {
-    label: 'Daily Negative SERP %',   // was 'Negative SERP %'
-    data: sN,
-    tension: 0.25,
-    borderWidth: SOLID_WIDTH,
-    borderColor: NEG_COLOR,
-    fill: false
-  },
-  {
-    label: 'Daily SERP Control %',    // was 'Control %'
-    data: sC,
-    tension: 0.25,
-    borderWidth: SOLID_WIDTH,
-    borderColor: CTRL_COLOR,
-    fill: false
-  },
+        // Daily (solid)
+        {
+          label: 'Daily Negative SERP %',
+          data: sN,
+          tension: 0.25,
+          borderWidth: SOLID_WIDTH,
+          borderColor: NEG_COLOR,
+          fill: false
+        },
+        {
+          label: 'Daily SERP Control %',
+          data: sC,
+          tension: 0.25,
+          borderWidth: SOLID_WIDTH,
+          borderColor: CTRL_COLOR,
+          fill: false
+        },
 
-  // Averages (dashed, no points)
-  {
-    label: 'Average Negative SERP %',
-    data: avgNegLine,
-    tension: 0,
-    fill: false,
-    borderWidth: DASH_WIDTH,
-    borderDash: DASH_PATTERN,
-    borderColor: NEG_COLOR,
-    pointRadius: 0
-  },
-  {
-    label: 'Average SERP Control %',
-    data: avgCtrlLine,
-    tension: 0,
-    fill: false,
-    borderWidth: DASH_WIDTH,
-    borderDash: DASH_PATTERN,
-    borderColor: CTRL_COLOR,
-    pointRadius: 0
-  }
-]
+        // Averages (dashed, no points)
+        {
+          label: 'Average Negative SERP %',
+          data: avgNegLine,
+          tension: 0,
+          fill: false,
+          borderWidth: DASH_WIDTH,
+          borderDash: DASH_PATTERN,
+          borderColor: NEG_COLOR,
+          pointRadius: 0
+        },
+        {
+          label: 'Average SERP Control %',
+          data: avgCtrlLine,
+          tension: 0,
+          fill: false,
+          borderWidth: DASH_WIDTH,
+          borderDash: DASH_PATTERN,
+          borderColor: CTRL_COLOR,
+          pointRadius: 0
+        }
+      ]
     },
     options: { ...commonOpts }
   });
