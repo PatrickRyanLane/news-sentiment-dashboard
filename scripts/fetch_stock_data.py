@@ -1,6 +1,7 @@
 """
 Fetch stock price data for companies in the roster.
 Retrieves opening prices and calculates 7-day percentage changes.
+Stores 90 days of historical price data for charting.
 """
 
 import yfinance as yf
@@ -18,7 +19,7 @@ OUTPUT_DIR = PROJECT_ROOT / 'data' / 'stock_prices'
 def fetch_stock_data():
     """
     Fetch stock data for all companies in the roster.
-    Returns a DataFrame with ticker, company, opening price, 7-day change %, and price history.
+    Returns a DataFrame with ticker, company, opening price, 7-day change %, and 90-day price history.
     """
     print("Loading roster...")
     roster_df = pd.read_csv(ROSTER_PATH)
@@ -46,10 +47,10 @@ def fetch_stock_data():
             # Create ticker object
             stock = yf.Ticker(ticker)
             
-            # Get 8 days of history to ensure we have 7 full trading days
+            # Get ~120 days of history to ensure we have 90 full trading days
             # (accounting for weekends/holidays)
             end_date = datetime.now()
-            start_date = end_date - timedelta(days=10)
+            start_date = end_date - timedelta(days=120)
             
             hist = stock.history(start=start_date, end=end_date)
             
@@ -61,7 +62,7 @@ def fetch_stock_data():
             # Get today's opening price (most recent)
             today_open = hist['Open'].iloc[-1]
             
-            # Get price from 7 trading days ago (or closest available)
+            # Get price from 7 trading days ago (or closest available) for the 7-day change
             if len(hist) >= 7:
                 week_ago_close = hist['Close'].iloc[-7]
             else:
@@ -72,8 +73,8 @@ def fetch_stock_data():
             # Calculate 7-day percentage change
             seven_day_change = ((today_open - week_ago_close) / week_ago_close) * 100
             
-            # Store last 7 days of closing prices for charting
-            recent_history = hist.tail(7)
+            # Store last 90 days of closing prices for charting
+            recent_history = hist.tail(90)
             price_history = recent_history['Close'].tolist()
             date_history = recent_history.index.strftime('%Y-%m-%d').tolist()
             
@@ -87,7 +88,7 @@ def fetch_stock_data():
                 'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             })
             
-            print(f"  ✓ {company}: ${today_open:.2f} ({seven_day_change:+.2f}%)")
+            print(f"  ✓ {company}: ${today_open:.2f} ({seven_day_change:+.2f}%) - {len(price_history)} days stored")
             
         except Exception as e:
             print(f"  ✗ Error fetching {ticker} ({company}): {str(e)}")
