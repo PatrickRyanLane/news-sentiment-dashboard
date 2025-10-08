@@ -4,7 +4,7 @@ This guide explains how to integrate the stock price data into your dashboards.
 
 ## Overview
 
-The stock data is now fetched daily and stored in `data/stock_prices/stock_data_YYYY-MM-DD.csv` with the following columns:
+The stock data is now fetched daily and stored in `data/stock_prices/YYYY-MM-DD-stock-data.csv` with the following columns:
 - `ticker`: Stock ticker symbol
 - `company`: Company name
 - `opening_price`: Opening price for the day
@@ -29,13 +29,13 @@ async function loadStockData() {
         let stockData = {};
         
         try {
-            const response = await fetch(`data/stock_prices/stock_data_${today}.csv`);
+            const response = await fetch(`data/stock_prices/${today}-stock-data.csv`);
             const text = await response.text();
             stockData = parseStockCSV(text);
         } catch {
             // Try yesterday's file
             const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-            const response = await fetch(`data/stock_prices/stock_data_${yesterday}.csv`);
+            const response = await fetch(`data/stock_prices/${yesterday}-stock-data.csv`);
             const text = await response.text();
             stockData = parseStockCSV(text);
         }
@@ -336,6 +336,8 @@ Here's a minimal complete example:
    ```
 
 2. **Check Output**: Verify the CSV file in `data/stock_prices/`
+   - Filename format: `YYYY-MM-DD-stock-data.csv`
+   - Failed tickers: `YYYY-MM-DD-failed-tickers.csv`
 
 3. **Test Dashboard**: Open your HTML dashboard and verify:
    - Stock prices display correctly
@@ -347,7 +349,7 @@ Here's a minimal complete example:
 
 - **"No data available"**: The stock data file may not exist yet. Run the workflow manually or wait for the scheduled run.
 - **Chart not displaying**: Ensure Chart.js is loaded before your script runs.
-- **Ticker symbol issues**: Some tickers in your roster may not be valid or may have changed. Check the `failed_tickers_YYYY-MM-DD.csv` file.
+- **Ticker symbol issues**: Some tickers in your roster may not be valid or may have changed. Check the `YYYY-MM-DD-failed-tickers.csv` file.
 
 ## Next Steps
 
