@@ -96,10 +96,10 @@ def fetch_stock_data():
     # Create DataFrame
     stock_df = pd.DataFrame(results)
     
-    # Save results
+    # Save results with updated naming convention: YYYY-MM-DD-stock-data.csv
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     today = datetime.now().strftime('%Y-%m-%d')
-    output_file = OUTPUT_DIR / f'stock_data_{today}.csv'
+    output_file = OUTPUT_DIR / f'{today}-stock-data.csv'
     
     stock_df.to_csv(output_file, index=False)
     print(f"\n✓ Stock data saved to {output_file}")
@@ -109,7 +109,7 @@ def fetch_stock_data():
     # Save failed tickers for debugging
     if failed_tickers:
         failed_df = pd.DataFrame(failed_tickers)
-        failed_file = OUTPUT_DIR / f'failed_tickers_{today}.csv'
+        failed_file = OUTPUT_DIR / f'{today}-failed-tickers.csv'
         failed_df.to_csv(failed_file, index=False)
         print(f"  Failed tickers saved to {failed_file}")
     
