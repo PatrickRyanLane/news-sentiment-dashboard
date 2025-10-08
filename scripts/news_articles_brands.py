@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from bs4 import BeautifulSoup
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from tqdm import tqdm
 
 # Import our new hybrid classifier
 from sentiment_classifier import classify_sentiment
@@ -121,13 +122,13 @@ def main():
     print(f"Using distilBERT for low-confidence cases: {use_distilbert}")
     
     analyzer = SentimentIntensityAnalyzer()
-
+    
     rows = []
-    for b in brands:
+    for b in tqdm(brands, desc="Processing brands", unit="brand"):
         try:
             rows.extend(fetch_one(b, analyzer, date))
         except Exception as e:
-            print(f"[WARN] {b}: {e}", file=sys.stderr)
+            tqdm.write(f"[WARN] {b}: {e}")
 
     # Enhanced output with confidence metrics
     with out_file.open("w", newline="", encoding="utf-8") as f:
