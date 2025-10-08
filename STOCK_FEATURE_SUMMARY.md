@@ -11,7 +11,7 @@ This feature branch adds stock price tracking to your news sentiment dashboard.
    - Calculates 7-day percentage changes
    - Stores 7 days of price history for charting
    - Handles errors gracefully (non-trading days, invalid tickers, etc.)
-   - Output: `data/stock_prices/stock_data_YYYY-MM-DD.csv`
+   - Output: `data/stock_prices/YYYY-MM-DD-stock-data.csv`
 
 2. **Dependencies** (updated `requirements.txt`)
    - Added `yfinance>=0.2.40` for stock data fetching
@@ -72,6 +72,8 @@ The stock data CSV contains:
 - `date_history` - Last 7 dates (pipe-separated)
 - `last_updated` - Timestamp
 
+**File naming convention:** `data/stock_prices/YYYY-MM-DD-stock-data.csv`
+
 ## ⚠️ Important Notes
 
 ### yfinance Limitations
@@ -84,7 +86,7 @@ The stock data CSV contains:
 - Your roster already has ~900 ticker symbols mapped
 - ~100 companies are marked "NA" (private/non-public)
 - Some tickers may fail (delisted, changed symbols, etc.)
-- Failed tickers are logged to `failed_tickers_YYYY-MM-DD.csv`
+- Failed tickers are logged to `YYYY-MM-DD-failed-tickers.csv`
 
 ### Workflow Schedule
 - Runs at 21:00 UTC (5 PM ET) on weekdays
