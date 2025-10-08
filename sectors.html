@@ -26,6 +26,9 @@
   --stroke: #0e2230;
   --chip: #12343e;
   --chipBorder: #174550;
+  
+  --stock-pos:#22c55e; 
+  --stock-neg:#ef4444;
 }
 
 *{box-sizing:border-box}
@@ -72,6 +75,11 @@ tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 
 .right{text-align:right}
 .center{text-align:center}
 
+/* Stock styling */
+.stock-change{font-weight:600}
+.stock-change.positive{color:var(--stock-pos)}
+.stock-change.negative{color:var(--stock-neg)}
+
 /* Mobile horizontal scroll */
 .table-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch }
 .table-scroll::-webkit-scrollbar{height:8px}
@@ -80,7 +88,7 @@ tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 
 @media (max-width: 960px){
   .table-card{ padding:8px }
   thead th, tbody td{ padding:8px 10px }
-  table{ min-width: 820px }
+  table{ min-width: 900px }
 }
 /* Pagination */
 .pagination{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:8px}
@@ -133,12 +141,14 @@ tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 
   </div>
 
   <div class="table-card">
+    <p class="table-hint">Select a sector using the checkbox to view its trend lines.</p>
     <div class="table-scroll">
       <table>
         <thead>
           <tr>
             <th style="width:56px">Select</th>
             <th data-key="sector">Sector</th>
+            <th data-key="avg_stock_change" class="right">Avg 7-Day Stock Change ▲▼</th>
             <th data-key="neg_news" class="right">Negative News % ▲▼</th>
             <th data-key="neg_serp" class="right">Negative SERP % ▲▼</th>
             <th data-key="ctrl_pct" class="right">SERP Control % ▲▼</th>
@@ -166,6 +176,7 @@ let allCountsRows = [];
 let serpsDaily = [];
 let sectorFromBrand = new Map();
 let brandsBySector = new Map();
+let globalStockData = {};
 
 let filteredRows = [];
 let selectedSector = null;
@@ -180,10 +191,60 @@ let dateWindowStart = null;
 
 /* ================= Utilities ================= */
 const isISODate = s => /^\d{4}-\d{2}-\d{2}$/.test(String(s||'').trim());
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const esc = (s) => String(s ?? '').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":"&#39;"}[m]));
 const fmtPct = v => (v==null) ? 'N/A' : (Math.round(v*100) + '%');
 
 const canonBrand = s => String(s || '').toLowerCase().replace(/\s+/g,' ').trim();
+
+/********************** Stock Data **********************/
+async function loadStockData() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    let stockData = {};
+    
+    try {
+      const response = await fetch(`data/stock_prices/${today}-stock-data.csv`, {cache:'no-store'});
+      const text = await response.text();
+      stockData = parseStockCSV(text);
+    } catch {
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      const response = await fetch(`data/stock_prices/${yesterday}-stock-data.csv`, {cache:'no-store'});
+      const text = await response.text();
+      stockData = parseStockCSV(text);
+    }
+    
+    return stockData;
+  } catch (error) {
+    console.warn('Could not load stock data:', error);
+    return {};
+  }
+}
+
+function parseStockCSV(csvText) {
+  const lines = csvText.trim().split('\n');
+  const stockData = {};
+  
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    
+    const values = line.split(',');
+    if (values.length < 7) continue;
+    
+    const company = values[1];
+    stockData[company] = {
+      ticker: values[0],
+      company: values[1],
+      openingPrice: parseFloat(values[2]) || null,
+      sevenDayChange: parseFloat(values[3]) || null,
+      priceHistory: values[4] ? values[4].split('|').map(p => parseFloat(p)).filter(p => !isNaN(p)) : [],
+      dateHistory: values[5] ? values[5].split('|') : [],
+      lastUpdated: values[6]
+    };
+  }
+  
+  return stockData;
+}
 
 function clampDateStart(total){
   if (total <= DATE_WINDOW_SIZE) return 0;
@@ -289,7 +350,7 @@ async function loadRosterSectors() {
 
 /* ================= Init ================= */
 async function init(){
-  await Promise.all([loadRosterSectors(), loadCounts(), loadSerpDaily()]);
+  await Promise.all([loadRosterSectors(), loadCounts(), loadSerpDaily(), loadStockData().then(data => globalStockData = data)]);
 
   const dateSet = new Set([
     ...allCountsRows.map(r => r.date),
@@ -354,12 +415,21 @@ async function buildSectorRowsForDate(d) {
   const sectors = [];
   brandsBySector.forEach((brandSet, sectorName) => {
     let nPos=0, nNeu=0, nNeg=0, sTot=0, sNeg=0, sCtrl=0;
+    let stockChanges = [];
 
     brandSet.forEach(bKey => {
       const n = newsByBrand.get(bKey);
       if (n) { nPos += n.pos; nNeu += n.neu; nNeg += n.neg; }
       const s = serpByBrand.get(bKey);
       if (s) { sTot += s.total; sNeg += s.neg; sCtrl += s.ctrl; }
+      
+      // Get stock data for this brand - need to find original company name
+      for (const [company, stock] of Object.entries(globalStockData)) {
+        if (canonBrand(company) === bKey && stock.sevenDayChange !== null) {
+          stockChanges.push(stock.sevenDayChange);
+          break;
+        }
+      }
     });
 
     const newsTot = nPos + nNeu + nNeg;
@@ -367,9 +437,11 @@ async function buildSectorRowsForDate(d) {
     const neg_news = newsTot ? (nNeg / newsTot) : null;
     const neg_serp = sTot    ? (sNeg / sTot)    : null;
     const ctrl_pct = sTot    ? (sCtrl / sTot)   : null;
+    const avg_stock_change = stockChanges.length ? 
+      (stockChanges.reduce((a,b) => a+b, 0) / stockChanges.length) : null;
 
     if (newsTot || sTot) {
-      sectors.push({ sector: sectorName, neg_news, neg_serp, ctrl_pct });
+      sectors.push({ sector: sectorName, neg_news, neg_serp, ctrl_pct, avg_stock_change });
     }
   });
 
@@ -408,7 +480,7 @@ function renderTable(){
     rows.sort((a,b)=>{
       const ka = a[currentSort.key], kb = b[currentSort.key];
       if (typeof ka === 'string') return currentSort.dir * ka.localeCompare(kb);
-      return currentSort.dir * ((ka ?? -1) - (kb ?? -1));
+      return currentSort.dir * ((ka ?? -999) - (kb ?? -999));
     });
   }
 
@@ -417,9 +489,18 @@ function renderTable(){
 
   tbody.innerHTML = pageRows.map(r=>{
     const checked = (selectedSector && selectedSector===r.sector) ? 'checked' : '';
+    
+    let stockChangeHtml = '<span class="muted">N/A</span>';
+    if (r.avg_stock_change !== null) {
+      const changeClass = r.avg_stock_change >= 0 ? 'positive' : 'negative';
+      const changeSymbol = r.avg_stock_change >= 0 ? '▲' : '▼';
+      stockChangeHtml = `<span class="stock-change ${changeClass}">${changeSymbol} ${Math.abs(r.avg_stock_change).toFixed(2)}%</span>`;
+    }
+    
     return `<tr>
       <td class="center"><input type="checkbox" class="sectorCheck" data-sector="${esc(r.sector)}" ${checked} /></td>
       <td>${esc(r.sector)}</td>
+      <td class="right">${stockChangeHtml}</td>
       <td class="right">${fmtPct(r.neg_news)}</td>
       <td class="right">${fmtPct(r.neg_serp)}</td>
       <td class="right">${fmtPct(r.ctrl_pct)}</td>
