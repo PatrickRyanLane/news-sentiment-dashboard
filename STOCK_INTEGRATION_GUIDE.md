@@ -9,8 +9,8 @@ The stock data is now fetched daily and stored in `data/stock_prices/YYYY-MM-DD-
 - `company`: Company name
 - `opening_price`: Opening price for the day
 - `seven_day_change_pct`: 7-day percentage change
-- `price_history`: Pipe-separated list of closing prices (last 7 days)
-- `date_history`: Pipe-separated list of dates
+- `price_history`: Pipe-separated list of closing prices (last 90 days)
+- `date_history`: Pipe-separated list of dates (last 90 days)
 - `last_updated`: Timestamp
 
 ## Dashboard Integration Steps
@@ -148,9 +148,22 @@ async function renderTable() {
     margin: 5% auto;
     padding: 20px;
     width: 80%;
-    max-width: 800px;
+    max-width: 900px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
 }
 
 #stockChart {
@@ -195,7 +208,7 @@ function showStockChart(company) {
     // Show modal
     document.getElementById('stockChartModal').style.display = 'block';
     document.getElementById('chartCompanyName').textContent = 
-        `${company} (${stock.ticker}) - 7-Day Price History`;
+        `${company} (${stock.ticker}) - 90-Day Price History`;
     
     // Destroy existing chart if it exists
     if (stockChart) {
@@ -241,6 +254,12 @@ function showStockChart(company) {
                         callback: function(value) {
                             return '$' + value.toFixed(2);
                         }
+                    }
+                },
+                x: {
+                    ticks: {
+                        maxTicksLimit: 10, // Show ~10 dates across the x-axis
+                        autoSkip: true
                     }
                 }
             }
@@ -338,18 +357,27 @@ Here's a minimal complete example:
 2. **Check Output**: Verify the CSV file in `data/stock_prices/`
    - Filename format: `YYYY-MM-DD-stock-data.csv`
    - Failed tickers: `YYYY-MM-DD-failed-tickers.csv`
+   - Check that ~90 days of data are stored per company
 
 3. **Test Dashboard**: Open your HTML dashboard and verify:
    - Stock prices display correctly
    - 7-day changes show with correct colors
    - Clicking a company opens the chart modal
-   - Chart displays historical data
+   - Chart displays 90 days of historical data
+
+## File Size Expectations
+
+With 90 days of historical data:
+- CSV file size: ~800-900 KB
+- Load time: negligible (< 100ms on most connections)
+- Chart render time: instant
 
 ## Troubleshooting
 
 - **"No data available"**: The stock data file may not exist yet. Run the workflow manually or wait for the scheduled run.
 - **Chart not displaying**: Ensure Chart.js is loaded before your script runs.
 - **Ticker symbol issues**: Some tickers in your roster may not be valid or may have changed. Check the `YYYY-MM-DD-failed-tickers.csv` file.
+- **Dates overlap on x-axis**: The chart automatically skips labels. Adjust `maxTicksLimit` in the x-axis config if needed.
 
 ## Next Steps
 
@@ -357,7 +385,8 @@ After integrating stock data:
 1. Update all dashboard HTML files (brand-dashboard.html, ceo-dashboard.html, sectors.html)
 2. Test on GitHub Pages
 3. Consider adding:
-   - Volume data
-   - Market cap
-   - Additional chart types (candlestick, etc.)
+   - Time range selector (7-day, 30-day, 90-day views)
+   - Volume data overlay
+   - Moving averages
    - Comparison charts for multiple companies
+   - Export chart functionality
