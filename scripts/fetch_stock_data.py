@@ -1,6 +1,6 @@
 """
 Fetch stock price data for companies in the roster.
-Retrieves opening prices and calculates 7-day percentage changes.
+Retrieves opening prices and calculates daily and 7-day percentage changes.
 Stores 90 days of historical price data for charting.
 """
 
@@ -19,7 +19,7 @@ OUTPUT_DIR = PROJECT_ROOT / 'data' / 'stock_prices'
 def fetch_stock_data():
     """
     Fetch stock data for all companies in the roster.
-    Returns a DataFrame with ticker, company, opening price, 7-day change %, and 90-day price history.
+    Returns a DataFrame with ticker, company, opening price, daily change %, 7-day change %, and 90-day price history.
     """
     print("Loading roster...")
     roster_df = pd.read_csv(ROSTER_PATH)
@@ -62,6 +62,14 @@ def fetch_stock_data():
             # Get today's opening price (most recent)
             today_open = hist['Open'].iloc[-1]
             
+            # Calculate daily change (today's open vs yesterday's close)
+            if len(hist) >= 2:
+                yesterday_close = hist['Close'].iloc[-2]
+                daily_change = ((today_open - yesterday_close) / yesterday_close) * 100
+            else:
+                daily_change = 0
+                print(f"  ⚠️  Not enough data for daily change calculation for {ticker}")
+            
             # Get price from 7 trading days ago (or closest available) for the 7-day change
             if len(hist) >= 7:
                 week_ago_close = hist['Close'].iloc[-7]
@@ -82,13 +90,14 @@ def fetch_stock_data():
                 'ticker': ticker,
                 'company': company,
                 'opening_price': round(today_open, 2),
+                'daily_change_pct': round(daily_change, 2),
                 'seven_day_change_pct': round(seven_day_change, 2),
                 'price_history': '|'.join(map(str, price_history)),
                 'date_history': '|'.join(date_history),
                 'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             })
             
-            print(f"  ✓ {company}: ${today_open:.2f} ({seven_day_change:+.2f}%) - {len(price_history)} days stored")
+            print(f"  ✓ {company}: ${today_open:.2f} (Daily: {daily_change:+.2f}%, 7-day: {seven_day_change:+.2f}%) - {len(price_history)} days stored")
             
         except Exception as e:
             print(f"  ✗ Error fetching {ticker} ({company}): {str(e)}")
