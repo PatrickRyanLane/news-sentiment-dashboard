@@ -9,11 +9,11 @@ Inputs:
 - rosters/main-roster.csv  (must include: CEO, Company, CEO Alias)
 
 Output columns:
-  ceo, company, title, url, source, sentiment  (sentiment ∈ {positive, neutral, negative})
+  ceo, company, title, url, source, sentiment, confidence, method, vader_compound
 
 Notes:
 - Uses Google News RSS (no API key). Be respectful; we keep requests tiny.
-- Classifies sentiment on the HEADLINE text using VADER (lightweight, works well on short headlines).
+- Uses hybrid VADER + DistilBERT sentiment classification for improved accuracy
 """
 
 from __future__ import annotations
@@ -27,6 +27,8 @@ import requests
 import feedparser
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
+# Import our hybrid classifier
+from sentiment_classifier import classify_sentiment
 
 # Updated paths - consolidated with brand articles
 BASE = Path(__file__).parent.parent
@@ -41,6 +43,7 @@ RSS_TMPL = "https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:
 MAX_PER_ALIAS = int(os.getenv("ARTICLES_MAX_PER_ALIAS", "25"))
 SLEEP_SEC = float(os.getenv("ARTICLES_SLEEP_SEC", "0.35"))   # polite delay between requests
 TARGET_DATE = os.getenv("ARTICLES_DATE", "").strip()         # YYYY-MM-DD or empty for today (UTC)
+USE_DISTILBERT = os.getenv("USE_DISTILBERT", "true").lower() in ("true", "1", "yes")
 
 
 def target_date() -> str:
@@ -102,16 +105,6 @@ def fetch_rss(query: str) -> feedparser.FeedParserDict:
     return feedparser.parse(resp.content)
 
 
-def label_sentiment(analyzer: SentimentIntensityAnalyzer, text: str) -> str:
-    s = analyzer.polarity_scores(text or "")
-    c = s.get("compound", 0.0)
-    if c >= 0.25:
-        return "positive"
-    if c <= -0.05:
-        return "negative"
-    return "neutral"
-
-
 def extract_source(entry) -> str:
     # feedparser sometimes puts the publisher in entry.source.title
     try:
@@ -143,14 +136,20 @@ def build_articles_for_alias(alias: str, ceo: str, company: str, analyzer) -> li
         source = extract_source(entry)
         if not title:
             continue
-        sent = label_sentiment(analyzer, title)
+        
+        # Use hybrid classifier
+        result = classify_sentiment(title, analyzer, use_distilbert=USE_DISTILBERT)
+        
         rows.append({
             "ceo": ceo,
             "company": company,
             "title": title,
             "url": link,
             "source": source,
-            "sentiment": sent,
+            "sentiment": result["sentiment"],
+            "confidence": f"{result['confidence']:.3f}",
+            "method": result["method"],
+            "vader_compound": f"{result['vader_compound']:.3f}"
         })
     return rows
 
@@ -160,13 +159,16 @@ def main() -> int:
     # Updated to use new naming convention
     out_path = OUT_DIR / f"{out_date}-ceo-articles-modal.csv"
     print(f"Building articles for {out_date} → {out_path}")
+    print(f"Using distilBERT for low-confidence cases: {USE_DISTILBERT}")
 
     try:
         roster = read_roster(MAIN_ROSTER)
     except Exception as e:
         print(f"FATAL: {e}")
         # Still write an empty file so the UI is predictable
-        pd.DataFrame(columns=["ceo","company","title","url","source","sentiment"]).to_csv(out_path, index=False)
+        empty_cols = ["ceo", "company", "title", "url", "source", "sentiment", 
+                      "confidence", "method", "vader_compound"]
+        pd.DataFrame(columns=empty_cols).to_csv(out_path, index=False)
         return 1
 
     analyzer = SentimentIntensityAnalyzer()
@@ -186,13 +188,29 @@ def main() -> int:
     # de-duplicate (same ceo/title/url)
     if all_rows:
         df = pd.DataFrame(all_rows)
-        df = df.drop_duplicates(subset=["ceo","title","url"]).reset_index(drop=True)
+        df = df.drop_duplicates(subset=["ceo", "title", "url"]).reset_index(drop=True)
     else:
-        df = pd.DataFrame(columns=["ceo","company","title","url","source","sentiment"])
+        empty_cols = ["ceo", "company", "title", "url", "source", "sentiment", 
+                      "confidence", "method", "vader_compound"]
+        df = pd.DataFrame(columns=empty_cols)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out_path, index=False)
-    print(f"✔ Wrote {len(df):,} rows → {out_path}")
+    
+    # Print summary statistics
+    total = len(df)
+    if total > 0:
+        distilbert_count = sum(1 for _, r in df.iterrows() if r["method"] == "distilbert")
+        vader_count = total - distilbert_count
+        avg_confidence = df["confidence"].astype(float).mean()
+        
+        print(f"✔ Wrote {total:,} rows → {out_path}")
+        print(f"  VADER-only: {vader_count} ({vader_count/total*100:.1f}%)")
+        print(f"  DistilBERT: {distilbert_count} ({distilbert_count/total*100:.1f}%)")
+        print(f"  Avg confidence: {avg_confidence:.3f}")
+    else:
+        print(f"✔ Wrote {total:,} rows → {out_path}")
+    
     return 0
 
 
