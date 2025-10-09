@@ -322,8 +322,8 @@ function parseStockCSV(csvText) {
   return stockData;
 }
 
-function drawSparkline(prices, isPositive) {
-  if (!prices || prices.length < 2) return '';
+function createSparkline(prices, isPositive) {
+  if (!prices || prices.length < 2) return null;
   
   const canvas = document.createElement('canvas');
   canvas.width = 80;
@@ -358,7 +358,7 @@ function drawSparkline(prices, isPositive) {
   
   ctx.stroke();
   
-  return canvas.outerHTML;
+  return canvas;
 }
 
 function showStockChart(company) {
