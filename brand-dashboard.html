@@ -62,7 +62,7 @@ button:hover{filter:brightness(1.08)}
 .table-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.05);border-radius:8px}
 .table-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px}
 
-table{width:100%;border-collapse:separate;border-spacing:0 6px;min-width:1100px}
+table{width:100%;border-collapse:separate;border-spacing:0 6px;min-width:1180px}
 thead th{font-size:12px;color:var(--muted);text-align:left;padding:6px 8px}
 tbody td{padding:10px 8px;background:var(--black);border-top:1px solid #0f1831;border-bottom:1px solid #0f1831}
 tbody tr{cursor:pointer;transition:background-color 0.15s}
@@ -77,6 +77,10 @@ tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 
 .stock-change{font-weight:600}
 .stock-change.positive{color:var(--stock-pos)}
 .stock-change.negative{color:var(--stock-neg)}
+
+/* Sparkline */
+.sparkline-cell{text-align:center;padding:6px 8px !important}
+.sparkline{display:inline-block;vertical-align:middle}
 
 .pill{font-size:12px;border-radius:999px;padding:3px 8px;border:1px solid var(--chipBorder);background:var(--chip);color:#cfe0ff}
 .pill.low{background:rgba(130,198,24,.15);color:#82c618}
@@ -152,7 +156,6 @@ thead th:first-child, tbody td:first-child{
   <div class="grid">
     <div class="chart-card">
       <h3>News sentiment (percent of articles)</h3>
-      <!-- range + pager (synced) -->
       <div class="chart-actions">
         <span class="dates-range muted" aria-live="polite"></span>
         <div class="dates-pager">
@@ -165,7 +168,6 @@ thead th:first-child, tbody td:first-child{
 
     <div class="chart-card">
       <h3>SERP (Negative % • Control %)</h3>
-      <!-- range + pager (synced) -->
       <div class="chart-actions">
         <span class="dates-range muted" aria-live="polite"></span>
         <div class="dates-pager">
@@ -185,7 +187,8 @@ thead th:first-child, tbody td:first-child{
           <tr>
             <th>Company</th>
             <th class="right">Stock Price</th>
-            <th class="right">7-Day Change</th>
+            <th class="right">Daily Change</th>
+            <th class="center">90-Day Trend</th>
             <th data-key="neg_news" class="right">Negative News % ▲▼</th>
             <th data-key="neg_serp" class="right">Negative SERP % ▲▼</th>
             <th data-key="ctrl_pct" class="right">SERP Control % ▲▼</th>
@@ -301,21 +304,61 @@ function parseStockCSV(csvText) {
     if (!line) continue;
     
     const values = line.split(',');
-    if (values.length < 7) continue;
+    if (values.length < 8) continue;
     
     const company = values[1];
     stockData[company] = {
       ticker: values[0],
       company: values[1],
       openingPrice: parseFloat(values[2]) || null,
-      sevenDayChange: parseFloat(values[3]) || null,
-      priceHistory: values[4] ? values[4].split('|').map(p => parseFloat(p)).filter(p => !isNaN(p)) : [],
-      dateHistory: values[5] ? values[5].split('|') : [],
-      lastUpdated: values[6]
+      dailyChange: parseFloat(values[3]) || null,
+      sevenDayChange: parseFloat(values[4]) || null,
+      priceHistory: values[5] ? values[5].split('|').map(p => parseFloat(p)).filter(p => !isNaN(p)) : [],
+      dateHistory: values[6] ? values[6].split('|') : [],
+      lastUpdated: values[7]
     };
   }
   
   return stockData;
+}
+
+function drawSparkline(prices, isPositive) {
+  if (!prices || prices.length < 2) return '';
+  
+  const canvas = document.createElement('canvas');
+  canvas.width = 80;
+  canvas.height = 24;
+  canvas.className = 'sparkline';
+  
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  const padding = 2;
+  
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const range = max - min || 1;
+  
+  const stepX = (width - padding * 2) / (prices.length - 1);
+  
+  ctx.beginPath();
+  ctx.strokeStyle = isPositive ? '#22c55e' : '#ef4444';
+  ctx.lineWidth = 1.5;
+  
+  prices.forEach((price, i) => {
+    const x = padding + i * stepX;
+    const y = height - padding - ((price - min) / range) * (height - padding * 2);
+    
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+  });
+  
+  ctx.stroke();
+  
+  return canvas.outerHTML;
 }
 
 function showStockChart(company) {
@@ -605,26 +648,32 @@ function renderTable(){
 
   const start = (currentPage-1)*PAGE_SIZE;
   const pageRows = rows.slice(start, start+PAGE_SIZE);
-  tbody.innerHTML = pageRows.map(r=>{
+  
+  // Build HTML first, then inject sparklines
+  const rowsHTML = pageRows.map(r=>{
     const checked = (selectedCompany && selectedCompany===r.company) ? 'checked' : '';
     const stock = globalStockData[r.company];
     let stockPriceHtml = '<span class="muted">N/A</span>';
-    let stockChangeHtml = '<span class="muted">N/A</span>';
+    let dailyChangeHtml = '<span class="muted">N/A</span>';
+    let sparklineId = '';
     
     if (stock && stock.openingPrice !== null) {
       stockPriceHtml = `<span class="stock-price">$${stock.openingPrice.toFixed(2)}</span>`;
       
-      if (stock.sevenDayChange !== null) {
-        const changeClass = stock.sevenDayChange >= 0 ? 'positive' : 'negative';
-        const changeSymbol = stock.sevenDayChange >= 0 ? '▲' : '▼';
-        stockChangeHtml = `<span class="stock-change ${changeClass}">${changeSymbol} ${Math.abs(stock.sevenDayChange).toFixed(2)}%</span>`;
+      if (stock.dailyChange !== null) {
+        const changeClass = stock.dailyChange >= 0 ? 'positive' : 'negative';
+        const changeSymbol = stock.dailyChange >= 0 ? '▲' : '▼';
+        dailyChangeHtml = `<span class="stock-change ${changeClass}">${changeSymbol} ${Math.abs(stock.dailyChange).toFixed(2)}%</span>`;
       }
+      
+      sparklineId = `sparkline-${r.company.replace(/[^a-zA-Z0-9]/g, '-')}`;
     }
     
     return `<tr data-company="${esc(r.company)}">
       <td><input type="checkbox" data-company="${esc(r.company)}" class="brandCheck" ${checked} onclick="event.stopPropagation()" /> ${esc(r.company)}</td>
       <td class="right">${stockPriceHtml}</td>
-      <td class="right">${stockChangeHtml}</td>
+      <td class="right">${dailyChangeHtml}</td>
+      <td class="sparkline-cell"><span id="${sparklineId}"></span></td>
       <td class="right">${fmtPct(r.neg_news)}</td>
       <td class="right">${fmtPct(r.neg_serp)}</td>
       <td class="right">${fmtPct(r.ctrl_pct)}</td>
@@ -641,12 +690,27 @@ function renderTable(){
       <td class="center"><button class="serpBtn" data-company="${esc(r.company)}" onclick="event.stopPropagation()">View</button></td>
     </tr>`;
   }).join('');
+  
+  tbody.innerHTML = rowsHTML;
+  
+  // Now inject sparklines
+  pageRows.forEach(r => {
+    const stock = globalStockData[r.company];
+    if (stock && stock.priceHistory && stock.priceHistory.length >= 2) {
+      const sparklineId = `sparkline-${r.company.replace(/[^a-zA-Z0-9]/g, '-')}`;
+      const container = document.getElementById(sparklineId);
+      if (container) {
+        const isPositive = stock.sevenDayChange !== null && stock.sevenDayChange >= 0;
+        container.innerHTML = drawSparkline(stock.priceHistory, isPositive);
+      }
+    }
+  });
 
   tbody.querySelectorAll('tr').forEach(row => {
     const company = row.getAttribute('data-company');
     row.addEventListener('click', (e) => {
       if (!e.target.classList.contains('brandCheck') && 
-          !e.target.tagName === 'BUTTON' &&
+          e.target.tagName !== 'BUTTON' &&
           !e.target.closest('button')) {
         showStockChart(company);
       }
@@ -772,47 +836,47 @@ function renderCharts(){
     data: {
       labels: d,
       datasets: [
-  {
-    label: 'Daily Negative SERP %',
-    data: sN,
-    tension: 0.2,
-    borderWidth: SOLID_WIDTH,
-    fill: false,
-    borderColor: NEG_COLOR,
-    pointBackgroundColor: NEG_COLOR,
-    pointBorderColor: NEG_COLOR
-  },
-  {
-    label: 'Daily Control %',
-    data: sC,
-    tension: 0.2,
-    borderWidth: SOLID_WIDTH,
-    fill: false,
-    borderColor: CTRL_COLOR,
-    pointBackgroundColor: CTRL_COLOR,
-    pointBorderColor: CTRL_COLOR
-  },
-  ...(avgNegLine.length ? [{
-    label: 'Average Negative SERP %',
-    data: avgNegLine,
-    tension: 0,
-    fill: false,
-    borderWidth: DASH_WIDTH,
-    borderDash: DASH_PATTERN,
-    borderColor: NEG_COLOR,
-    pointRadius: 0
-  }] : []),
-  ...(avgCtrlLine.length ? [{
-    label: 'Average Daily Control %',
-    data: avgCtrlLine,
-    tension: 0,
-    fill: false,
-    borderWidth: DASH_WIDTH,
-    borderDash: DASH_PATTERN,
-    borderColor: CTRL_COLOR,
-    pointRadius: 0
-  }] : [])
-]
+        {
+          label: 'Daily Negative SERP %',
+          data: sN,
+          tension: 0.2,
+          borderWidth: SOLID_WIDTH,
+          fill: false,
+          borderColor: NEG_COLOR,
+          pointBackgroundColor: NEG_COLOR,
+          pointBorderColor: NEG_COLOR
+        },
+        {
+          label: 'Daily Control %',
+          data: sC,
+          tension: 0.2,
+          borderWidth: SOLID_WIDTH,
+          fill: false,
+          borderColor: CTRL_COLOR,
+          pointBackgroundColor: CTRL_COLOR,
+          pointBorderColor: CTRL_COLOR
+        },
+        ...(avgNegLine.length ? [{
+          label: 'Average Negative SERP %',
+          data: avgNegLine,
+          tension: 0,
+          fill: false,
+          borderWidth: DASH_WIDTH,
+          borderDash: DASH_PATTERN,
+          borderColor: NEG_COLOR,
+          pointRadius: 0
+        }] : []),
+        ...(avgCtrlLine.length ? [{
+          label: 'Average Daily Control %',
+          data: avgCtrlLine,
+          tension: 0,
+          fill: false,
+          borderWidth: DASH_WIDTH,
+          borderDash: DASH_PATTERN,
+          borderColor: CTRL_COLOR,
+          pointRadius: 0
+        }] : [])
+      ]
     },
     options: { ...commonOpts }
   });
