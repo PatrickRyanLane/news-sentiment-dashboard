@@ -889,7 +889,9 @@ function renderTable(){
       const container = document.getElementById(sparklineId);
       if (container) {
         const isPositive = stock.sevenDayChange !== null && stock.sevenDayChange >= 0;
-        container.innerHTML = drawSparkline(stock.priceHistory, isPositive);
+        container.innerHTML = '';
+           const canvas = createSparkline(stock.priceHistory, isPositive);
+           if (canvas) container.appendChild(canvas);
       }
     }
   });
