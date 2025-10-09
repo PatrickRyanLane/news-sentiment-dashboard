@@ -694,17 +694,29 @@ function renderTable(){
   tbody.innerHTML = rowsHTML;
   
   // Now inject sparklines
+  console.log('Brand Dashboard - Available stock data companies:', Object.keys(globalStockData));
   pageRows.forEach(r => {
     const stock = globalStockData[r.company];
+    console.log(`Looking for stock data for: "${r.company}"`, stock ? 'FOUND' : 'NOT FOUND');
     if (stock && stock.priceHistory && stock.priceHistory.length >= 2) {
+      console.log(`  - Has price history with ${stock.priceHistory.length} points`);
       const sparklineId = `sparkline-${r.company.replace(/[^a-zA-Z0-9]/g, '-')}`;
       const container = document.getElementById(sparklineId);
       if (container) {
         const isPositive = stock.sevenDayChange !== null && stock.sevenDayChange >= 0;
         container.innerHTML = '';
-           const canvas = createSparkline(stock.priceHistory, isPositive);
-           if (canvas) container.appendChild(canvas);
+        const canvas = createSparkline(stock.priceHistory, isPositive);
+        if (canvas) {
+          container.appendChild(canvas);
+          console.log(`  - Sparkline created and appended for ${r.company}`);
+        } else {
+          console.log(`  - createSparkline returned null for ${r.company}`);
+        }
+      } else {
+        console.log(`  - Container not found for ${sparklineId}`);
       }
+    } else if (stock) {
+      console.log(`  - Stock data exists but insufficient price history (${stock.priceHistory?.length || 0} points)`);
     }
   });
 
