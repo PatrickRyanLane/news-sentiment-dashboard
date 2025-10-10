@@ -161,13 +161,6 @@ tbody td:first-child{
   box-shadow: 2px 0 0 0 rgba(255,255,255,.06);
 }
 
-/* Company column (second column) - also constrained */
-tbody td:nth-child(2),
-thead th:nth-child(2){
-  max-width: 140px;
-  white-space: normal;
-}
-
 /* Pagination */
 .pagination{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:8px}
 
@@ -290,7 +283,6 @@ thead th:nth-child(2){
         <thead>
           <tr>
             <th>CEO</th>
-            <th>Company</th>
             <th>Stock<br>Price</th>
             <th>Daily<br>Change</th>
             <th>90-Day<br>Trend</th>
@@ -904,7 +896,6 @@ function renderTable(){
           </div>
         </div>
       </td>
-      <td>${esc(r.company)}</td>
       <td>${stockPriceHtml}</td>
       <td>${dailyChangeHtml}</td>
       <td class="sparkline-cell"><span id="${sparklineId}"></span></td>
