@@ -576,7 +576,7 @@ async function getSerpAggForDate(d){
   return map;
 }
 
-/********************** UI bootstrap **********************/
+/********************** UI bootstrap ***********************/
 async function init(){
   await Promise.all([loadCounts(), loadSerpDaily(), loadStockData().then(data => globalStockData = data)]);
 
@@ -584,7 +584,7 @@ async function init(){
   if (Object.keys(globalStockData).length === 0) {
     console.warn('⚠️  No stock data was loaded. Stock prices and sparklines will show N/A.');
   }
-  
+
   const dateSet = new Set([ ...allCountsRows.map(r=>r.date), ...serpsDaily.map(r=>r.date) ].filter(isISODate));
   const dates = [...dateSet].sort();
   const sel = document.getElementById('dateSelect');
