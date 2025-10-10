@@ -191,13 +191,13 @@ thead th:first-child, tbody td:first-child{
           <tr>
             <th>Company</th>
             <th>Stock<br>Price</th>
-            <th>Daily<br>Change</th>
+            <th data-key="daily_change">Daily Change ▲▼</th>
             <th>90-Day<br>Trend</th>
             <th data-key="neg_news">Negative<br>News % ▲▼</th>
             <th data-key="neg_serp">Negative<br>SERP % ▲▼</th>
             <th data-key="ctrl_pct">SERP<br>Control % ▲▼</th>
             <th data-key="risk">Risk<br>▲▼</th>
-            <th>Head-<br>lines</th>
+            <th>Headlines</th>
             <th>SERP</th>
           </tr>
         </thead>
@@ -634,12 +634,18 @@ async function buildRowsForDate(d){
     let negSerpPct=null, ctrlPct=null;
     if (s && s.total>0){ negSerpPct = s.neg_serp/s.total; ctrlPct = s.controlled/s.total; }
     const risk = computeRisk(negSerpPct, ctrlPct);
+    
+    // Get stock data for sorting
+    const stock = globalStockData[company];
+    const dailyChange = stock?.dailyChange ?? null;
+    
     out.push({
       date:d,
       company,
       neg_news:a.neg_pct ?? 0,
       neg_serp:negSerpPct,
       ctrl_pct:ctrlPct,
+      daily_change: dailyChange,
       risk
     });
   }
