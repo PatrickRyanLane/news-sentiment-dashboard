@@ -340,6 +340,9 @@ const ARTICLES_DAILY_PATH = d => `data/processed_articles/${d}-ceo-articles-tabl
 const SERP_PROCESSED_PATH = d => `data/processed_serps/${d}-ceo-serps-table.csv`;
 const HEADLINES_PATH_CEO = d => `data/processed_articles/${d}-ceo-articles-modal.csv`;
 
+// Threshold: minimum number of negative articles required to show a marker
+const NEGATIVE_ARTICLE_THRESHOLD = 3;
+
 /********************** Runtime **********************/
 let rosterMap = new Map();
 let companyToCeo = new Map();
@@ -357,6 +360,7 @@ let globalStockData = {};
 
 const _articlesCache = new Map();
 const _serpAggCache  = new Map();
+const _negativeArticleCache = new Map();  // Cache for negative article dates
 
 const DATE_WINDOW_SIZE = 30;
 let dateWindowStart = null;
@@ -481,13 +485,19 @@ function createSparkline(prices, isPositive) {
   return canvas;
 }
 
-/********************** NEW: Load negative article dates **********************/
+/********************** OPTIMIZED: Load negative article dates **********************/
 async function loadNegativeArticleDates(ceo, company, dateRange) {
-  const negativeDates = [];
+  // Check cache first for instant return on repeat views
+  const cacheKey = `${ceo}_${company}_${dateRange[0]}_${dateRange[dateRange.length-1]}`;
+  if (_negativeArticleCache.has(cacheKey)) {
+    console.log(`✅ Using cached negative articles for ${ceo} (${company})`);
+    return _negativeArticleCache.get(cacheKey);
+  }
   
   console.log(`📰 Loading negative articles for ${ceo} (${company}) across ${dateRange.length} days...`);
   
-  for (const date of dateRange) {
+  // OPTIMIZATION: Load all dates in parallel instead of sequentially
+  const promises = dateRange.map(async (date) => {
     try {
       const rows = await fetchCsv(HEADLINES_PATH_CEO(date));
       const negativeArticles = rows.filter(r => 
@@ -495,19 +505,28 @@ async function loadNegativeArticleDates(ceo, company, dateRange) {
         String(r.sentiment || '').toLowerCase() === 'negative'
       );
       
-      if (negativeArticles.length > 0) {
-        negativeDates.push({
-          date: date,
-          count: negativeArticles.length
-        });
-        console.log(`  📍 ${date}: ${negativeArticles.length} negative article(s)`);
+      // Only return dates with threshold+ negative articles
+      if (negativeArticles.length >= NEGATIVE_ARTICLE_THRESHOLD) {
+        return { date: date, count: negativeArticles.length };
       }
+      return null;
     } catch (e) {
-      // Skip dates with missing files - this is expected
+      // Skip dates with missing files
+      return null;
     }
-  }
+  });
   
-  console.log(`✅ Found ${negativeDates.length} dates with negative articles`);
+  // Wait for all fetches to complete in parallel
+  const results = await Promise.all(promises);
+  
+  // Filter out null results
+  const negativeDates = results.filter(r => r !== null);
+  
+  console.log(`✅ Found ${negativeDates.length} dates with ${NEGATIVE_ARTICLE_THRESHOLD}+ negative articles`);
+  
+  // Cache the result for future use
+  _negativeArticleCache.set(cacheKey, negativeDates);
+  
   return negativeDates;
 }
 
@@ -528,7 +547,7 @@ async function showStockChart(company) {
   
   if (stockChart) stockChart.destroy();
   
-  // Load negative article dates for the date range shown
+  // Load negative article dates for the date range shown (cached after first load)
   const negativeDates = await loadNegativeArticleDates(ceo, company, stock.dateHistory);
   
   // Create annotations for negative articles
@@ -595,7 +614,7 @@ async function showStockChart(company) {
               ];
               if (negativeDates.length > 0) {
                 labels.push({
-                  text: 'Negative Articles',
+                  text: `Negative Articles (${NEGATIVE_ARTICLE_THRESHOLD}+)`,
                   fillStyle: '#ff8261',
                   strokeStyle: '#ff8261',
                   lineWidth: 2,
