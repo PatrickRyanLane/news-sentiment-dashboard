@@ -385,26 +385,36 @@ async function loadStockData() {
     const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     const today = todayUTC.toISOString().split('T')[0];
     
+    console.log('📊 Attempting to load stock data for:', today);
     let stockData = {};
     
     try {
+      console.log('🔍 Trying today file:', `data/stock_prices/${today}-stock-data.csv`);
       const response = await fetch(`data/stock_prices/${today}-stock-data.csv`, {cache:'no-store'});
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const text = await response.text();
       stockData = parseStockCSV(text);
-    } catch {
+      console.log('✅ Loaded today stock data, companies:', Object.keys(stockData).length);
+    } catch (todayError) {
+      console.warn('⚠️  Today file failed:', todayError.message);
+      
       // Try yesterday in UTC
       const yesterdayUTC = new Date(todayUTC);
       yesterdayUTC.setUTCDate(yesterdayUTC.getUTCDate() - 1);
       const yesterday = yesterdayUTC.toISOString().split('T')[0];
       
+      console.log('🔍 Trying yesterday file:', `data/stock_prices/${yesterday}-stock-data.csv`);
       const response = await fetch(`data/stock_prices/${yesterday}-stock-data.csv`, {cache:'no-store'});
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const text = await response.text();
       stockData = parseStockCSV(text);
+      console.log('✅ Loaded yesterday stock data, companies:', Object.keys(stockData).length);
     }
     
     return stockData;
   } catch (error) {
-    console.warn('Could not load stock data:', error);
+    console.error('❌ STOCK DATA LOAD FAILED:', error);
+    console.error('📋 Stock data will not be displayed. Check network tab for failed requests.');
     return {};
   }
 }
@@ -730,6 +740,12 @@ async function getSerpAggForDate(d){
 /********************** UI bootstrap **********************/
 async function init(){
   await Promise.all([loadRoster(), loadCounts(), loadSerpDaily(), loadBoards(), loadStockData().then(data => globalStockData = data)]);
+  
+  console.log('📈 Stock data loaded. Companies with stock data:', Object.keys(globalStockData).length);
+  if (Object.keys(globalStockData).length === 0) {
+    console.warn('⚠️  No stock data was loaded. Stock prices and sparklines will show N/A.');
+  }
+  
   const dateSet = new Set([
     ...allCountsRows.map(r => r.date),
     ...serpsDaily.map(r => r.date)
