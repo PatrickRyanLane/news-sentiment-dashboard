@@ -148,14 +148,6 @@ thead th:first-child{
   /* keep existing borders/radii from your theme */
 }
 
-thead th:first-child{
-  background:var(--card);
-}
-
-tbody td:first-child{
-  background:#1f2121;
-}
-
 /* First column with checkbox - use flexbox for alignment */
 tbody td:first-child{
   display:flex;
@@ -180,19 +172,6 @@ thead th:nth-child(2){
   max-width: 120px;
   white-space: normal;
   padding-left: 16px;
-}
-
-/* Sticky last column (Boards) */
-thead th:last-child, tbody td:last-child{
-  position:sticky;right:0;z-index:2;box-shadow:-2px 0 0 0 rgba(255,255,255,.06);
-}
-
-thead th:last-child{
-  background:var(--card);
-}
-
-tbody td:last-child{
-  background:#1f2121;
 }
 
 /* Pagination */
