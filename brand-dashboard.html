@@ -578,11 +578,13 @@ async function getSerpAggForDate(d){
 
 /********************** UI bootstrap **********************/
 async function init(){
-  await Promise.all([loadRoster(), loadCounts(), loadSerpDaily(), loadBoards(), loadStockData().then(data => globalStockData = data)]);
+  await Promise.all([loadCounts(), loadSerpDaily(), loadStockData().then(data => globalStockData = data)]);
+
   console.log('📈 Stock data loaded. Companies with stock data:', Object.keys(globalStockData).length);
-if (Object.keys(globalStockData).length === 0) {
-  console.warn('⚠️  No stock data was loaded. Stock prices and sparklines will show N/A.');
-}
+  if (Object.keys(globalStockData).length === 0) {
+    console.warn('⚠️  No stock data was loaded. Stock prices and sparklines will show N/A.');
+  }
+  
   const dateSet = new Set([ ...allCountsRows.map(r=>r.date), ...serpsDaily.map(r=>r.date) ].filter(isISODate));
   const dates = [...dateSet].sort();
   const sel = document.getElementById('dateSelect');
