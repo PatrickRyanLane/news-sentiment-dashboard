@@ -26,6 +26,9 @@
   --stroke: #0e2230;          /* border stroke */
   --chip: #12343e;
   --chipBorder: #174550;
+  
+  --stock-pos:#22c55e; 
+  --stock-neg:#ef4444;
 }
 
 *{box-sizing:border-box}
@@ -87,13 +90,33 @@ button:hover{filter:brightness(1.08)}
 /* Table */
 .table-card{background:var(--card);border:1px solid var(--stroke);border-radius:12px;padding:10px}
 .table-hint{margin:0 0 8px;color:var(--muted)}
-table{width:100%;border-collapse:separate;border-spacing:0 6px}
-thead th{font-size:12px;color:var(--muted);text-align:left;padding:6px 8px}
-tbody td{padding:10px 8px;background:#1f2121;border-top:1px solid #0f1831;border-bottom:1px solid #0f1831}
+table{width:100%;border-collapse:separate;border-spacing:0 6px;table-layout:auto}
+thead th{font-size:11px;color:var(--muted);text-align:center;padding:6px 6px;vertical-align:top;line-height:1.2;white-space:nowrap}
+thead th:first-child{white-space:normal;min-width:140px}
+tbody td{padding:8px 6px;background:#1f2121;border-top:1px solid #0f1831;border-bottom:1px solid #0f1831;text-align:center;white-space:nowrap}
+tbody td:first-child{text-align:left;white-space:normal}
+tbody tr{transition:background-color 0.15s}
+tbody tr:hover{background:rgba(88,219,237,.08)}
 tbody tr td:first-child{border-left:1px solid #0f1831;border-radius:10px 0 0 10px}
 tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 0}
-.right{text-align:right}
-.center{text-align:center}
+
+/* CEO column styling with company sub-header */
+.ceo-cell-content{display:flex;align-items:center;gap:8px}
+.ceo-name-block{display:flex;flex-direction:column;gap:2px}
+.ceo-name{font-weight:500}
+.company-subheader{font-size:11px;color:#7a9ca3;font-weight:400}
+
+/* Stock styling */
+.stock-price{font-family:'Courier New',monospace;font-weight:500;color:var(--text)}
+.stock-change{font-weight:600}
+.stock-change.positive{color:var(--stock-pos)}
+.stock-change.negative{color:var(--stock-neg)}
+
+/* Sparkline */
+.sparkline-cell{text-align:center;padding:6px 8px !important;cursor:pointer}
+.sparkline-cell:hover{background:rgba(88,219,237,.15)}
+.sparkline{display:inline-block;vertical-align:middle}
+
 .pill{font-size:12px;border-radius:999px;padding:3px 8px;border:1px solid var(--chipBorder);background:var(--chip);color:#cfe0ff}
 .pill.low  { background:rgba(130,198,24,.15); color:#82c618; }   /* green */
 .pill.med  { background:rgba(207,219,221,.25); color:#cfdbdd; } /* grey/neutral */
@@ -114,8 +137,7 @@ tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 
 @media (max-width: 960px){
   .table-card{ padding:8px }                               /* a bit tighter padding */
   .table-hint{ font-size:12px }
-  thead th, tbody td{ padding:8px 10px }                   /* smaller cell padding */
-  table{ min-width: 980px }                                 /* force scroll width */
+  thead th, tbody td{ padding:6px 4px }                   /* smaller cell padding */
 
   /* Slightly smaller pills/buttons for space */
   .pill{ font-size:11px; padding:3px 8px }
@@ -128,13 +150,12 @@ thead th:first-child{
   position: sticky;
   left: 0;
   z-index: 2;
-  /* keep existing borders/radii from your theme */
-}
-
-/* Optional: faint divider to the right of sticky column */
-thead th:first-child,
-tbody td:first-child{
+  white-space: normal;
   box-shadow: 2px 0 0 0 rgba(255,255,255,.06);
+  background: var(--card);
+}
+tbody td:first-child{
+  background: var(--black);
 }
 
 /* Pagination */
@@ -164,6 +185,8 @@ tbody td:first-child{
 .modal header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #12203d}
 .modal header h3{margin:0;font-size:16px}
 .modal .content{padding:16px}
+.close{color:#aaa;float:right;font-size:28px;font-weight:bold;cursor:pointer;line-height:20px}
+.close:hover,.close:focus{color:var(--text)}
 .badges{display:flex;gap:8px;margin-top:8px}
 .badge{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid transparent}
 .badge.positive{
@@ -192,6 +215,10 @@ tbody td:first-child{
   border-color:rgba(255,130,97,.35);
 }
 .muted{color:var(--muted)}
+
+/* Stock chart modal */
+#stockChartModal .box{max-width:1000px}
+#stockChart{width:100%;height:400px}
 
 /* SERP card layout */
 .serp-cards{display:grid;gap:12px;margin-top:12px}
@@ -224,7 +251,6 @@ tbody td:first-child{
   <div class="grid">
     <div class="chart-card">
       <h3>News sentiment (percent of articles)</h3>
-      <!-- NEW: range + pager (synced) -->
       <div class="chart-actions">
         <span class="dates-range muted" aria-live="polite"></span>
         <div class="dates-pager">
@@ -236,7 +262,6 @@ tbody td:first-child{
     </div>
     <div class="chart-card">
       <h3>SERP (Negative % • Control %)</h3>
-      <!-- NEW: range + pager (synced) -->
       <div class="chart-actions">
         <span class="dates-range muted" aria-live="polite"></span>
         <div class="dates-pager">
@@ -249,32 +274,35 @@ tbody td:first-child{
   </div>
 
   <div class="table-card">
-  <div class="table-scroll">
-    <table>
-      <thead>
-        <tr>
-          <th>CEO</th>
-          <th>Company</th>
-          <th data-key="neg_news" class="right">Negative News % ▲▼</th>
-          <th data-key="neg_serp" class="right">Negative SERP % ▲▼</th>
-          <th data-key="ctrl_pct" class="right">SERP Control % ▲▼</th>
-          <th data-key="risk" class="center">Risk ▲▼</th>
-          <th class="center">Headlines</th>
-          <th class="center">SERP</th>
-          <th class="center">Boards</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </div>
+    <p class="table-hint">Select a CEO using the checkbox to view their trend lines. Click the sparkline to see the company's 90-day stock chart.</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>CEO</th>
+            <th>Stock<br>Price</th>
+            <th data-key="daily_change">Daily Change ▲▼</th>
+            <th>90-Day<br>Trend</th>
+            <th data-key="neg_news">Negative<br>News % ▲▼</th>
+            <th data-key="neg_serp">Negative<br>SERP % ▲▼</th>
+            <th data-key="ctrl_pct">SERP<br>Control % ▲▼</th>
+            <th data-key="risk">Risk<br>▲▼</th>
+            <th>Headlines</th>
+            <th>SERP</th>
+            <th>Boards</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
 
-  <div class="pagination">
-    <button id="prevBtn">Prev</button>
-    <div>Page <span id="pageNo">1</span> / <span id="pageTotal">1</span></div>
-    <button id="nextBtn">Next</button>
+    <div class="pagination">
+      <button id="prevBtn">Prev</button>
+      <div>Page <span id="pageNo">1</span> / <span id="pageTotal">1</span></div>
+      <button id="nextBtn">Next</button>
+    </div>
   </div>
 </div>
-
 
 <!-- Modal -->
 <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -287,54 +315,239 @@ tbody td:first-child{
   </div>
 </div>
 
+<!-- Stock Chart Modal -->
+<div id="stockChartModal" class="modal" role="dialog" aria-modal="true">
+  <div class="box">
+    <header>
+      <h3 id="stockChartTitle">Stock Price History</h3>
+      <span class="close" onclick="closeStockChart()">&times;</span>
+    </header>
+    <div class="content">
+      <canvas id="stockChart"></canvas>
+    </div>
+  </div>
+</div>
+
 <script>
 /********************** Config **********************/
 const COUNTS_CANDIDATES = ['data/daily_counts/ceo-articles-daily-counts-chart.csv'];
-const ROSTER_CANDIDATES = [
-  'rosters/main-roster.csv'
-];
+const ROSTER_CANDIDATES = ['rosters/main-roster.csv'];
 const SERPS_DAILY_CSV = 'data/daily_counts/ceo-serps-daily-counts-chart.csv';
 const BOARDS_CSV = 'rosters/boards-roster.csv';
 const SERP_ROWS_PATH = d => `data/processed_serps/${d}-ceo-serps-modal.csv`;
-
-// NEW: authoritative per-date sources for the table
 const ARTICLES_DAILY_PATH = d => `data/processed_articles/${d}-ceo-articles-table.csv`;
 const SERP_PROCESSED_PATH = d => `data/processed_serps/${d}-ceo-serps-table.csv`;
 
 /********************** Runtime **********************/
-let rosterMap = new Map();        // CEO -> Company
-let companyToCeo = new Map();     // Company -> CEO
-let allCountsRows = [];           // news counts (for charts)
-let serpsDaily = [];              // serp aggregates (for charts)
-let boardsByCeo = new Map();      // CEO -> [domain,url]
-let filteredRows = [];            // table rows for current date/filter
-let selectedCeo = null;           // to drive brand-level charts
+let rosterMap = new Map();
+let companyToCeo = new Map();
+let allCountsRows = [];
+let serpsDaily = [];
+let boardsByCeo = new Map();
+let filteredRows = [];
+let selectedCeo = null;
 let currentSort = { key:null, dir:1 };
 let currentPage = 1;
 const PAGE_SIZE = 25;
 
-let newsChart, serpChart;
+let newsChart, serpChart, stockChart;
+let globalStockData = {};
 
-// NEW caches for per-date table sources
-const _articlesCache = new Map();   // date -> Map(ceo -> {company, theme, neg_pct})
-const _serpAggCache  = new Map();   // date -> Map(ceo -> {total, neg_serp, controlled})
+const _articlesCache = new Map();
+const _serpAggCache  = new Map();
 
-/* ===== NEW: synced chart pagination state ===== */
-const DATE_WINDOW_SIZE = 30;      // show 30 dates at a time
-let dateWindowStart = null;       // index of first date in window (global, shared)
+const DATE_WINDOW_SIZE = 30;
+let dateWindowStart = null;
 
 /********************** Utils **********************/
 const isISODate = s => /^\d{4}-\d{2}-\d{2}$/.test(String(s||'').trim());
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m]));
 function fmtPct(v){ 
   return (v==null) ? 'N/A' : Math.round(v*100) + '%'; 
 }
 
-// Normalizes names so lookups are reliable
 const canonName = s => String(s || '')
   .toLowerCase()
   .replace(/\s+/g, ' ')
   .trim();
+
+/********************** Stock Data **********************/
+async function loadStockData() {
+  try {
+    // Get today's date in UTC (matching the workflow's perspective)
+    const now = new Date();
+    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const today = todayUTC.toISOString().split('T')[0];
+    
+    console.log('📊 Attempting to load stock data for:', today);
+    let stockData = {};
+    
+    try {
+      console.log('🔍 Trying today file:', `data/stock_prices/${today}-stock-data.csv`);
+      const response = await fetch(`data/stock_prices/${today}-stock-data.csv`, {cache:'no-store'});
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const text = await response.text();
+      stockData = parseStockCSV(text);
+      console.log('✅ Loaded today stock data, companies:', Object.keys(stockData).length);
+    } catch (todayError) {
+      console.warn('⚠️  Today file failed:', todayError.message);
+      
+      // Try yesterday in UTC
+      const yesterdayUTC = new Date(todayUTC);
+      yesterdayUTC.setUTCDate(yesterdayUTC.getUTCDate() - 1);
+      const yesterday = yesterdayUTC.toISOString().split('T')[0];
+      
+      console.log('🔍 Trying yesterday file:', `data/stock_prices/${yesterday}-stock-data.csv`);
+      const response = await fetch(`data/stock_prices/${yesterday}-stock-data.csv`, {cache:'no-store'});
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const text = await response.text();
+      stockData = parseStockCSV(text);
+      console.log('✅ Loaded yesterday stock data, companies:', Object.keys(stockData).length);
+    }
+    
+    return stockData;
+  } catch (error) {
+    console.error('❌ STOCK DATA LOAD FAILED:', error);
+    console.error('📋 Stock data will not be displayed. Check network tab for failed requests.');
+    return {};
+  }
+}
+
+function parseStockCSV(csvText) {
+  const lines = csvText.trim().split('\n');
+  const stockData = {};
+  
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    
+    const values = line.split(',');
+    if (values.length < 8) continue;
+    
+    const company = values[1];
+    stockData[company] = {
+      ticker: values[0],
+      company: values[1],
+      openingPrice: parseFloat(values[2]) || null,
+      dailyChange: parseFloat(values[3]) || null,
+      sevenDayChange: parseFloat(values[4]) || null,
+      priceHistory: values[5] ? values[5].split('|').map(p => parseFloat(p)).filter(p => !isNaN(p)) : [],
+      dateHistory: values[6] ? values[6].split('|') : [],
+      lastUpdated: values[7]
+    };
+  }
+  
+  return stockData;
+}
+
+function createSparkline(prices, isPositive) {
+  if (!prices || prices.length < 2) return null;
+  
+  const canvas = document.createElement('canvas');
+  canvas.width = 80;
+  canvas.height = 24;
+  canvas.className = 'sparkline';
+  
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  const padding = 2;
+  
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const range = max - min || 1;
+  
+  const stepX = (width - padding * 2) / (prices.length - 1);
+  
+  ctx.beginPath();
+  ctx.strokeStyle = isPositive ? '#22c55e' : '#ef4444';
+  ctx.lineWidth = 1.5;
+  
+  prices.forEach((price, i) => {
+    const x = padding + i * stepX;
+    const y = height - padding - ((price - min) / range) * (height - padding * 2);
+    
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+  });
+  
+  ctx.stroke();
+  
+  return canvas;
+}
+
+function showStockChart(company) {
+  const stock = globalStockData[company];
+  if (!stock || !stock.priceHistory || !stock.priceHistory.length) {
+    alert('No stock data available for this company');
+    return;
+  }
+  
+  const modal = document.getElementById('stockChartModal');
+  document.getElementById('stockChartTitle').textContent = 
+    `${company} (${stock.ticker}) - 90-Day Price History`;
+  modal.classList.add('open');
+  
+  if (stockChart) stockChart.destroy();
+  
+  const ctx = document.getElementById('stockChart').getContext('2d');
+  const isPositive = (stock.sevenDayChange !== null && stock.sevenDayChange >= 0);
+  
+  stockChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: stock.dateHistory,
+      datasets: [{
+        label: 'Closing Price ($)',
+        data: stock.priceHistory,
+        borderColor: isPositive ? '#22c55e' : '#ef4444',
+        backgroundColor: isPositive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+        borderWidth: 2,
+        tension: 0.1,
+        fill: true,
+        pointRadius: 2,
+        pointHoverRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return '$' + context.parsed.y.toFixed(2);
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: false,
+          ticks: {
+            callback: function(value) {
+              return '$' + value.toFixed(2);
+            }
+          }
+        },
+        x: {
+          ticks: {
+            maxTicksLimit: 10,
+            autoSkip: true
+          }
+        }
+      }
+    }
+  });
+}
+
+function closeStockChart() {
+  document.getElementById('stockChartModal').classList.remove('open');
+}
 
 /* ===== NEW: pager helpers ===== */
 function clampDateStart(total){
@@ -370,7 +583,6 @@ function hookDatePager(allDates){
     dateWindowStart = Math.min(maxStart, clampDateStart(total) + DATE_WINDOW_SIZE);
     renderCharts();
   };
-  // rebind on each render (safe, uses .onclick assignment)
   document.querySelectorAll('.dates-prev').forEach(b => b.onclick = goPrev);
   document.querySelectorAll('.dates-next').forEach(b => b.onclick = goNext);
 }
@@ -417,7 +629,7 @@ async function loadBoards(){
       const url = (r.url || r.Website || '').trim();
       let domain = (r.domain || '').trim();
 
-      if (!ceoRaw || !url) return; // need both
+      if (!ceoRaw || !url) return;
       if (!domain && url){
         try { domain = new URL(url).hostname.replace(/^www\./,''); } catch {}
       }
@@ -444,7 +656,7 @@ async function loadCounts(){
       neu: +r.neutral || 0,
       neg: +r.negative || 0
     }))
-    .filter(r => isISODate(r.date) && r.ceo);   // require a CEO name
+    .filter(r => isISODate(r.date) && r.ceo);
 }
 async function loadSerpDaily(){
   try{
@@ -461,14 +673,9 @@ async function loadSerpDaily(){
 }
 
 /********************** Risk **********************/
-// Rules:
-// High   = negPct > 0
-// Medium = negPct === 0 AND ctrlPct < 0.35
-// Low    = everything else
 function computeRisk(negPct, ctrlPct){
   if (negPct == null || isNaN(negPct)) return 'N/A';
   if (negPct > 0) return 'High';
-  // negPct is exactly zero; control needed to decide
   if (ctrlPct == null || isNaN(ctrlPct)) return 'N/A';
   return (ctrlPct < 0.35) ? 'Medium' : 'Low';
 }
@@ -481,7 +688,6 @@ function toPct01(x){
   return n > 1 ? n/100 : n;
 }
 
-// data/processed_articles/<DATE>-ceo-articles-table.csv -> Map(ceo -> {company, theme, neg_pct})
 async function getArticlesForDate(d){
   if (_articlesCache.has(d)) return _articlesCache.get(d);
   let map = new Map();
@@ -506,7 +712,6 @@ async function getArticlesForDate(d){
   return map;
 }
 
-// data/processed_serps/<DATE>-ceo-serps-table.csv -> Map(ceo -> {total, neg_serp, controlled})
 async function getSerpAggForDate(d){
   if (_serpAggCache.has(d)) return _serpAggCache.get(d);
   let map = new Map();
@@ -528,8 +733,13 @@ async function getSerpAggForDate(d){
 
 /********************** UI bootstrap **********************/
 async function init(){
-  await Promise.all([loadRoster(), loadCounts(), loadSerpDaily(), loadBoards()]);
-  // date options from the chart sources (existing behavior)
+  await Promise.all([loadRoster(), loadCounts(), loadSerpDaily(), loadBoards(), loadStockData().then(data => globalStockData = data)]);
+  
+  console.log('📈 Stock data loaded. Companies with stock data:', Object.keys(globalStockData).length);
+  if (Object.keys(globalStockData).length === 0) {
+    console.warn('⚠️  No stock data was loaded. Stock prices and sparklines will show N/A.');
+  }
+  
   const dateSet = new Set([
     ...allCountsRows.map(r => r.date),
     ...serpsDaily.map(r => r.date)
@@ -546,7 +756,6 @@ async function init(){
   document.getElementById('prevBtn').onclick = ()=>{ if (currentPage>1){ currentPage--; renderTable(); } };
   document.getElementById('nextBtn').onclick = ()=>{ const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE)); if (currentPage<totalPages){ currentPage++; renderTable(); } };
 
-  // header sort
   document.querySelectorAll('thead th[data-key]').forEach(th=>{
     th.style.cursor='pointer';
     th.addEventListener('click', ()=>{
@@ -558,40 +767,50 @@ async function init(){
 
   renderAll();
 
-  // Keep charts perfectly in sync with their cards
   const newsCanvas = document.getElementById('newsChart');
   const serpCanvas = document.getElementById('serpChart');
   const ro = new ResizeObserver(() => {
     if (newsChart) newsChart.resize();
     if (serpChart) serpChart.resize();
   });
-  [newsCanvas.parentElement, serpCanvas.parentElement].forEach(el => ro.observe(el));  
+  [newsCanvas.parentElement, serpCanvas.parentElement].forEach(el => ro.observe(el));
+  
+  window.onclick = function(event) {
+    if (event.target === document.getElementById('stockChartModal')) {
+      closeStockChart();
+    }
+  };
 }
 
 /********************** Data → view rows **********************/
 async function buildRowsForDate(d){
-  const articles = await getArticlesForDate(d);  // Map(ceo -> {company, theme, neg_pct})
-  const serpAgg  = await getSerpAggForDate(d);   // Map(ceo -> {total, neg_serp, controlled})
+  const articles = await getArticlesForDate(d);
+  const serpAgg  = await getSerpAggForDate(d);
 
   const out = [];
   for (const [ceo, a] of articles.entries()){
-    const s = serpAgg.get(ceo);  // may be undefined
+    const s = serpAgg.get(ceo);
 
     let negSerpPct = null, ctrlPct = null;
     if (s && s.total > 0){
-      negSerpPct = s.neg_serp   / s.total;   // 0..1
-      ctrlPct    = s.controlled / s.total;   // 0..1
+      negSerpPct = s.neg_serp   / s.total;
+      ctrlPct    = s.controlled / s.total;
     }
     const risk = computeRisk(negSerpPct, ctrlPct);
+
+    // Get stock data for sorting
+    const stock = globalStockData[a.company];
+    const dailyChange = stock?.dailyChange ?? null;
 
     out.push({
       date: d,
       ceo,
       company: a.company || '',
       theme: a.theme || 'None',
-      neg_news: a.neg_pct ?? 0,   // 0..1
-      neg_serp: negSerpPct,       // 0..1 or null
-      ctrl_pct: ctrlPct,          // 0..1 or null
+      neg_news: a.neg_pct ?? 0,
+      neg_serp: negSerpPct,
+      ctrl_pct: ctrlPct,
+      daily_change: dailyChange,
       risk
     });
   }
@@ -611,56 +830,81 @@ async function renderAll(){
   filteredRows = rows;
   currentPage = 1;
 
-  // Auto-select when the filter leaves exactly one CEO
   if (rows.length === 1) {
     selectedCeo = rows[0].ceo;
   } else if (selectedCeo && !rows.some(r => r.ceo === selectedCeo)) {
-    // If the previously selected CEO is no longer visible, clear it
     selectedCeo = null;
+  }
+
+  renderTable();
+  renderCharts();
 }
 
-renderTable();
-renderCharts(); // charts keep using existing aggregated sources
-
-}
 function riskRank(risk) {
   if (risk === 'High') return 3;
   if (risk === 'Medium') return 2;
   if (risk === 'Low') return 1;
-  return 0; // for 'N/A'
+  return 0;
 }
 
 function renderTable(){
   const tbody = document.getElementById('tbody');
   let rows = [...filteredRows];
 
-  // sorting
   if (currentSort.key){
-  rows.sort((a,b)=>{
-    const ka = a[currentSort.key], kb = b[currentSort.key];
+    rows.sort((a,b)=>{
+      const ka = a[currentSort.key], kb = b[currentSort.key];
 
-    if (currentSort.key === 'risk') {
-      return currentSort.dir * (riskRank(ka) - riskRank(kb));
-    }
+      if (currentSort.key === 'risk') {
+        return currentSort.dir * (riskRank(ka) - riskRank(kb));
+      }
 
-    if (typeof ka === 'string') {
-      return currentSort.dir * ka.localeCompare(kb);
-    }
-    return currentSort.dir * ((ka ?? -1) - (kb ?? -1));
-  });
-}
+      if (typeof ka === 'string') {
+        return currentSort.dir * ka.localeCompare(kb);
+      }
+      return currentSort.dir * ((ka ?? -1) - (kb ?? -1));
+    });
+  }
 
   const start = (currentPage-1)*PAGE_SIZE;
   const pageRows = rows.slice(start, start+PAGE_SIZE);
-  tbody.innerHTML = pageRows.map(r=>{
+  
+  const rowsHTML = pageRows.map(r=>{
     const checked = (selectedCeo && selectedCeo===r.ceo) ? 'checked' : '';
-    return `<tr>
-      <td><input type="checkbox" data-ceo="${esc(r.ceo)}" class="brandCheck" ${checked} /> ${esc(r.ceo)}</td>
-      <td>${esc(r.company)}</td>
-      <td class="right">${fmtPct(r.neg_news)}</td>
-      <td class="right">${fmtPct(r.neg_serp)}</td>
-      <td class="right">${fmtPct(r.ctrl_pct)}</td>
-      <td class="center">${
+    const stock = globalStockData[r.company];
+    let stockPriceHtml = '<span class="muted">N/A</span>';
+    let dailyChangeHtml = '<span class="muted">N/A</span>';
+    let sparklineId = '';
+    
+    if (stock && stock.openingPrice !== null) {
+      stockPriceHtml = `<span class="stock-price">$${stock.openingPrice.toFixed(2)}</span>`;
+      
+      if (stock.dailyChange !== null) {
+        const changeClass = stock.dailyChange >= 0 ? 'positive' : 'negative';
+        const changeSymbol = stock.dailyChange >= 0 ? '▲' : '▼';
+        dailyChangeHtml = `<span class="stock-change ${changeClass}">${changeSymbol} ${Math.abs(stock.dailyChange).toFixed(2)}%</span>`;
+      }
+      
+      sparklineId = `sparkline-${r.company.replace(/[^a-zA-Z0-9]/g, '-')}`;
+    }
+    
+    return `<tr data-company="${esc(r.company)}">
+      <td>
+        <div class="ceo-cell-content">
+          <input type="checkbox" data-ceo="${esc(r.ceo)}" class="brandCheck" ${checked} onclick="event.stopPropagation()" />
+          <div class="ceo-name-block">
+            <div class="ceo-name">${esc(r.ceo)}</div>
+            <div class="company-subheader">${esc(r.company)}</div>
+          </div>
+        </div>
+      </td>
+      <td>${stockPriceHtml}</td>
+      <td>${dailyChangeHtml}</td>
+      <td class="sparkline-cell"><span id="${sparklineId}"></span></td>
+      <td>${fmtPct(r.neg_news)}</td>
+      <td>${fmtPct(r.neg_serp)}</td>
+      <td>${fmtPct(r.ctrl_pct)}</td>
+      <td>${
         (r.risk==='High'||r.risk==='Medium'||r.risk==='Low')
           ? (r.risk==='High'
               ? '<span class="pill high">High</span>'
@@ -669,13 +913,38 @@ function renderTable(){
                 : '<span class="pill low">Low</span>')
           : '<span class="muted">N/A</span>'
       }</td>
-      <td class="center"><button class="headBtn" data-ceo="${esc(r.ceo)}">View</button></td>
-      <td class="center"><button class="serpBtn" data-ceo="${esc(r.ceo)}" data-company="${esc(r.company)}">View</button></td>
-      <td class="center"><button class="boardsBtn" data-ceo="${esc(r.ceo)}">View</button></td>
+      <td><button class="headBtn" data-ceo="${esc(r.ceo)}" onclick="event.stopPropagation()">View</button></td>
+      <td><button class="serpBtn" data-ceo="${esc(r.ceo)}" data-company="${esc(r.company)}" onclick="event.stopPropagation()">View</button></td>
+      <td><button class="boardsBtn" data-ceo="${esc(r.ceo)}" onclick="event.stopPropagation()">View</button></td>
     </tr>`;
   }).join('');
+  
+  tbody.innerHTML = rowsHTML;
+  
+  // Now inject sparklines
+  pageRows.forEach(r => {
+    const stock = globalStockData[r.company];
+    if (stock && stock.priceHistory && stock.priceHistory.length >= 2) {
+      const sparklineId = `sparkline-${r.company.replace(/[^a-zA-Z0-9]/g, '-')}`;
+      const container = document.getElementById(sparklineId);
+      if (container) {
+        const isPositive = stock.sevenDayChange !== null && stock.sevenDayChange >= 0;
+        container.innerHTML = '';
+        const canvas = createSparkline(stock.priceHistory, isPositive);
+        if (canvas) container.appendChild(canvas);
+        
+        // Add click handler to sparkline cell
+        const sparklineCell = container.closest('td');
+        if (sparklineCell) {
+          sparklineCell.onclick = (e) => {
+            e.stopPropagation();
+            showStockChart(r.company);
+          };
+        }
+      }
+    }
+  });
 
-  // events
   tbody.querySelectorAll('.brandCheck').forEach(cb=>{
     cb.addEventListener('change', (e)=>{
       const ceo = e.target.getAttribute('data-ceo');
@@ -710,7 +979,6 @@ function renderTable(){
 
 /********************** Charts (windowed + synced) **********************/
 function getDateSeries(){
-  // Build series for all dates, optionally for a single CEO
   const byDate = new Map();
   allCountsRows.forEach(r=>{
     const key = r.date;
@@ -750,7 +1018,6 @@ function getDateSeries(){
 function renderCharts(){
   const {dates, newsPos, newsNeu, newsNeg, serpNegPct, serpCtrlPct} = getDateSeries();
 
-  // Initialize default window to the last 30 points
   if (dateWindowStart === null){
     dateWindowStart = Math.max(0, dates.length - DATE_WINDOW_SIZE);
   }
@@ -762,7 +1029,6 @@ function renderCharts(){
   const sN = sliceWindow(serpNegPct,  start, DATE_WINDOW_SIZE);
   const sC = sliceWindow(serpCtrlPct, start, DATE_WINDOW_SIZE);
 
-  // Update UI + hook pager (both charts share the same handlers/state)
   updateDateRangeUI(dates);
   hookDatePager(dates);
 
@@ -792,7 +1058,6 @@ function renderCharts(){
     }
   };
 
-  // ---- NEWS STACKED BAR ----
   const nh = document.getElementById('newsChart').getContext('2d');
   if (newsChart) newsChart.destroy();
   newsChart = new Chart(nh, {
@@ -808,22 +1073,17 @@ function renderCharts(){
     options: { ...commonOpts }
   });
 
-  // Hard-code CEO-wide averages for dashed lines (match brand styling)
-  const avgNegAll  = 1;   // 1%
-  const avgCtrlAll = 38;  // 38%
-  
-  // Expand to current window length
+  const avgNegAll  = 1;
+  const avgCtrlAll = 38;
   const avgNegLine  = new Array(d.length).fill(avgNegAll);
   const avgCtrlLine = new Array(d.length).fill(avgCtrlAll);
   
-  // Styling constants (same as brand)
   const SOLID_WIDTH  = 3;
   const DASH_WIDTH   = 2;
   const DASH_PATTERN = [8, 6];
   const NEG_COLOR    = '#ff8261';
   const CTRL_COLOR   = '#58dbed';
 
-  // ---- SERP LINE ----
   const sh = document.getElementById('serpChart').getContext('2d');
   if (serpChart) serpChart.destroy();
   serpChart = new Chart(sh, {
@@ -831,46 +1091,43 @@ function renderCharts(){
     data: {
       labels: d,
       datasets: [
-  // Daily (solid)
-  {
-    label: 'Daily Negative SERP %',   // was 'Negative SERP %'
-    data: sN,
-    tension: 0.25,
-    borderWidth: SOLID_WIDTH,
-    borderColor: NEG_COLOR,
-    fill: false
-  },
-  {
-    label: 'Daily SERP Control %',    // was 'Control %'
-    data: sC,
-    tension: 0.25,
-    borderWidth: SOLID_WIDTH,
-    borderColor: CTRL_COLOR,
-    fill: false
-  },
-
-  // Averages (dashed, no points)
-  {
-    label: 'Average Negative SERP %',
-    data: avgNegLine,
-    tension: 0,
-    fill: false,
-    borderWidth: DASH_WIDTH,
-    borderDash: DASH_PATTERN,
-    borderColor: NEG_COLOR,
-    pointRadius: 0
-  },
-  {
-    label: 'Average SERP Control %',
-    data: avgCtrlLine,
-    tension: 0,
-    fill: false,
-    borderWidth: DASH_WIDTH,
-    borderDash: DASH_PATTERN,
-    borderColor: CTRL_COLOR,
-    pointRadius: 0
-  }
-]
+        {
+          label: 'Daily Negative SERP %',
+          data: sN,
+          tension: 0.25,
+          borderWidth: SOLID_WIDTH,
+          borderColor: NEG_COLOR,
+          fill: false
+        },
+        {
+          label: 'Daily SERP Control %',
+          data: sC,
+          tension: 0.25,
+          borderWidth: SOLID_WIDTH,
+          borderColor: CTRL_COLOR,
+          fill: false
+        },
+        {
+          label: 'Average Negative SERP %',
+          data: avgNegLine,
+          tension: 0,
+          fill: false,
+          borderWidth: DASH_WIDTH,
+          borderDash: DASH_PATTERN,
+          borderColor: NEG_COLOR,
+          pointRadius: 0
+        },
+        {
+          label: 'Average SERP Control %',
+          data: avgCtrlLine,
+          tension: 0,
+          fill: false,
+          borderWidth: DASH_WIDTH,
+          borderDash: DASH_PATTERN,
+          borderColor: CTRL_COLOR,
+          pointRadius: 0
+        }
+      ]
     },
     options: { ...commonOpts }
   });
@@ -890,12 +1147,10 @@ function openModal(title, html){
 
 /********************** Boards modal **********************/
 function showBoards(ceo){
-  // exact, then canonical (case/space-insensitive), then fuzzy fallback
   const key = canonName(ceo);
   let boards = boardsByCeo.get(ceo) || boardsByCeo.get(key);
 
   if (!boards){
-    // last-chance: find any key that equals ignoring case/space
     const k = [...boardsByCeo.keys()].find(k => k === key);
     boards = k ? boardsByCeo.get(k) : null;
   }
@@ -915,7 +1170,7 @@ function showBoards(ceo){
   openModal(`Boards — ${ceo}`, html);
 }
 
-/********************** Headlines modal (styled like SERP cards) **********************/
+/********************** Headlines modal **********************/
 async function showHeadlines({ ceo }) {
   const d = document.getElementById('dateSelect').value;
   const file = `data/processed_articles/${d}-ceo-articles-modal.csv`;
@@ -929,7 +1184,6 @@ async function showHeadlines({ ceo }) {
     return;
   }
 
-  // Match on CEO (trim to be safe)
   const list = rows.filter(r => String(r.ceo || '').trim() === ceo);
 
   if (!list.length) {
@@ -938,7 +1192,6 @@ async function showHeadlines({ ceo }) {
     return;
   }
 
-  // Build cards using the same layout classes as the SERP modal
   const cards = list.map(r => {
     const url = String(r.url || '').trim();
     let domain = '';
@@ -966,7 +1219,7 @@ async function showHeadlines({ ceo }) {
 }
 
 
-/********************** SERP modal (reads data/processed_serps) **********************/
+/********************** SERP modal **********************/
 async function showSerp(row){
   const d = document.getElementById('dateSelect').value;
   const path = SERP_ROWS_PATH(d);
@@ -988,7 +1241,6 @@ async function showSerp(row){
     openModal(`SERP — ${esc(row.ceo)}`, `<div class="muted">No SERPs for ${esc(row.ceo)} on ${d}.</div>`); return;
   }
 
-  // metrics
   const total = matches.length;
   const negCount = matches.filter(r => String(r.sentiment||'').toLowerCase()==='negative').length;
   const ctrlCount = matches.filter(r => (/^controlled|true|1$/i).test(String(r.controlled||''))).length;
@@ -996,7 +1248,6 @@ async function showSerp(row){
   const ctrlPct = total? (ctrlCount/total) : 0;
   const risk = computeRisk(negPct, ctrlPct);
 
-  // sort by position if present
   matches.sort((a,b)=>(+a.position||9999) - (+b.position||9999));
 
   const cards = matches.map(r=>{
