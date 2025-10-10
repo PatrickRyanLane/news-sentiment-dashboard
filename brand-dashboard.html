@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Brand Risk Dashboard</title>
 
-<!-- Chart.js + PapaParse CDN -->
+<!-- Chart.js + PapaParse + Annotation Plugin CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
@@ -187,7 +188,7 @@ tbody td:first-child{background:var(--black)}
   </div>
 
   <div class="table-card">
-    <p class="table-hint">Select a company using the checkbox to view its trend lines. Click the sparkline to see 90-day stock chart.</p>
+    <p class="table-hint">Select a company using the checkbox to view its trend lines. Click the sparkline to see 30-day stock chart with negative article markers.</p>
     <div class="table-scroll">
       <table>
         <thead>
@@ -195,7 +196,7 @@ tbody td:first-child{background:var(--black)}
             <th>Company</th>
             <th>Stock<br>Price</th>
             <th data-key="daily_change">Daily Change ▲▼</th>
-            <th>90-Day<br>Trend</th>
+            <th>30-Day<br>Trend</th>
             <th data-key="neg_news">Negative<br>News % ▲▼</th>
             <th data-key="neg_serp">Negative<br>SERP % ▲▼</th>
             <th data-key="ctrl_pct">SERP<br>Control % ▲▼</th>
@@ -281,7 +282,6 @@ const DASH_PATTERN = [8, 6];
 /********************** Stock Data **********************/
 async function loadStockData() {
   try {
-    // Get today's date in UTC (matching the workflow's perspective)
     const now = new Date();
     const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     const today = todayUTC.toISOString().split('T')[0];
@@ -299,7 +299,6 @@ async function loadStockData() {
     } catch (todayError) {
       console.warn('⚠️  Today file failed:', todayError.message);
 
-      // Try yesterday in UTC
       const yesterdayUTC = new Date(todayUTC);
       yesterdayUTC.setUTCDate(yesterdayUTC.getUTCDate() - 1);
       const yesterday = yesterdayUTC.toISOString().split('T')[0];
@@ -386,7 +385,37 @@ function createSparkline(prices, isPositive) {
   return canvas;
 }
 
-function showStockChart(company) {
+/********************** NEW: Load negative article dates **********************/
+async function loadNegativeArticleDates(company, dateRange) {
+  const negativeDates = [];
+  
+  console.log(`📰 Loading negative articles for ${company} across ${dateRange.length} days...`);
+  
+  for (const date of dateRange) {
+    try {
+      const rows = await fetchCsv(HEADLINES_PATH(date));
+      const negativeArticles = rows.filter(r => 
+        String(r.company || '').trim() === company && 
+        String(r.sentiment || '').toLowerCase() === 'negative'
+      );
+      
+      if (negativeArticles.length > 0) {
+        negativeDates.push({
+          date: date,
+          count: negativeArticles.length
+        });
+        console.log(`  📍 ${date}: ${negativeArticles.length} negative article(s)`);
+      }
+    } catch (e) {
+      // Skip dates with missing files - this is expected
+    }
+  }
+  
+  console.log(`✅ Found ${negativeDates.length} dates with negative articles`);
+  return negativeDates;
+}
+
+async function showStockChart(company) {
   const stock = globalStockData[company];
   if (!stock || !stock.priceHistory || !stock.priceHistory.length) {
     alert('No stock data available for this company');
@@ -395,10 +424,39 @@ function showStockChart(company) {
 
   const modal = document.getElementById('stockChartModal');
   document.getElementById('stockChartTitle').textContent =
-    `${company} (${stock.ticker}) - 90-Day Price History`;
+    `${company} (${stock.ticker}) - 30-Day Price History`;
   modal.classList.add('open');
 
   if (stockChart) stockChart.destroy();
+
+  // Load negative article dates for the date range shown
+  const negativeDates = await loadNegativeArticleDates(company, stock.dateHistory);
+  
+  // Create annotations for negative articles
+  const annotations = {};
+  negativeDates.forEach((item, idx) => {
+    annotations[`negArticle${idx}`] = {
+      type: 'line',
+      xMin: item.date,
+      xMax: item.date,
+      borderColor: '#ff8261',
+      borderWidth: 2,
+      borderDash: [5, 5],
+      label: {
+        display: true,
+        content: `${item.count} neg`,
+        position: 'start',
+        backgroundColor: 'rgba(255, 130, 97, 0.9)',
+        color: '#fff',
+        font: {
+          size: 10,
+          weight: 'bold'
+        },
+        padding: 4,
+        borderRadius: 4
+      }
+    };
+  });
 
   const ctx = document.getElementById('stockChart').getContext('2d');
   const isPositive = (stock.sevenDayChange !== null && stock.sevenDayChange >= 0);
@@ -423,7 +481,35 @@ function showStockChart(company) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: false },
+        legend: { 
+          display: true,
+          labels: {
+            color: '#ebf2f2',
+            generateLabels: function(chart) {
+              const labels = [
+                {
+                  text: 'Stock Price',
+                  fillStyle: isPositive ? '#22c55e' : '#ef4444',
+                  strokeStyle: isPositive ? '#22c55e' : '#ef4444',
+                  lineWidth: 2
+                }
+              ];
+              if (negativeDates.length > 0) {
+                labels.push({
+                  text: 'Negative Articles',
+                  fillStyle: '#ff8261',
+                  strokeStyle: '#ff8261',
+                  lineWidth: 2,
+                  lineDash: [5, 5]
+                });
+              }
+              return labels;
+            }
+          }
+        },
+        annotation: {
+          annotations: annotations
+        },
         tooltip: {
           callbacks: {
             label: function(context) {
@@ -436,15 +522,23 @@ function showStockChart(company) {
         y: {
           beginAtZero: false,
           ticks: {
+            color: '#ebf2f2',
             callback: function(value) {
               return '$' + value.toFixed(2);
             }
+          },
+          grid: {
+            color: 'rgba(255,255,255,.08)'
           }
         },
         x: {
           ticks: {
+            color: '#ebf2f2',
             maxTicksLimit: 10,
             autoSkip: true
+          },
+          grid: {
+            color: 'rgba(255,255,255,.05)'
           }
         }
       }
@@ -638,7 +732,6 @@ async function buildRowsForDate(d){
     if (s && s.total>0){ negSerpPct = s.neg_serp/s.total; ctrlPct = s.controlled/s.total; }
     const risk = computeRisk(negSerpPct, ctrlPct);
     
-    // Get stock data for sorting
     const stock = globalStockData[company];
     const dailyChange = stock?.dailyChange ?? null;
     
@@ -686,7 +779,6 @@ function renderTable(){
   const start = (currentPage-1)*PAGE_SIZE;
   const pageRows = rows.slice(start, start+PAGE_SIZE);
 
-  // Build HTML first, then inject sparklines
   const rowsHTML = pageRows.map(r=>{
     const checked = (selectedCompany && selectedCompany===r.company) ? 'checked' : '';
     const stock = globalStockData[r.company];
@@ -735,7 +827,6 @@ function renderTable(){
 
   tbody.innerHTML = rowsHTML;
 
-  // Now inject sparklines
   pageRows.forEach(r => {
     const stock = globalStockData[r.company];
     if (stock && stock.priceHistory && stock.priceHistory.length >= 2) {
@@ -747,7 +838,6 @@ function renderTable(){
         const canvas = createSparkline(stock.priceHistory, isPositive);
         if (canvas) container.appendChild(canvas);
 
-        // Add click handler to sparkline cell
         const sparklineCell = container.closest('td');
         if (sparklineCell) {
           sparklineCell.onclick = (e) => {

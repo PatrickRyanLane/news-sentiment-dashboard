@@ -1,7 +1,7 @@
 """
 Fetch stock price data for companies in the roster.
 Retrieves opening prices and calculates daily and 7-day percentage changes.
-Stores 90 days of historical price data for charting.
+Stores 30 days of historical price data for charting.
 """
 
 import yfinance as yf
@@ -81,8 +81,8 @@ def fetch_stock_data():
             # Calculate 7-day percentage change
             seven_day_change = ((today_open - week_ago_close) / week_ago_close) * 100
             
-            # Store last 90 days of closing prices for charting
-            recent_history = hist.tail(90)
+            # Store last 30 days of closing prices for charting
+            recent_history = hist.tail(30)
             price_history = recent_history['Close'].tolist()
             date_history = recent_history.index.strftime('%Y-%m-%d').tolist()
             
