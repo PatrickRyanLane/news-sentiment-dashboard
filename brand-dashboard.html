@@ -53,7 +53,7 @@ button:hover{filter:brightness(1.08)}
   border-radius:8px; padding:4px 8px; cursor:pointer;
 }
 .chart-actions .dates-pager button[disabled]{ opacity:.45; cursor:not-allowed; }
-  
+
 /* Table */
 .table-card{background:var(--card);border:1px solid var(--stroke);border-radius:12px;padding:10px}
 .table-hint{margin:0 0 8px;color:var(--muted)}
@@ -279,27 +279,37 @@ async function loadStockData() {
     const now = new Date();
     const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     const today = todayUTC.toISOString().split('T')[0];
-    
+
+    console.log('📊 Attempting to load stock data for:', today);
     let stockData = {};
-    
+
     try {
+      console.log('🔍 Trying today file:', `data/stock_prices/${today}-stock-data.csv`);
       const response = await fetch(`data/stock_prices/${today}-stock-data.csv`, {cache:'no-store'});
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const text = await response.text();
       stockData = parseStockCSV(text);
-    } catch {
+      console.log('✅ Loaded today stock data, companies:', Object.keys(stockData).length);
+    } catch (todayError) {
+      console.warn('⚠️  Today file failed:', todayError.message);
+
       // Try yesterday in UTC
       const yesterdayUTC = new Date(todayUTC);
       yesterdayUTC.setUTCDate(yesterdayUTC.getUTCDate() - 1);
       const yesterday = yesterdayUTC.toISOString().split('T')[0];
-      
+
+      console.log('🔍 Trying yesterday file:', `data/stock_prices/${yesterday}-stock-data.csv`);
       const response = await fetch(`data/stock_prices/${yesterday}-stock-data.csv`, {cache:'no-store'});
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const text = await response.text();
       stockData = parseStockCSV(text);
+      console.log('✅ Loaded yesterday stock data, companies:', Object.keys(stockData).length);
     }
-    
+
     return stockData;
   } catch (error) {
-    console.warn('Could not load stock data:', error);
+    console.error('❌ STOCK DATA LOAD FAILED:', error);
+    console.error('📋 Stock data will not be displayed. Check network tab for failed requests.');
     return {};
   }
 }
@@ -307,14 +317,14 @@ async function loadStockData() {
 function parseStockCSV(csvText) {
   const lines = csvText.trim().split('\n');
   const stockData = {};
-  
+
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
-    
+
     const values = line.split(',');
     if (values.length < 8) continue;
-    
+
     const company = values[1];
     stockData[company] = {
       ticker: values[0],
@@ -327,46 +337,46 @@ function parseStockCSV(csvText) {
       lastUpdated: values[7]
     };
   }
-  
+
   return stockData;
 }
 
 function createSparkline(prices, isPositive) {
   if (!prices || prices.length < 2) return null;
-  
+
   const canvas = document.createElement('canvas');
   canvas.width = 80;
   canvas.height = 24;
   canvas.className = 'sparkline';
-  
+
   const ctx = canvas.getContext('2d');
   const width = canvas.width;
   const height = canvas.height;
   const padding = 2;
-  
+
   const min = Math.min(...prices);
   const max = Math.max(...prices);
   const range = max - min || 1;
-  
+
   const stepX = (width - padding * 2) / (prices.length - 1);
-  
+
   ctx.beginPath();
   ctx.strokeStyle = isPositive ? '#22c55e' : '#ef4444';
   ctx.lineWidth = 1.5;
-  
+
   prices.forEach((price, i) => {
     const x = padding + i * stepX;
     const y = height - padding - ((price - min) / range) * (height - padding * 2);
-    
+
     if (i === 0) {
       ctx.moveTo(x, y);
     } else {
       ctx.lineTo(x, y);
     }
   });
-  
+
   ctx.stroke();
-  
+
   return canvas;
 }
 
@@ -376,17 +386,17 @@ function showStockChart(company) {
     alert('No stock data available for this company');
     return;
   }
-  
+
   const modal = document.getElementById('stockChartModal');
-  document.getElementById('stockChartTitle').textContent = 
+  document.getElementById('stockChartTitle').textContent =
     `${company} (${stock.ticker}) - 90-Day Price History`;
   modal.classList.add('open');
-  
+
   if (stockChart) stockChart.destroy();
-  
+
   const ctx = document.getElementById('stockChart').getContext('2d');
   const isPositive = (stock.sevenDayChange !== null && stock.sevenDayChange >= 0);
-  
+
   stockChart = new Chart(ctx, {
     type: 'line',
     data: {
@@ -477,7 +487,7 @@ function hookDatePager(allDates){
   document.querySelectorAll('.dates-prev').forEach(b => b.onclick = goPrev);
   document.querySelectorAll('.dates-next').forEach(b => b.onclick = goNext);
 }
-  
+
 /********************** CSV helpers **********************/
 async function fetchCsv(url){
   const r = await fetch(url, {cache:'no-store'});
@@ -568,7 +578,11 @@ async function getSerpAggForDate(d){
 
 /********************** UI bootstrap **********************/
 async function init(){
-  await Promise.all([loadCounts(), loadSerpDaily(), loadStockData().then(data => globalStockData = data)]);
+  await Promise.all([loadRoster(), loadCounts(), loadSerpDaily(), loadBoards(), loadStockData().then(data => globalStockData = data)]);
+  console.log('📈 Stock data loaded. Companies with stock data:', Object.keys(globalStockData).length);
+if (Object.keys(globalStockData).length === 0) {
+  console.warn('⚠️  No stock data was loaded. Stock prices and sparklines will show N/A.');
+}
   const dateSet = new Set([ ...allCountsRows.map(r=>r.date), ...serpsDaily.map(r=>r.date) ].filter(isISODate));
   const dates = [...dateSet].sort();
   const sel = document.getElementById('dateSelect');
@@ -596,7 +610,7 @@ async function init(){
   const ro = new ResizeObserver(()=>{ if (newsChart) newsChart.resize(); if (serpChart) serpChart.resize(); });
   ro.observe(document.getElementById('newsChart').parentElement);
   ro.observe(document.getElementById('serpChart').parentElement);
-  
+
   window.onclick = function(event) {
     if (event.target === document.getElementById('stockChartModal')) {
       closeStockChart();
@@ -657,7 +671,7 @@ function renderTable(){
 
   const start = (currentPage-1)*PAGE_SIZE;
   const pageRows = rows.slice(start, start+PAGE_SIZE);
-  
+
   // Build HTML first, then inject sparklines
   const rowsHTML = pageRows.map(r=>{
     const checked = (selectedCompany && selectedCompany===r.company) ? 'checked' : '';
@@ -665,19 +679,19 @@ function renderTable(){
     let stockPriceHtml = '<span class="muted">N/A</span>';
     let dailyChangeHtml = '<span class="muted">N/A</span>';
     let sparklineId = '';
-    
+
     if (stock && stock.openingPrice !== null) {
       stockPriceHtml = `<span class="stock-price">$${stock.openingPrice.toFixed(2)}</span>`;
-      
+
       if (stock.dailyChange !== null) {
         const changeClass = stock.dailyChange >= 0 ? 'positive' : 'negative';
         const changeSymbol = stock.dailyChange >= 0 ? '▲' : '▼';
         dailyChangeHtml = `<span class="stock-change ${changeClass}">${changeSymbol} ${Math.abs(stock.dailyChange).toFixed(2)}%</span>`;
       }
-      
+
       sparklineId = `sparkline-${r.company.replace(/[^a-zA-Z0-9]/g, '-')}`;
     }
-    
+
     return `<tr data-company="${esc(r.company)}">
       <td><input type="checkbox" data-company="${esc(r.company)}" class="brandCheck" ${checked} onclick="event.stopPropagation()" /> ${esc(r.company)}</td>
       <td>${stockPriceHtml}</td>
@@ -699,9 +713,9 @@ function renderTable(){
       <td><button class="serpBtn" data-company="${esc(r.company)}" onclick="event.stopPropagation()">View</button></td>
     </tr>`;
   }).join('');
-  
+
   tbody.innerHTML = rowsHTML;
-  
+
   // Now inject sparklines
   pageRows.forEach(r => {
     const stock = globalStockData[r.company];
@@ -713,7 +727,7 @@ function renderTable(){
         container.innerHTML = '';
         const canvas = createSparkline(stock.priceHistory, isPositive);
         if (canvas) container.appendChild(canvas);
-        
+
         // Add click handler to sparkline cell
         const sparklineCell = container.closest('td');
         if (sparklineCell) {
@@ -832,7 +846,7 @@ function renderCharts(){
     ]},
     options:{...commonOpts}
   });
-  
+
   const avgNegAll  = 1;
   const avgCtrlAll = 46;
   const avgNegLine  = new Array(d.length).fill(avgNegAll);
