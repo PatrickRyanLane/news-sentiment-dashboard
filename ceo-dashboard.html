@@ -229,6 +229,231 @@ tbody td:first-child{
 .serp-snippet{color:var(--muted);margin-top:6px;line-height:1.35}
 .serp-metrics{margin:4px 0 0;color:var(--muted)}
 .serp-metrics b{color:var(--text)}
+
+
+/* ===== NEGATIVE ARTICLES HEATMAP STYLES ===== */
+
+/* Enhanced stock chart modal for better visibility of heatmap */
+#stockChartModal .box {
+  max-width: 1000px;
+  max-height: 90vh;
+}
+
+#stockChart {
+  width: 100% !important;
+  height: 450px !important;
+  min-height: 400px;
+}
+
+/* Sparkline hover effect - make it more obvious it's clickable */
+.sparkline-cell {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.sparkline-cell:hover {
+  background: rgba(88, 219, 237, 0.2) !important;
+}
+
+.sparkline-cell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  pointer-events: none;
+  transition: border-color 0.2s ease;
+}
+
+.sparkline-cell:hover::after {
+  border-color: rgba(88, 219, 237, 0.4);
+}
+
+/* Add a subtle hint icon on sparkline hover */
+.sparkline-cell:hover .sparkline {
+  filter: brightness(1.2);
+}
+
+/* Loading state for stock chart */
+.stock-chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.stock-chart-loading::before {
+  content: '📊';
+  font-size: 32px;
+  margin-right: 12px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Heatmap legend (optional - can be added to modal) */
+.heatmap-legend {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.heatmap-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.heatmap-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.heatmap-legend-dot.medium {
+  background: #ffaa44;
+}
+
+.heatmap-legend-dot.high {
+  background: #ff4444;
+}
+
+/* Improved tooltip appearance (Chart.js uses canvas, but this helps with custom elements) */
+.chart-tooltip {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.chart-tooltip-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chart-tooltip-headline {
+  margin: 4px 0;
+  padding-left: 8px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Mobile responsiveness for stock chart */
+@media (max-width: 768px) {
+  #stockChartModal .box {
+    margin: 12px;
+    max-height: 95vh;
+  }
+  
+  #stockChart {
+    height: 350px !important;
+    min-height: 300px;
+  }
+  
+  .heatmap-legend {
+    flex-wrap: wrap;
+    font-size: 11px;
+  }
+}
+
+/* Add subtle animation when chart loads */
+@keyframes chartFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#stockChart {
+  animation: chartFadeIn 0.3s ease-out;
+}
+
+/* Enhanced close button for stock modal */
+#stockChartModal .close {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+#stockChartModal .close:hover {
+  color: var(--accent) !important;
+  transform: scale(1.1);
+}
+
+/* Better visual feedback for the sparkline */
+.sparkline {
+  transition: opacity 0.2s ease;
+}
+
+.sparkline-cell:active .sparkline {
+  opacity: 0.7;
+}
+
+/* Optional: Add a click hint tooltip */
+.sparkline-cell[title]::before {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+}
+
+.sparkline-cell:hover[title]::before {
+  opacity: 1;
+}
+
+/* Chart.js annotation hover states - these are applied programmatically */
+.chartjs-annotation-point-hover {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Add a subtle glow effect to high-intensity markers */
+@keyframes markerGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(255, 68, 68, 0);
+  }
+}
+
+/* Note: This would need to be applied via Chart.js annotation plugin options */
+
+
+
 </style>
 </head>
 
@@ -360,7 +585,6 @@ let globalStockData = {};
 
 const _articlesCache = new Map();
 const _serpAggCache  = new Map();
-const _negativeArticleCache = new Map();  // Cache for negative article dates
 
 const DATE_WINDOW_SIZE = 30;
 let dateWindowStart = null;
@@ -488,60 +712,77 @@ function createSparkline(prices, isPositive) {
   return canvas;
 }
 
-/********************** OPTIMIZED: Load negative article dates **********************/
-async function loadNegativeArticleDates(ceo, company, dateRange) {
-  // Check cache first for instant return on repeat views
-  const cacheKey = `${ceo}_${company}_${dateRange[0]}_${dateRange[dateRange.length-1]}`;
-  if (_negativeArticleCache.has(cacheKey)) {
-    console.log(`✅ Using cached negative articles for ${ceo} (${company})`);
-    return _negativeArticleCache.get(cacheKey);
-  }
+/********************** NEGATIVE ARTICLES HEATMAP INTEGRATION **********************/
+// This code replaces the existing loadNegativeArticleDates() function and 
+// updates the showStockChart() function in ceo-dashboard.html and brand-dashboard.html
+
+// Global variable to store the negative articles summary
+let negativeSummaryMap = null;
+
+// Threshold: minimum number of negative articles required to show a marker
+const NEGATIVE_ARTICLE_THRESHOLD = 3;
+
+/**
+ * Load pre-aggregated negative articles summary (ONE file, ~80KB for 90 days)
+ * Returns: Map<company, Array<{date, count, headlines, type}>>
+ */
+async function loadNegativeSummary() {
+  console.log('📰 Loading negative articles summary...');
   
-  console.log(`📰 Loading negative articles for ${ceo} (${company}) across ${dateRange.length} days...`);
-  
-  // OPTIMIZATION: Load all dates in parallel instead of sequentially
-  const promises = dateRange.map(async (date) => {
-    try {
-      const rows = await fetchCsv(HEADLINES_PATH_CEO(date));
-      const negativeArticles = rows.filter(r => 
-        String(r.ceo || '').trim() === ceo && 
-        String(r.sentiment || '').toLowerCase() === 'negative'
-      );
+  try {
+    const rows = await fetchCsv('data/negative-articles-summary.csv');
+    
+    // Map structure: company -> array of {date, count, headlines, type}
+    const summaryMap = new Map();
+    
+    rows.forEach(r => {
+      const company = String(r.company || '').trim();
+      if (!company || company === 'nan') return;
       
-      // Only return dates with threshold+ negative articles
-      if (negativeArticles.length >= NEGATIVE_ARTICLE_THRESHOLD) {
-        return { date: date, count: negativeArticles.length };
+      const count = parseInt(r.negative_count) || 0;
+      if (count < NEGATIVE_ARTICLE_THRESHOLD) return;  // Filter at load time
+      
+      if (!summaryMap.has(company)) {
+        summaryMap.set(company, []);
       }
-      return null;
-    } catch (e) {
-      // Skip dates with missing files
-      return null;
-    }
-  });
-  
-  // Wait for all fetches to complete in parallel
-  const results = await Promise.all(promises);
-  
-  // Filter out null results
-  const negativeDates = results.filter(r => r !== null);
-  
-  console.log(`✅ Found ${negativeDates.length} dates with ${NEGATIVE_ARTICLE_THRESHOLD}+ negative articles`);
-  
-  // Cache the result for future use
-  _negativeArticleCache.set(cacheKey, negativeDates);
-  
-  return negativeDates;
+      
+      summaryMap.get(company).push({
+        date: String(r.date || '').trim(),
+        count: count,
+        headlines: (r.top_headlines || '').split('|').filter(h => h.trim()),
+        type: String(r.article_type || 'unknown').trim()  // 'ceo' or 'brand'
+      });
+    });
+    
+    console.log(`✅ Loaded negative summary for ${summaryMap.size} companies`);
+    
+    // Log some stats
+    let totalCeo = 0, totalBrand = 0;
+    summaryMap.forEach(articles => {
+      articles.forEach(a => {
+        if (a.type === 'ceo') totalCeo++;
+        if (a.type === 'brand') totalBrand++;
+      });
+    });
+    console.log(`   📊 CEO articles: ${totalCeo}, Brand articles: ${totalBrand}`);
+    
+    return summaryMap;
+    
+  } catch (e) {
+    console.error('❌ Failed to load negative summary:', e);
+    return new Map();
+  }
 }
 
+/**
+ * Enhanced stock chart with negative article heatmap markers
+ */
 async function showStockChart(company) {
   const stock = globalStockData[company];
   if (!stock || !stock.priceHistory || !stock.priceHistory.length) {
     alert('No stock data available for this company');
     return;
   }
-  
-  // Find the CEO for this company
-  const ceo = companyToCeo.get(company) || '';
   
   const modal = document.getElementById('stockChartModal');
   document.getElementById('stockChartTitle').textContent = 
@@ -550,31 +791,63 @@ async function showStockChart(company) {
   
   if (stockChart) stockChart.destroy();
   
-  // Load negative article dates for the date range shown (cached after first load)
-  const negativeDates = await loadNegativeArticleDates(ceo, company, stock.dateHistory);
+  // Get negative article data from pre-loaded summary (instant!)
+  const negativeDates = negativeSummaryMap?.get(company) || [];
   
-  // Create annotations for negative articles
+  // Filter to only dates in the stock date range
+  const relevantNegatives = negativeDates.filter(item => 
+    stock.dateHistory.includes(item.date)
+  );
+  
+  // Group by date (may have both CEO and brand articles on same day)
+  const negativesByDate = new Map();
+  relevantNegatives.forEach(item => {
+    if (!negativesByDate.has(item.date)) {
+      negativesByDate.set(item.date, {
+        totalCount: 0,
+        ceoCount: 0,
+        brandCount: 0,
+        allHeadlines: []
+      });
+    }
+    const agg = negativesByDate.get(item.date);
+    agg.totalCount += item.count;
+    if (item.type === 'ceo') agg.ceoCount += item.count;
+    if (item.type === 'brand') agg.brandCount += item.count;
+    agg.allHeadlines.push(...item.headlines);
+  });
+  
+  console.log(`📊 ${company}: ${negativesByDate.size} dates with ${NEGATIVE_ARTICLE_THRESHOLD}+ negative articles`);
+  
+  // Create heatmap point annotations for negative articles
   const annotations = {};
-  negativeDates.forEach((item, idx) => {
+  Array.from(negativesByDate.entries()).forEach(([date, data], idx) => {
+    const priceIndex = stock.dateHistory.indexOf(date);
+    if (priceIndex === -1) return;
+    
+    const price = stock.priceHistory[priceIndex];
+    const intensity = data.totalCount >= 6 ? 'high' : 'medium';
+    
     annotations[`negArticle${idx}`] = {
-      type: 'line',
-      xMin: item.date,
-      xMax: item.date,
-      borderColor: '#ff8261',
+      type: 'point',
+      xValue: date,
+      yValue: price,
+      backgroundColor: intensity === 'high' ? '#ff4444' : '#ffaa44',
+      borderColor: '#ffffff',
       borderWidth: 2,
-      borderDash: [5, 5],
-      label: {
-        display: true,
-        content: `${item.count} neg`,
-        position: 'start',
-        backgroundColor: 'rgba(255, 130, 97, 0.9)',
-        color: '#fff',
-        font: {
-          size: 10,
-          weight: 'bold'
-        },
-        padding: 4,
-        borderRadius: 4
+      radius: Math.min(data.totalCount + 3, 14),
+      // Hover effect
+      enter(context) {
+        context.element.options.radius = Math.min(data.totalCount + 5, 18);
+        context.element.options.borderWidth = 3;
+        stockChart.update('none');
+        return true;
+      },
+      leave(context) {
+        context.element.options.radius = Math.min(data.totalCount + 3, 14);
+        context.element.options.borderWidth = 2;
+        stockChart.update('none');
+        return true;
       }
     };
   });
@@ -601,6 +874,10 @@ async function showStockChart(company) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: {
+        mode: 'nearest',
+        intersect: false
+      },
       plugins: {
         legend: { 
           display: true,
@@ -615,15 +892,42 @@ async function showStockChart(company) {
                   lineWidth: 2
                 }
               ];
-              if (negativeDates.length > 0) {
-                labels.push({
-                  text: `Negative Articles (${NEGATIVE_ARTICLE_THRESHOLD}+)`,
-                  fillStyle: '#ff8261',
-                  strokeStyle: '#ff8261',
-                  lineWidth: 2,
-                  lineDash: [5, 5]
+              
+              if (negativesByDate.size > 0) {
+                // Count articles by type
+                let totalCeo = 0, totalBrand = 0;
+                negativesByDate.forEach(data => {
+                  totalCeo += data.ceoCount;
+                  totalBrand += data.brandCount;
                 });
+                
+                if (totalCeo > 0 && totalBrand > 0) {
+                  labels.push({
+                    text: `Negative Articles (${totalCeo} CEO, ${totalBrand} Brand)`,
+                    fillStyle: '#ffaa44',
+                    strokeStyle: '#ffffff',
+                    lineWidth: 2,
+                    pointStyle: 'circle'
+                  });
+                } else if (totalCeo > 0) {
+                  labels.push({
+                    text: `Negative CEO Articles (${totalCeo})`,
+                    fillStyle: '#ffaa44',
+                    strokeStyle: '#ffffff',
+                    lineWidth: 2,
+                    pointStyle: 'circle'
+                  });
+                } else if (totalBrand > 0) {
+                  labels.push({
+                    text: `Negative Brand Articles (${totalBrand})`,
+                    fillStyle: '#ffaa44',
+                    strokeStyle: '#ffffff',
+                    lineWidth: 2,
+                    pointStyle: 'circle'
+                  });
+                }
               }
+              
               return labels;
             }
           }
@@ -632,9 +936,59 @@ async function showStockChart(company) {
           annotations: annotations
         },
         tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: false,
           callbacks: {
+            title: function(tooltipItems) {
+              if (!tooltipItems || tooltipItems.length === 0) return '';
+              const date = tooltipItems[0].label;
+              return date;
+            },
             label: function(context) {
-              return '$' + context.parsed.y.toFixed(2);
+              const lines = [];
+              
+              // Stock price
+              lines.push(`Price: $${context.parsed.y.toFixed(2)}`);
+              
+              // Negative articles for this date
+              const date = context.label;
+              const negData = negativesByDate.get(date);
+              
+              if (negData) {
+                lines.push(''); // Blank line
+                lines.push(`⚠️  ${negData.totalCount} Negative Article${negData.totalCount > 1 ? 's' : ''}`);
+                
+                if (negData.ceoCount > 0) {
+                  lines.push(`   CEO: ${negData.ceoCount}`);
+                }
+                if (negData.brandCount > 0) {
+                  lines.push(`   Brand: ${negData.brandCount}`);
+                }
+                
+                // Show first 2 headlines
+                const previewHeadlines = negData.allHeadlines.slice(0, 2);
+                if (previewHeadlines.length > 0) {
+                  lines.push(''); // Blank line
+                  previewHeadlines.forEach((headline, i) => {
+                    // Truncate to 50 chars for tooltip
+                    const truncated = headline.length > 50 
+                      ? headline.substring(0, 47) + '...' 
+                      : headline;
+                    lines.push(`• ${truncated}`);
+                  });
+                  
+                  if (negData.allHeadlines.length > 2) {
+                    lines.push(`   ... and ${negData.allHeadlines.length - 2} more`);
+                  }
+                }
+              }
+              
+              return lines;
             }
           }
         }
@@ -666,6 +1020,31 @@ async function showStockChart(company) {
     }
   });
 }
+
+/**
+ * Close the stock chart modal
+ */
+function closeStockChart() {
+  document.getElementById('stockChartModal').classList.remove('open');
+}
+
+/********************** UPDATE INIT FUNCTION **********************/
+// Add this to your init() function's Promise.all() array:
+//
+// Before (old):
+// await Promise.all([loadRoster(), loadCounts(), loadSerpDaily(), loadBoards(), 
+//                    loadStockData().then(data => globalStockData = data)]);
+//
+// After (new):
+// await Promise.all([
+//   loadRoster(), 
+//   loadCounts(), 
+//   loadSerpDaily(), 
+//   loadBoards(), 
+//   loadStockData().then(data => globalStockData = data),
+//   loadNegativeSummary().then(data => negativeSummaryMap = data)  // <-- ADD THIS LINE
+// ]);
+
 
 function closeStockChart() {
   document.getElementById('stockChartModal').classList.remove('open');
@@ -855,7 +1234,14 @@ async function getSerpAggForDate(d){
 
 /********************** UI bootstrap **********************/
 async function init(){
-  await Promise.all([loadRoster(), loadCounts(), loadSerpDaily(), loadBoards(), loadStockData().then(data => globalStockData = data)]);
+  await Promise.all([
+    loadRoster(), 
+    loadCounts(), 
+    loadSerpDaily(), 
+    loadBoards(), 
+    loadStockData().then(data => globalStockData = data),
+    loadNegativeSummary().then(data => negativeSummaryMap = data)
+  ]);
   
   console.log('📈 Stock data loaded. Companies with stock data:', Object.keys(globalStockData).length);
   if (Object.keys(globalStockData).length === 0) {
