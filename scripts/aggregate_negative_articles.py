@@ -1,7 +1,18 @@
 #!/usr/bin/env python3
 """
-DEBUG VERSION: Aggregate negative articles with detailed logging
-This will help us see what's happening with brand vs CEO articles
+Aggregate negative article data for stock chart heatmap visualization.
+
+UPDATED: Handles brand articles that don't have a CEO column by looking up
+the CEO from the roster based on company name.
+
+Reads both CEO and brand articles for the last 90 days and creates a 
+unified summary for fast frontend loading.
+
+Output: data/negative-articles-summary.csv
+Columns: date, company, ceo, negative_count, top_headlines, article_type
+
+Usage:
+    python scripts/aggregate_negative_articles.py [--days-back 90]
 """
 
 import argparse
@@ -10,32 +21,69 @@ from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
 
-def process_articles(file_path, article_type):
-    """Process articles with detailed logging"""
+def load_roster(roster_path='rosters/main-roster.csv'):
+    """
+    Load roster and create company -> CEO mapping.
+    
+    Returns:
+        dict: company_name -> ceo_name
+    """
+    try:
+        df = pd.read_csv(roster_path, encoding='utf-8-sig')
+        
+        # Normalize column names
+        df.columns = [c.strip().lower() for c in df.columns]
+        
+        # Extract company and CEO columns
+        if 'company' not in df.columns or 'ceo' not in df.columns:
+            print(f"⚠️  Roster missing 'company' or 'ceo' columns")
+            return {}
+        
+        # Clean up and create mapping
+        df['company'] = df['company'].astype(str).str.strip()
+        df['ceo'] = df['ceo'].astype(str).str.strip()
+        
+        # Filter out invalid rows
+        df = df[(df['company'] != '') & (df['company'] != 'nan') & 
+                (df['ceo'] != '') & (df['ceo'] != 'nan')]
+        
+        # Create mapping dictionary
+        company_to_ceo = dict(zip(df['company'], df['ceo']))
+        
+        print(f"📋 Loaded roster: {len(company_to_ceo)} company-CEO mappings")
+        
+        return company_to_ceo
+        
+    except Exception as e:
+        print(f"❌ Error loading roster: {e}")
+        return {}
+
+
+def process_ceo_articles(file_path):
+    """
+    Process CEO articles file (has CEO column).
+    
+    Returns:
+        List of dicts with negative article summaries
+    """
     if not file_path.exists():
-        print(f"  ⚠️  File not found: {file_path.name}")
         return []
     
     try:
         df = pd.read_csv(file_path)
         
         if df.empty:
-            print(f"  ⚠️  File is empty: {file_path.name}")
             return []
-        
-        print(f"\n  📄 Processing {file_path.name}")
-        print(f"     Total rows: {len(df)}")
         
         # Normalize column names
         df.columns = [c.lower().strip() for c in df.columns]
-        print(f"     Columns: {list(df.columns)}")
         
         # Ensure required columns exist
         required_cols = ['ceo', 'company', 'sentiment', 'title']
-        missing = [c for c in required_cols if c not in df.columns]
-        if missing:
-            print(f"  ❌ Missing columns: {missing}")
-            return []
+        for col in required_cols:
+            if col not in df.columns:
+                print(f"⚠️  Missing column '{col}' in {file_path.name}")
+                return []
         
         # Clean up data
         df['sentiment'] = df['sentiment'].astype(str).str.lower().str.strip()
@@ -43,18 +91,10 @@ def process_articles(file_path, article_type):
         df['company'] = df['company'].astype(str).str.strip()
         df['title'] = df['title'].astype(str).str.strip()
         
-        # Show sentiment distribution
-        sentiment_counts = df['sentiment'].value_counts()
-        print(f"     Sentiment distribution:")
-        for sent, count in sentiment_counts.items():
-            print(f"       - {sent}: {count}")
-        
         # Filter for negative sentiment only
         negative = df[df['sentiment'] == 'negative']
-        print(f"     Negative articles: {len(negative)}")
         
         if negative.empty:
-            print(f"  ℹ️  No negative articles found")
             return []
         
         summary_data = []
@@ -63,11 +103,10 @@ def process_articles(file_path, article_type):
         for (ceo, company), group in negative.groupby(['ceo', 'company']):
             if not ceo or not company or ceo == 'nan' or company == 'nan':
                 continue
-            
+                
             count = len(group)
-            print(f"     ✓ {company} ({ceo}): {count} negative articles [type={article_type}]")
             
-            # Get top 3 headlines
+            # Get top 3 headlines (truncated to 80 chars each)
             headlines = []
             for title in group['title'].head(3):
                 title_str = str(title).strip()
@@ -80,21 +119,111 @@ def process_articles(file_path, article_type):
                 'company': company,
                 'negative_count': count,
                 'top_headlines': '|'.join(headlines),
-                'article_type': article_type
+                'article_type': 'ceo'
             })
         
-        print(f"     Summary rows created: {len(summary_data)}")
         return summary_data
     
     except Exception as e:
-        print(f"  ❌ Error processing {file_path.name}: {e}")
-        import traceback
-        traceback.print_exc()
+        print(f"⚠️  Error processing {file_path.name}: {e}")
         return []
 
 
-def create_negative_summary(days_back=7):  # Default to 7 days for debugging
-    """Create aggregated summary with detailed logging"""
+def process_brand_articles(file_path, company_to_ceo):
+    """
+    Process brand articles file (NO CEO column - we look it up from roster).
+    
+    Args:
+        file_path: Path to brand articles file
+        company_to_ceo: Dictionary mapping company names to CEO names
+    
+    Returns:
+        List of dicts with negative article summaries
+    """
+    if not file_path.exists():
+        return []
+    
+    try:
+        df = pd.read_csv(file_path)
+        
+        if df.empty:
+            return []
+        
+        # Normalize column names
+        df.columns = [c.lower().strip() for c in df.columns]
+        
+        # Brand files have: company, title, url, source, date, sentiment
+        required_cols = ['company', 'sentiment', 'title']
+        for col in required_cols:
+            if col not in df.columns:
+                print(f"⚠️  Missing column '{col}' in {file_path.name}")
+                return []
+        
+        # Clean up data
+        df['sentiment'] = df['sentiment'].astype(str).str.lower().str.strip()
+        df['company'] = df['company'].astype(str).str.strip()
+        df['title'] = df['title'].astype(str).str.strip()
+        
+        # Filter for negative sentiment only
+        negative = df[df['sentiment'] == 'negative']
+        
+        if negative.empty:
+            return []
+        
+        summary_data = []
+        
+        # Group by company (no CEO column, we'll look it up)
+        for company, group in negative.groupby('company'):
+            if not company or company == 'nan':
+                continue
+            
+            # Look up CEO from roster
+            ceo = company_to_ceo.get(company)
+            if not ceo:
+                # Try to find a close match (case-insensitive)
+                company_lower = company.lower()
+                for roster_company, roster_ceo in company_to_ceo.items():
+                    if roster_company.lower() == company_lower:
+                        ceo = roster_ceo
+                        break
+            
+            if not ceo:
+                print(f"  ⚠️  No CEO found for company: {company} (skipping)")
+                continue
+                
+            count = len(group)
+            
+            # Get top 3 headlines (truncated to 80 chars each)
+            headlines = []
+            for title in group['title'].head(3):
+                title_str = str(title).strip()
+                if len(title_str) > 80:
+                    title_str = title_str[:77] + '...'
+                headlines.append(title_str)
+            
+            summary_data.append({
+                'ceo': ceo,
+                'company': company,
+                'negative_count': count,
+                'top_headlines': '|'.join(headlines),
+                'article_type': 'brand'
+            })
+        
+        return summary_data
+    
+    except Exception as e:
+        print(f"⚠️  Error processing {file_path.name}: {e}")
+        return []
+
+
+def create_negative_summary(days_back=90, roster_path='rosters/main-roster.csv'):
+    """
+    Create aggregated negative articles summary from last N days.
+    
+    Args:
+        days_back: Number of days to look back (default 90)
+        roster_path: Path to roster CSV file
+    """
     articles_dir = Path("data/processed_articles")
     output_file = Path("data/negative-articles-summary.csv")
     
@@ -102,55 +231,50 @@ def create_negative_summary(days_back=7):  # Default to 7 days for debugging
         print(f"❌ Articles directory not found: {articles_dir}")
         return
     
+    # Load roster for company -> CEO mapping
+    company_to_ceo = load_roster(roster_path)
+    if not company_to_ceo:
+        print("⚠️  Warning: No roster loaded. Brand articles will be skipped.")
+    
     all_summary_data = []
     today = datetime.now(timezone.utc)
     
-    print(f"\n{'='*60}")
-    print(f"🔍 DEBUG MODE: Scanning last {days_back} days")
-    print(f"{'='*60}")
+    print(f"\n🔍 Scanning last {days_back} days for negative articles...")
     
     days_processed = 0
     ceo_files_found = 0
     brand_files_found = 0
+    ceo_articles_count = 0
+    brand_articles_count = 0
     
     for i in range(days_back):
         date = (today - timedelta(days=i)).strftime("%Y-%m-%d")
-        print(f"\n📅 Date: {date}")
         
-        # Process CEO articles
+        # Process CEO articles (have CEO column)
         ceo_file = articles_dir / f"{date}-ceo-articles-modal.csv"
         if ceo_file.exists():
             ceo_files_found += 1
-            print(f"  ✓ Found CEO file")
-            ceo_data = process_articles(ceo_file, 'ceo')
+            ceo_data = process_ceo_articles(ceo_file)
             for item in ceo_data:
                 item['date'] = date
                 all_summary_data.append(item)
-        else:
-            print(f"  ⚠️  No CEO file")
+                ceo_articles_count += 1
         
-        # Process brand articles
+        # Process brand articles (NO CEO column - look up from roster)
         brand_file = articles_dir / f"{date}-brand-articles-modal.csv"
         if brand_file.exists():
             brand_files_found += 1
-            print(f"  ✓ Found brand file")
-            brand_data = process_articles(brand_file, 'brand')
+            brand_data = process_brand_articles(brand_file, company_to_ceo)
             for item in brand_data:
                 item['date'] = date
                 all_summary_data.append(item)
-        else:
-            print(f"  ⚠️  No brand file")
+                brand_articles_count += 1
         
         if ceo_file.exists() or brand_file.exists():
             days_processed += 1
     
-    print(f"\n{'='*60}")
-    print(f"📊 SUMMARY STATISTICS")
-    print(f"{'='*60}")
-    print(f"Days processed: {days_processed}")
-    print(f"CEO files found: {ceo_files_found}")
-    print(f"Brand files found: {brand_files_found}")
-    print(f"Total summary rows: {len(all_summary_data)}")
+    print(f"\n📁 Files found: {ceo_files_found} CEO, {brand_files_found} brand ({days_processed} days with data)")
+    print(f"📊 Article summaries created: {ceo_articles_count} CEO, {brand_articles_count} brand")
     
     # Create summary DataFrame
     if all_summary_data:
@@ -158,16 +282,10 @@ def create_negative_summary(days_back=7):  # Default to 7 days for debugging
         summary_df = summary_df.sort_values(['company', 'date', 'article_type'])
         summary_df = summary_df[['date', 'company', 'ceo', 'negative_count', 'top_headlines', 'article_type']]
         
-        # Show breakdown by type
-        type_counts = summary_df.groupby('article_type').size()
-        print(f"\nRows by article type:")
-        for atype, count in type_counts.items():
-            print(f"  - {atype}: {count}")
-        
-        # Show sample companies with both types
+        # Show some helpful stats
         print(f"\n{'='*60}")
-        print(f"🔍 COMPANIES WITH BOTH CEO AND BRAND ARTICLES")
-        print(f"{'='*60}")
+        print("📊 COMPANIES WITH BOTH CEO AND BRAND ARTICLES")
+        print('='*60)
         
         companies_with_both = []
         for company in summary_df['company'].unique():
@@ -175,27 +293,18 @@ def create_negative_summary(days_back=7):  # Default to 7 days for debugging
             types = company_data['article_type'].unique()
             if len(types) > 1:
                 companies_with_both.append(company)
-                print(f"\n✓ {company}")
-                for atype in ['ceo', 'brand']:
-                    type_data = company_data[company_data['article_type'] == atype]
-                    if not type_data.empty:
-                        total = type_data['negative_count'].sum()
-                        dates = len(type_data)
-                        print(f"  - {atype}: {total} articles across {dates} dates")
+                ceo_count = company_data[company_data['article_type'] == 'ceo']['negative_count'].sum()
+                brand_count = company_data[company_data['article_type'] == 'brand']['negative_count'].sum()
+                print(f"✓ {company}: {ceo_count} CEO articles, {brand_count} brand articles")
         
-        if not companies_with_both:
-            print("\n⚠️  WARNING: No companies found with BOTH CEO and brand articles!")
-            print("This might explain why you only see CEO counts in the tooltip.")
-            print("\nCompanies with CEO articles only:")
-            ceo_only = summary_df[summary_df['article_type'] == 'ceo']['company'].unique()
-            for co in ceo_only[:5]:
-                print(f"  - {co}")
-            print("\nCompanies with brand articles only:")
-            brand_only = summary_df[summary_df['article_type'] == 'brand']['company'].unique()
-            for co in brand_only[:5]:
-                print(f"  - {co}")
+        if companies_with_both:
+            print(f"\n✅ {len(companies_with_both)} companies have both CEO and brand negative articles!")
+        else:
+            print("\n⚠️  No companies have both types - tooltips will only show one type")
+            
     else:
-        print("\n⚠️  No negative articles found")
+        print("⚠️  No negative articles found in the specified time range")
+        # Create empty file with headers
         summary_df = pd.DataFrame(columns=[
             'date', 'company', 'ceo', 'negative_count', 'top_headlines', 'article_type'
         ])
@@ -204,25 +313,49 @@ def create_negative_summary(days_back=7):  # Default to 7 days for debugging
     output_file.parent.mkdir(parents=True, exist_ok=True)
     summary_df.to_csv(output_file, index=False)
     
-    print(f"\n{'='*60}")
-    print(f"✅ Created {output_file}")
-    print(f"📊 File size: {output_file.stat().st_size / 1024:.1f} KB")
-    print(f"{'='*60}\n")
+    print(f"\n✅ Created {output_file}")
+    print(f"📊 Total rows: {len(summary_df):,}")
+    
+    if not summary_df.empty:
+        file_size_kb = output_file.stat().st_size / 1024
+        print(f"📊 File size: {file_size_kb:.1f} KB")
+        
+        ceo_count = len(summary_df[summary_df['article_type'] == 'ceo'])
+        brand_count = len(summary_df[summary_df['article_type'] == 'brand'])
+        
+        print(f"🎯 CEO article summaries: {ceo_count:,}")
+        print(f"🏢 Brand article summaries: {brand_count:,}")
+        print(f"📅 Date range: {summary_df['date'].min()} to {summary_df['date'].max()}")
+        
+        # Show some stats
+        companies = summary_df['company'].nunique()
+        print(f"🏭 Companies with negative coverage: {companies}")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='DEBUG: Aggregate negative articles with detailed logging'
+        description='Aggregate negative articles for stock chart visualization'
     )
     parser.add_argument(
         '--days-back',
         type=int,
-        default=7,
-        help='Number of days to look back (default: 7 for debugging)'
+        default=90,
+        help='Number of days to look back (default: 90)'
+    )
+    parser.add_argument(
+        '--roster',
+        type=str,
+        default='rosters/main-roster.csv',
+        help='Path to roster file (default: rosters/main-roster.csv)'
     )
     
     args = parser.parse_args()
-    create_negative_summary(days_back=args.days_back)
+    
+    if args.days_back < 1:
+        print("❌ --days-back must be at least 1")
+        return 1
+    
+    create_negative_summary(days_back=args.days_back, roster_path=args.roster)
     return 0
 
 
