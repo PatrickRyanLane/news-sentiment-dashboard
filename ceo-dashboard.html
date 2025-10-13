@@ -1543,7 +1543,10 @@ function renderTable(){
       const sparklineId = `sparkline-${r.company.replace(/[^a-zA-Z0-9]/g, '-')}`;
       const container = document.getElementById(sparklineId);
       if (container) {
-        const isPositive = stock.sevenDayChange !== null && stock.sevenDayChange >= 0;
+        // Calculate 30-day change from the sparkline data itself
+        const firstPrice = stock.priceHistory[0];
+        const lastPrice = stock.priceHistory[stock.priceHistory.length - 1];
+        const isPositive = lastPrice >= firstPrice;
         container.innerHTML = '';
         const canvas = createSparkline(stock.priceHistory, isPositive);
         if (canvas) container.appendChild(canvas);
