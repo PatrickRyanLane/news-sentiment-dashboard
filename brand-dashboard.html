@@ -727,13 +727,61 @@ const NEGATIVE_ARTICLE_THRESHOLD = 3;
  * Load pre-aggregated negative articles summary (ONE file, ~80KB for 90 days)
  * Returns: Map<company, Array<{date, count, headlines, type}>>
  */
+/********************** FRONTEND DEBUG CODE **********************/
+// Add this temporarily to your dashboard to debug the issue
+
+// REPLACE the loadNegativeSummary() function with this DEBUG version:
+
 async function loadNegativeSummary() {
   console.log('📰 Loading negative articles summary...');
   
   try {
     const rows = await fetchCsv('data/negative-articles-summary.csv');
     
-    // Map structure: company -> array of {date, count, headlines, type}
+    console.log(`📊 Loaded ${rows.length} total rows from summary file`);
+    
+    // Check article types
+    const ceoRows = rows.filter(r => r.article_type === 'ceo');
+    const brandRows = rows.filter(r => r.article_type === 'brand');
+    console.log(`   CEO rows: ${ceoRows.length}`);
+    console.log(`   Brand rows: ${brandRows.length}`);
+    
+    // Check for companies with both types
+    const companyCounts = new Map();
+    rows.forEach(r => {
+      const company = String(r.company || '').trim();
+      if (!company) return;
+      if (!companyCounts.has(company)) {
+        companyCounts.set(company, { ceo: 0, brand: 0 });
+      }
+      const type = String(r.article_type || '').trim();
+      if (type === 'ceo') companyCounts.get(company).ceo++;
+      if (type === 'brand') companyCounts.get(company).brand++;
+    });
+    
+    // Find companies with BOTH types
+    const companiesWithBoth = [];
+    companyCounts.forEach((counts, company) => {
+      if (counts.ceo > 0 && counts.brand > 0) {
+        companiesWithBoth.push({ company, ...counts });
+      }
+    });
+    
+    console.log(`\n🔍 Companies with BOTH CEO and brand negative articles: ${companiesWithBoth.length}`);
+    if (companiesWithBoth.length > 0) {
+      console.log('Examples:');
+      companiesWithBoth.slice(0, 3).forEach(c => {
+        console.log(`  - ${c.company}: ${c.ceo} CEO articles, ${c.brand} brand articles`);
+      });
+    } else {
+      console.warn('⚠️  WARNING: No companies have BOTH CEO and brand articles!');
+      console.log('\nThis means you will only see one type in tooltips.');
+      console.log('\nCheck your data files:');
+      console.log('  - Are brand articles being collected?');
+      console.log('  - Do brand articles have negative sentiment?');
+      console.log('  - Are CEO names consistent between CEO and brand files?');
+    }
+    
     const summaryMap = new Map();
     
     rows.forEach(r => {
@@ -741,23 +789,51 @@ async function loadNegativeSummary() {
       if (!company || company === 'nan') return;
       
       const count = parseInt(r.negative_count) || 0;
-      if (count < NEGATIVE_ARTICLE_THRESHOLD) return;  // Filter at load time
+      if (count < NEGATIVE_ARTICLE_THRESHOLD) return;
       
       if (!summaryMap.has(company)) {
         summaryMap.set(company, []);
       }
       
+      const type = String(r.article_type || '').trim();
+      console.log(`  ✓ ${company}: ${count} ${type} articles on ${r.date}`);
+      
       summaryMap.get(company).push({
         date: String(r.date || '').trim(),
         count: count,
         headlines: (r.top_headlines || '').split('|').filter(h => h.trim()),
-        type: String(r.article_type || 'unknown').trim()  // 'ceo' or 'brand'
+        type: type
       });
     });
     
-    console.log(`✅ Loaded negative summary for ${summaryMap.size} companies`);
+    console.log(`\n✅ Loaded negative summary for ${summaryMap.size} companies`);
     
-    // Log some stats
+    // Check a specific company if you know one with issues
+    const testCompany = 'Apple'; // Change this to a company you're testing
+    if (summaryMap.has(testCompany)) {
+      console.log(`\n🔍 Detailed check for ${testCompany}:`);
+      const data = summaryMap.get(testCompany);
+      const ceoArticles = data.filter(d => d.type === 'ceo');
+      const brandArticles = data.filter(d => d.type === 'brand');
+      console.log(`  CEO articles: ${ceoArticles.length} dates`);
+      console.log(`  Brand articles: ${brandArticles.length} dates`);
+      
+      // Show breakdown by date
+      const byDate = new Map();
+      data.forEach(item => {
+        if (!byDate.has(item.date)) {
+          byDate.set(item.date, { ceo: 0, brand: 0 });
+        }
+        if (item.type === 'ceo') byDate.get(item.date).ceo += item.count;
+        if (item.type === 'brand') byDate.get(item.date).brand += item.count;
+      });
+      
+      console.log('  By date:');
+      Array.from(byDate.entries()).slice(0, 5).forEach(([date, counts]) => {
+        console.log(`    ${date}: CEO=${counts.ceo}, Brand=${counts.brand}`);
+      });
+    }
+    
     let totalCeo = 0, totalBrand = 0;
     summaryMap.forEach(articles => {
       articles.forEach(a => {
@@ -765,7 +841,7 @@ async function loadNegativeSummary() {
         if (a.type === 'brand') totalBrand++;
       });
     });
-    console.log(`   📊 CEO articles: ${totalCeo}, Brand articles: ${totalBrand}`);
+    console.log(`\n📊 Final counts: CEO=${totalCeo}, Brand=${totalBrand}`);
     
     return summaryMap;
     
