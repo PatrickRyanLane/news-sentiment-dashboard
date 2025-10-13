@@ -231,18 +231,42 @@ tbody td:first-child{
 .serp-metrics b{color:var(--text)}
 
 
-/* ===== NEGATIVE ARTICLES HEATMAP STYLES ===== */
+/* ===== UPDATED: RESPONSIVE NEGATIVE ARTICLES HEATMAP STYLES ===== */
 
-/* Enhanced stock chart modal for better visibility of heatmap */
+/* Enhanced stock chart modal with responsive sizing */
 #stockChartModal .box {
   max-width: 1000px;
+  width: 95%;
   max-height: 90vh;
+  overflow: auto;
 }
 
+/* Responsive chart sizing */
 #stockChart {
   width: 100% !important;
   height: 450px !important;
   min-height: 400px;
+}
+
+/* Stock modal header - responsive font sizing */
+#stockChartModal header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid #12203d;
+}
+
+#stockChartModal header h3 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.3;
+  flex: 1;
+  padding-right: 12px;
+}
+
+#stockChartModal .content {
+  padding: 18px;
 }
 
 /* Sparkline hover effect - make it more obvious it's clickable */
@@ -270,7 +294,6 @@ tbody td:first-child{
   border-color: rgba(88, 219, 237, 0.4);
 }
 
-/* Add a subtle hint icon on sparkline hover */
 .sparkline-cell:hover .sparkline {
   filter: brightness(1.2);
 }
@@ -297,6 +320,191 @@ tbody td:first-child{
   50% { opacity: 1; transform: scale(1.1); }
 }
 
+/* Add subtle animation when chart loads */
+@keyframes chartFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#stockChart {
+  animation: chartFadeIn 0.3s ease-out;
+}
+
+/* Enhanced close button for stock modal */
+#stockChartModal .close {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+  font-size: 32px;
+  line-height: 28px;
+  font-weight: 300;
+  padding: 0 4px;
+  margin: -4px 0;
+}
+
+#stockChartModal .close:hover {
+  color: var(--accent) !important;
+  transform: scale(1.15);
+}
+
+#stockChartModal .close:active {
+  transform: scale(0.95);
+}
+
+/* Better visual feedback for the sparkline */
+.sparkline {
+  transition: opacity 0.2s ease;
+}
+
+.sparkline-cell:active .sparkline {
+  opacity: 0.7;
+}
+
+/* ===== TABLET RESPONSIVENESS (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  #stockChartModal .box {
+    width: 92%;
+    max-width: 900px;
+  }
+  
+  #stockChart {
+    height: 420px !important;
+    min-height: 380px;
+  }
+  
+  #stockChartModal header h3 {
+    font-size: 15px;
+  }
+  
+  #stockChartModal .content {
+    padding: 16px;
+  }
+}
+
+/* ===== MOBILE RESPONSIVENESS (< 768px) ===== */
+@media (max-width: 768px) {
+  /* Full-screen modal on mobile */
+  #stockChartModal .box {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100vh;
+    margin: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #stockChartModal header {
+    padding: 12px 16px;
+    flex-shrink: 0;
+  }
+  
+  #stockChartModal header h3 {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  #stockChartModal .close {
+    font-size: 28px;
+    line-height: 24px;
+  }
+  
+  /* Scrollable content area */
+  #stockChartModal .content {
+    padding: 12px 16px 16px;
+    overflow-y: auto;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Optimized chart height for mobile */
+  #stockChart {
+    height: 350px !important;
+    min-height: 300px;
+    max-height: 60vh;
+  }
+  
+  /* Touch-friendly close button */
+  #stockChartModal .close {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ===== SMALL MOBILE (< 480px) ===== */
+@media (max-width: 480px) {
+  #stockChartModal header h3 {
+    font-size: 13px;
+  }
+  
+  #stockChart {
+    height: 320px !important;
+    min-height: 280px;
+  }
+  
+  #stockChartModal .content {
+    padding: 10px 12px 14px;
+  }
+}
+
+/* ===== LANDSCAPE MOBILE ===== */
+@media (max-width: 768px) and (orientation: landscape) {
+  #stockChart {
+    height: 70vh !important;
+    min-height: 250px;
+  }
+}
+
+/* ===== LARGE SCREENS (> 1400px) ===== */
+@media (min-width: 1400px) {
+  #stockChartModal .box {
+    max-width: 1200px;
+  }
+  
+  #stockChart {
+    height: 500px !important;
+  }
+  
+  #stockChartModal header h3 {
+    font-size: 18px;
+  }
+}
+
+/* Prevent body scroll when modal is open on mobile */
+body:has(#stockChartModal.open) {
+  overflow: hidden;
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 768px) {
+  .sparkline-cell {
+    padding: 10px 8px !important;
+  }
+  
+  button {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+}
+
+/* Optional: Add a subtle overlay background blur on larger screens */
+@media (min-width: 769px) {
+  #stockChartModal {
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+}
+
 /* Heatmap legend (optional - can be added to modal) */
 .heatmap-legend {
   display: flex;
@@ -307,6 +515,7 @@ tbody td:first-child{
   border-radius: 8px;
   margin-top: 12px;
   font-size: 12px;
+  flex-wrap: wrap;
 }
 
 .heatmap-legend-item {
@@ -330,123 +539,16 @@ tbody td:first-child{
   background: #ff4444;
 }
 
-/* Improved tooltip appearance (Chart.js uses canvas, but this helps with custom elements) */
-.chart-tooltip {
-  background: rgba(0, 0, 0, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  padding: 12px;
-  color: #fff;
-  font-size: 13px;
-  line-height: 1.5;
-  max-width: 300px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-.chart-tooltip-title {
-  font-weight: 600;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.chart-tooltip-headline {
-  margin: 4px 0;
-  padding-left: 8px;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-/* Mobile responsiveness for stock chart */
 @media (max-width: 768px) {
-  #stockChartModal .box {
-    margin: 12px;
-    max-height: 95vh;
-  }
-  
-  #stockChart {
-    height: 350px !important;
-    min-height: 300px;
-  }
-  
   .heatmap-legend {
-    flex-wrap: wrap;
     font-size: 11px;
+    gap: 12px;
+    padding: 6px 12px;
   }
-}
-
-/* Add subtle animation when chart loads */
-@keyframes chartFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-#stockChart {
-  animation: chartFadeIn 0.3s ease-out;
-}
-
-/* Enhanced close button for stock modal */
-#stockChartModal .close {
-  transition: all 0.2s ease;
-  cursor: pointer;
-  user-select: none;
-}
-
-#stockChartModal .close:hover {
-  color: var(--accent) !important;
-  transform: scale(1.1);
-}
-
-/* Better visual feedback for the sparkline */
-.sparkline {
-  transition: opacity 0.2s ease;
-}
-
-.sparkline-cell:active .sparkline {
-  opacity: 0.7;
-}
-
-/* Optional: Add a click hint tooltip */
-.sparkline-cell[title]::before {
-  content: attr(title);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-4px);
-  background: rgba(0, 0, 0, 0.9);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-  z-index: 1000;
-}
-
-.sparkline-cell:hover[title]::before {
-  opacity: 1;
-}
-
-/* Chart.js annotation hover states - these are applied programmatically */
-.chartjs-annotation-point-hover {
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/* Add a subtle glow effect to high-intensity markers */
-@keyframes markerGlow {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 4px rgba(255, 68, 68, 0);
+  
+  .heatmap-legend-dot {
+    width: 8px;
+    height: 8px;
   }
 }
 
@@ -789,15 +891,11 @@ async function showStockChart(company) {
   
   if (stockChart) stockChart.destroy();
   
-  // Get negative article data from pre-loaded summary (instant!)
   const negativeDates = negativeSummaryMap?.get(company) || [];
-  
-  // Filter to only dates in the stock date range
   const relevantNegatives = negativeDates.filter(item => 
     stock.dateHistory.includes(item.date)
   );
   
-  // Group by date (may have both CEO and brand articles on same day)
   const negativesByDate = new Map();
   relevantNegatives.forEach(item => {
     if (!negativesByDate.has(item.date)) {
@@ -817,7 +915,6 @@ async function showStockChart(company) {
   
   console.log(`📊 ${company}: ${negativesByDate.size} dates with ${NEGATIVE_ARTICLE_THRESHOLD}+ negative articles`);
   
-  // Create heatmap point annotations for negative articles
   const annotations = {};
   Array.from(negativesByDate.entries()).forEach(([date, data], idx) => {
     const priceIndex = stock.dateHistory.indexOf(date);
@@ -834,7 +931,6 @@ async function showStockChart(company) {
       borderColor: '#ffffff',
       borderWidth: 2,
       radius: Math.min(data.totalCount + 3, 14),
-      // Hover effect
       enter(context) {
         context.element.options.radius = Math.min(data.totalCount + 5, 18);
         context.element.options.borderWidth = 3;
@@ -881,6 +977,9 @@ async function showStockChart(company) {
           display: true,
           labels: {
             color: '#ebf2f2',
+            font: {
+              size: window.innerWidth < 768 ? 11 : 12  // Smaller on mobile
+            },
             generateLabels: function(chart) {
               const labels = [
                 {
@@ -892,7 +991,6 @@ async function showStockChart(company) {
               ];
               
               if (negativesByDate.size > 0) {
-                // Count articles by type
                 let totalCeo = 0, totalBrand = 0;
                 negativesByDate.forEach(data => {
                   totalCeo += data.ceoCount;
@@ -934,31 +1032,34 @@ async function showStockChart(company) {
           annotations: annotations
         },
         tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
           titleColor: '#fff',
           bodyColor: '#fff',
-          borderColor: 'rgba(255, 255, 255, 0.2)',
+          borderColor: 'rgba(255, 255, 255, 0.3)',
           borderWidth: 1,
-          padding: 12,
+          padding: window.innerWidth < 768 ? 10 : 14,  // Less padding on mobile
           displayColors: false,
+          titleFont: {
+            size: window.innerWidth < 768 ? 12 : 13,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: window.innerWidth < 768 ? 11 : 12
+          },
           callbacks: {
             title: function(tooltipItems) {
               if (!tooltipItems || tooltipItems.length === 0) return '';
-              const date = tooltipItems[0].label;
-              return date;
+              return tooltipItems[0].label;
             },
             label: function(context) {
               const lines = [];
-              
-              // Stock price
               lines.push(`Price: $${context.parsed.y.toFixed(2)}`);
               
-              // Negative articles for this date
               const date = context.label;
               const negData = negativesByDate.get(date);
               
               if (negData) {
-                lines.push(''); // Blank line
+                lines.push('');
                 lines.push(`⚠️  ${negData.totalCount} Negative Article${negData.totalCount > 1 ? 's' : ''}`);
                 
                 if (negData.ceoCount > 0) {
@@ -968,20 +1069,21 @@ async function showStockChart(company) {
                   lines.push(`   Brand: ${negData.brandCount}`);
                 }
                 
-                // Show first 2 headlines
-                const previewHeadlines = negData.allHeadlines.slice(0, 2);
+                // UPDATED: Show 3 headlines instead of 2
+                const previewHeadlines = negData.allHeadlines.slice(0, 3);
                 if (previewHeadlines.length > 0) {
-                  lines.push(''); // Blank line
+                  lines.push('');
                   previewHeadlines.forEach((headline, i) => {
-                    // Truncate to 50 chars for tooltip
-                    const truncated = headline.length > 50 
-                      ? headline.substring(0, 47) + '...' 
+                    // Responsive truncation: shorter on mobile
+                    const maxLength = window.innerWidth < 768 ? 40 : 55;
+                    const truncated = headline.length > maxLength 
+                      ? headline.substring(0, maxLength - 3) + '...' 
                       : headline;
                     lines.push(`• ${truncated}`);
                   });
                   
-                  if (negData.allHeadlines.length > 2) {
-                    lines.push(`   ... and ${negData.allHeadlines.length - 2} more`);
+                  if (negData.allHeadlines.length > 3) {
+                    lines.push(`   ... and ${negData.allHeadlines.length - 3} more`);
                   }
                 }
               }
@@ -996,6 +1098,9 @@ async function showStockChart(company) {
           beginAtZero: false,
           ticks: {
             color: '#ebf2f2',
+            font: {
+              size: window.innerWidth < 768 ? 10 : 11
+            },
             callback: function(value) {
               return '$' + value.toFixed(2);
             }
@@ -1007,7 +1112,10 @@ async function showStockChart(company) {
         x: {
           ticks: {
             color: '#ebf2f2',
-            maxTicksLimit: 10,
+            font: {
+              size: window.innerWidth < 768 ? 9 : 11
+            },
+            maxTicksLimit: window.innerWidth < 768 ? 6 : 10,
             autoSkip: true
           },
           grid: {
@@ -1018,6 +1126,7 @@ async function showStockChart(company) {
     }
   });
 }
+
 
 /**
  * Close the stock chart modal
