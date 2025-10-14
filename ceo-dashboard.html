@@ -12,19 +12,18 @@
 
 <style>
 :root {
-  /* New palette */
   --bg: #044152;
   --card: #092e37;
-  --muted: #a2ebf3;          /* lighter accent text */
-  --text: #ebf2f2;           /* main text color */
-  --accent: #58dbed;         /* links, highlights */
+  --muted: #a2ebf3;
+  --text: #ebf2f2;
+  --accent: #58dbed;
   --black: #1f2121;
   
   --pill-neg: #ff8261;
   --pill-neu: #cfdbdd;
   --pill-pos: #82c618;
 
-  --stroke: #0e2230;          /* border stroke */
+  --stroke: #0e2230;
   --chip: #12343e;
   --chipBorder: #174550;
   
@@ -38,18 +37,14 @@ body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 Inter,system-
 h1{font-size:28px;margin:6px 0 18px}
 
 /* Controls */
-.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 16px}
 .card{background:var(--card);border:1px solid var(--stroke);border-radius:12px;padding:12px 12px}
 select,input[type="text"]{background:#1f2121;border:1px solid #23314d;border-radius:10px;color:var(--text);padding:8px 10px}
 button{background:#1f2121;border:1px solid #2a3b5e;color:var(--text);border-radius:10px;padding:8px 12px;cursor:pointer}
 button:hover{filter:brightness(1.08)}
 
-/* Grid for charts */
-/* Spacing */
-.controls{ margin:0 0 16px }             /* a touch more space under controls */
 .grid{
   display:grid;
-  /* Both rows scale the same with viewport height, but never shrink below a comfy minimum */
   grid-template-rows: minmax(340px, 40vh) minmax(340px, 40vh);
   gap:16px;
   margin:16px 0;
@@ -57,24 +52,20 @@ button:hover{filter:brightness(1.08)}
 
 @media (min-width:980px){
   .grid{
-    /* Slightly taller on wider screens, still equal heights */
     grid-template-rows: minmax(360px, 42vh) minmax(360px, 42vh);
     gap:18px;
   }
 }
 
-/* Chart cards: add padding-bottom so long tick labels never clip */
 .chart-card{ background:var(--card); border:1px solid var(--stroke);
   border-radius:12px; padding:12px 12px 48px; position:relative }
 
-/* The magic: let Chart.js fill the card and respond to resizes */
 .chart-card canvas{
   width:100% !important;
   height:100% !important;
-  display:block;              /* removes baseline gap */
+  display:block;
 }
 
-/* NEW: chart pagination controls (top-right) */
 .chart-actions{
   position:absolute;
   top:10px; right:12px;
@@ -101,51 +92,43 @@ tbody tr:hover{background:rgba(88,219,237,.08)}
 tbody tr td:first-child{border-left:1px solid #0f1831;border-radius:10px 0 0 10px}
 tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 0}
 
-/* CEO column styling with company sub-header */
 .ceo-cell-content{display:flex;align-items:center;gap:8px}
 .ceo-name-block{display:flex;flex-direction:column;gap:2px}
 .ceo-name{font-weight:500}
 .company-subheader{font-size:11px;color:#7a9ca3;font-weight:400}
 
-/* Stock styling */
 .stock-price{font-family:'Courier New',monospace;font-weight:500;color:var(--text)}
 .stock-change{font-weight:600}
 .stock-change.positive{color:var(--stock-pos)}
 .stock-change.negative{color:var(--stock-neg)}
 
-/* Sparkline */
 .sparkline-cell{text-align:center;padding:6px 8px !important;cursor:pointer}
 .sparkline-cell:hover{background:rgba(88,219,237,.15)}
 .sparkline{display:inline-block;vertical-align:middle}
 
 .pill{font-size:12px;border-radius:999px;padding:3px 8px;border:1px solid var(--chipBorder);background:var(--chip);color:#cfe0ff}
-.pill.low  { background:rgba(130,198,24,.15); color:#82c618; }   /* green */
-.pill.med  { background:rgba(207,219,221,.25); color:#cfdbdd; } /* grey/neutral */
-.pill.high { background:rgba(255,130,97,.15); color:#ff8261; }  /* red/orange */
+.pill.low  { background:rgba(130,198,24,.15); color:#82c618; }
+.pill.med  { background:rgba(207,219,221,.25); color:#cfdbdd; }
+.pill.high { background:rgba(255,130,97,.15); color:#ff8261; }
 .link{color:var(--accent);text-decoration:underline}
-/* ===== Mobile horizontal scroll (Option A) ===== */
+
 .table-scroll{
   overflow-x:auto;
-  -webkit-overflow-scrolling:touch; /* momentum scroll on iOS */
+  -webkit-overflow-scrolling:touch;
 }
 
-/* Optional: nicer thin scrollbar on mobile */
 .table-scroll::-webkit-scrollbar{height:8px}
 .table-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.05);border-radius:8px}
 .table-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px}
 
-/* Keep the table wide enough to require horizontal scroll on small screens */
 @media (max-width: 960px){
-  .table-card{ padding:8px }                               /* a bit tighter padding */
+  .table-card{ padding:8px }
   .table-hint{ font-size:12px }
-  thead th, tbody td{ padding:6px 4px }                   /* smaller cell padding */
-
-  /* Slightly smaller pills/buttons for space */
+  thead th, tbody td{ padding:6px 4px }
   .pill{ font-size:11px; padding:3px 8px }
   .pagination{ gap:6px; flex-wrap:wrap }
 }
 
-/* Make the first column sticky so the CEO remains visible while scrolling */
 tbody td:first-child,
 thead th:first-child{
   position: sticky;
@@ -159,11 +142,8 @@ tbody td:first-child{
   background: var(--black);
 }
 
-/* Pagination */
 .pagination{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:8px}
 
-/* Modal */
-/* Modal (update these rules) */
 .modal{
   position:fixed;
   inset:0;
@@ -172,7 +152,7 @@ tbody td:first-child{
   align-items:center;
   justify-content:center;
   padding:24px;
-  z-index:10000;          /* <-- ensure overlay is above sticky cells */
+  z-index:10000;
 }
 .modal.open{ display:flex; }
 
@@ -181,7 +161,7 @@ tbody td:first-child{
   max-height:85vh; overflow:auto;
   background:#0e152a; border:1px solid #1b2745; border-radius:16px;
   position:relative;
-  z-index:10001;          /* <-- box above overlay */
+  z-index:10001;
 }
 .modal header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #12203d}
 .modal header h3{margin:0;font-size:16px}
@@ -217,11 +197,9 @@ tbody td:first-child{
 }
 .muted{color:var(--muted)}
 
-/* Stock chart modal */
-#stockChartModal .box{max-width:1000px}
-#stockChart{width:100%;height:400px}
+#stockChartModal .box{max-width:1000px; width:95%; max-height:90vh; overflow:auto;}
+#stockChart{width:100% !important; height:450px !important; min-height:400px;}
 
-/* SERP card layout */
 .serp-cards{display:grid;gap:12px;margin-top:12px}
 .serp-card{background:var(--card);border:1px solid var(--stroke);border-radius:12px;padding:14px 16px}
 .serp-domain{font-size:12px;color:var(--muted);margin-bottom:4px}
@@ -230,25 +208,6 @@ tbody td:first-child{
 .serp-metrics{margin:4px 0 0;color:var(--muted)}
 .serp-metrics b{color:var(--text)}
 
-
-/* ===== UPDATED: RESPONSIVE NEGATIVE ARTICLES HEATMAP STYLES ===== */
-
-/* Enhanced stock chart modal with responsive sizing */
-#stockChartModal .box {
-  max-width: 1000px;
-  width: 95%;
-  max-height: 90vh;
-  overflow: auto;
-}
-
-/* Responsive chart sizing */
-#stockChart {
-  width: 100% !important;
-  height: 450px !important;
-  min-height: 400px;
-}
-
-/* Stock modal header - responsive font sizing */
 #stockChartModal header {
   display: flex;
   justify-content: space-between;
@@ -269,7 +228,6 @@ tbody td:first-child{
   padding: 18px;
 }
 
-/* Sparkline hover effect - make it more obvious it's clickable */
 .sparkline-cell {
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -298,7 +256,6 @@ tbody td:first-child{
   filter: brightness(1.2);
 }
 
-/* Loading state for stock chart */
 .stock-chart-loading {
   display: flex;
   align-items: center;
@@ -320,7 +277,6 @@ tbody td:first-child{
   50% { opacity: 1; transform: scale(1.1); }
 }
 
-/* Add subtle animation when chart loads */
 @keyframes chartFadeIn {
   from {
     opacity: 0;
@@ -336,7 +292,6 @@ tbody td:first-child{
   animation: chartFadeIn 0.3s ease-out;
 }
 
-/* Enhanced close button for stock modal */
 #stockChartModal .close {
   transition: all 0.2s ease;
   cursor: pointer;
@@ -357,7 +312,6 @@ tbody td:first-child{
   transform: scale(0.95);
 }
 
-/* Better visual feedback for the sparkline */
 .sparkline {
   transition: opacity 0.2s ease;
 }
@@ -366,7 +320,6 @@ tbody td:first-child{
   opacity: 0.7;
 }
 
-/* ===== TABLET RESPONSIVENESS (768px - 1024px) ===== */
 @media (max-width: 1024px) {
   #stockChartModal .box {
     width: 92%;
@@ -387,9 +340,7 @@ tbody td:first-child{
   }
 }
 
-/* ===== MOBILE RESPONSIVENESS (< 768px) ===== */
 @media (max-width: 768px) {
-  /* Full-screen modal on mobile */
   #stockChartModal .box {
     width: 100%;
     height: 100%;
@@ -416,7 +367,6 @@ tbody td:first-child{
     line-height: 24px;
   }
   
-  /* Scrollable content area */
   #stockChartModal .content {
     padding: 12px 16px 16px;
     overflow-y: auto;
@@ -424,14 +374,12 @@ tbody td:first-child{
     -webkit-overflow-scrolling: touch;
   }
   
-  /* Optimized chart height for mobile */
   #stockChart {
     height: 350px !important;
     min-height: 300px;
     max-height: 60vh;
   }
   
-  /* Touch-friendly close button */
   #stockChartModal .close {
     min-width: 44px;
     min-height: 44px;
@@ -441,7 +389,6 @@ tbody td:first-child{
   }
 }
 
-/* ===== SMALL MOBILE (< 480px) ===== */
 @media (max-width: 480px) {
   #stockChartModal header h3 {
     font-size: 13px;
@@ -457,7 +404,6 @@ tbody td:first-child{
   }
 }
 
-/* ===== LANDSCAPE MOBILE ===== */
 @media (max-width: 768px) and (orientation: landscape) {
   #stockChart {
     height: 70vh !important;
@@ -465,7 +411,6 @@ tbody td:first-child{
   }
 }
 
-/* ===== LARGE SCREENS (> 1400px) ===== */
 @media (min-width: 1400px) {
   #stockChartModal .box {
     max-width: 1200px;
@@ -480,12 +425,10 @@ tbody td:first-child{
   }
 }
 
-/* Prevent body scroll when modal is open on mobile */
 body:has(#stockChartModal.open) {
   overflow: hidden;
 }
 
-/* Better touch targets for mobile */
 @media (max-width: 768px) {
   .sparkline-cell {
     padding: 10px 8px !important;
@@ -497,7 +440,6 @@ body:has(#stockChartModal.open) {
   }
 }
 
-/* Optional: Add a subtle overlay background blur on larger screens */
 @media (min-width: 769px) {
   #stockChartModal {
     backdrop-filter: blur(2px);
@@ -505,30 +447,36 @@ body:has(#stockChartModal.open) {
   }
 }
 
-/* Heatmap legend (optional - can be added to modal) */
+/* ===== ENHANCED HEATMAP LEGEND STYLES ===== */
 .heatmap-legend {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   align-items: center;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.05);
+  justify-content: center;
+  padding: 10px 16px;
+  background: rgba(30, 40, 55, 0.7);
+  border: 1px solid rgba(88, 219, 237, 0.2);
   border-radius: 8px;
-  margin-top: 12px;
-  font-size: 12px;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 500;
   flex-wrap: wrap;
+  color: #e3f2f7;
 }
 
 .heatmap-legend-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .heatmap-legend-dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  flex-shrink: 0;
 }
 
 .heatmap-legend-dot.medium {
@@ -541,20 +489,16 @@ body:has(#stockChartModal.open) {
 
 @media (max-width: 768px) {
   .heatmap-legend {
-    font-size: 11px;
-    gap: 12px;
-    padding: 6px 12px;
+    font-size: 12px;
+    gap: 14px;
+    padding: 8px 12px;
   }
   
   .heatmap-legend-dot {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
 }
-
-/* Note: This would need to be applied via Chart.js annotation plugin options */
-
-
 
 </style>
 </head>
@@ -632,7 +576,6 @@ body:has(#stockChartModal.open) {
   </div>
 </div>
 
-<!-- Modal -->
 <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="box">
     <header>
@@ -643,7 +586,7 @@ body:has(#stockChartModal.open) {
   </div>
 </div>
 
-<!-- Stock Chart Modal -->
+<!-- Stock Chart Modal with Heatmap Legend -->
 <div id="stockChartModal" class="modal" role="dialog" aria-modal="true">
   <div class="box">
     <header>
@@ -652,12 +595,21 @@ body:has(#stockChartModal.open) {
     </header>
     <div class="content">
       <canvas id="stockChart"></canvas>
+      <div id="heatmapLegend" class="heatmap-legend" style="display: none;">
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-dot medium"></div>
+          <span>3-5 Negative Articles</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-dot high"></div>
+          <span>6+ Negative Articles</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-/********************** Config **********************/
 const COUNTS_CANDIDATES = ['data/daily_counts/ceo-articles-daily-counts-chart.csv'];
 const ROSTER_CANDIDATES = ['rosters/main-roster.csv'];
 const SERPS_DAILY_CSV = 'data/daily_counts/ceo-serps-daily-counts-chart.csv';
@@ -667,8 +619,6 @@ const ARTICLES_DAILY_PATH = d => `data/processed_articles/${d}-ceo-articles-tabl
 const SERP_PROCESSED_PATH = d => `data/processed_serps/${d}-ceo-serps-table.csv`;
 const HEADLINES_PATH_CEO = d => `data/processed_articles/${d}-ceo-articles-modal.csv`;
 
-
-/********************** Runtime **********************/
 let rosterMap = new Map();
 let companyToCeo = new Map();
 let allCountsRows = [];
@@ -688,8 +638,9 @@ const _serpAggCache  = new Map();
 
 const DATE_WINDOW_SIZE = 30;
 let dateWindowStart = null;
+let negativeSummaryMap = null;
+const NEGATIVE_ARTICLE_THRESHOLD = 3;
 
-/********************** Utils **********************/
 const isISODate = s => /^\d{4}-\d{2}-\d{2}$/.test(String(s||'').trim());
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m]));
 function fmtPct(v){ 
@@ -701,7 +652,6 @@ const canonName = s => String(s || '')
   .replace(/\s+/g, ' ')
   .trim();
 
-/********************** Stock Data **********************/
 async function loadStockData() {
   try {
     const now = new Date();
@@ -709,8 +659,6 @@ async function loadStockData() {
     
     console.log('📊 Looking for most recent stock data...');
     
-    // Try up to 7 days back to find the most recent stock data file
-    // This handles weekends and holidays
     for (let daysBack = 0; daysBack < 7; daysBack++) {
       const checkDate = new Date(todayUTC);
       checkDate.setUTCDate(checkDate.getUTCDate() - daysBack);
@@ -732,11 +680,9 @@ async function loadStockData() {
         return stockData;
       } catch (error) {
         console.log(`⚠️  ${dateStr}: ${error.message}`);
-        // Continue to next day
       }
     }
     
-    // If we get here, no stock data was found in the last 7 days
     console.error('❌ No stock data found in the last 7 days');
     return {};
     
@@ -812,27 +758,12 @@ function createSparkline(prices, isPositive) {
   return canvas;
 }
 
-/********************** NEGATIVE ARTICLES HEATMAP INTEGRATION **********************/
-// This code replaces the existing loadNegativeArticleDates() function and 
-// updates the showStockChart() function in ceo-dashboard.html and brand-dashboard.html
-
-// Global variable to store the negative articles summary
-let negativeSummaryMap = null;
-
-// Threshold: minimum number of negative articles required to show a marker
-const NEGATIVE_ARTICLE_THRESHOLD = 3;
-
-/**
- * Load pre-aggregated negative articles summary (ONE file, ~80KB for 90 days)
- * Returns: Map<company, Array<{date, count, headlines, type}>>
- */
 async function loadNegativeSummary() {
   console.log('📰 Loading negative articles summary...');
   
   try {
     const rows = await fetchCsv('data/negative-articles-summary.csv');
     
-    // Map structure: company -> array of {date, count, headlines, type}
     const summaryMap = new Map();
     
     rows.forEach(r => {
@@ -840,7 +771,7 @@ async function loadNegativeSummary() {
       if (!company || company === 'nan') return;
       
       const count = parseInt(r.negative_count) || 0;
-      if (count < NEGATIVE_ARTICLE_THRESHOLD) return;  // Filter at load time
+      if (count < NEGATIVE_ARTICLE_THRESHOLD) return;
       
       if (!summaryMap.has(company)) {
         summaryMap.set(company, []);
@@ -850,21 +781,11 @@ async function loadNegativeSummary() {
         date: String(r.date || '').trim(),
         count: count,
         headlines: (r.top_headlines || '').split('|').filter(h => h.trim()),
-        type: String(r.article_type || 'unknown').trim()  // 'ceo' or 'brand'
+        type: String(r.article_type || 'unknown').trim()
       });
     });
     
     console.log(`✅ Loaded negative summary for ${summaryMap.size} companies`);
-    
-    // Log some stats
-    let totalCeo = 0, totalBrand = 0;
-    summaryMap.forEach(articles => {
-      articles.forEach(a => {
-        if (a.type === 'ceo') totalCeo++;
-        if (a.type === 'brand') totalBrand++;
-      });
-    });
-    console.log(`   📊 CEO articles: ${totalCeo}, Brand articles: ${totalBrand}`);
     
     return summaryMap;
     
@@ -874,9 +795,6 @@ async function loadNegativeSummary() {
   }
 }
 
-/**
- * Enhanced stock chart with negative article heatmap markers
- */
 async function showStockChart(company) {
   const stock = globalStockData[company];
   if (!stock || !stock.priceHistory || !stock.priceHistory.length) {
@@ -914,6 +832,14 @@ async function showStockChart(company) {
   });
   
   console.log(`📊 ${company}: ${negativesByDate.size} dates with ${NEGATIVE_ARTICLE_THRESHOLD}+ negative articles`);
+  
+  // Show/hide heatmap legend
+  const legendEl = document.getElementById('heatmapLegend');
+  if (negativesByDate.size > 0) {
+    legendEl.style.display = 'flex';
+  } else {
+    legendEl.style.display = 'none';
+  }
   
   const annotations = {};
   Array.from(negativesByDate.entries()).forEach(([date, data], idx) => {
@@ -975,18 +901,26 @@ async function showStockChart(company) {
       plugins: {
         legend: { 
           display: true,
+          position: 'top',
           labels: {
-            color: '#ebf2f2',
+            color: '#ffffff',
             font: {
-              size: window.innerWidth < 768 ? 11 : 12  // Smaller on mobile
+              size: window.innerWidth < 768 ? 11 : 13,
+              weight: '500'
             },
+            padding: 12,
+            usePointStyle: true,
+            pointStyle: 'circle',
+            boxWidth: 8,
+            boxHeight: 8,
             generateLabels: function(chart) {
               const labels = [
                 {
                   text: 'Stock Price',
                   fillStyle: isPositive ? '#22c55e' : '#ef4444',
                   strokeStyle: isPositive ? '#22c55e' : '#ef4444',
-                  lineWidth: 2
+                  lineWidth: 2,
+                  pointStyle: 'line'
                 }
               ];
               
@@ -1037,7 +971,7 @@ async function showStockChart(company) {
           bodyColor: '#fff',
           borderColor: 'rgba(255, 255, 255, 0.3)',
           borderWidth: 1,
-          padding: window.innerWidth < 768 ? 10 : 14,  // Less padding on mobile
+          padding: window.innerWidth < 768 ? 10 : 14,
           displayColors: false,
           titleFont: {
             size: window.innerWidth < 768 ? 12 : 13,
@@ -1069,12 +1003,10 @@ async function showStockChart(company) {
                   lines.push(`   Brand: ${negData.brandCount}`);
                 }
                 
-                // UPDATED: Show 3 headlines instead of 2
                 const previewHeadlines = negData.allHeadlines.slice(0, 3);
                 if (previewHeadlines.length > 0) {
                   lines.push('');
                   previewHeadlines.forEach((headline, i) => {
-                    // Responsive truncation: shorter on mobile
                     const maxLength = window.innerWidth < 768 ? 40 : 55;
                     const truncated = headline.length > maxLength 
                       ? headline.substring(0, maxLength - 3) + '...' 
@@ -1127,44 +1059,19 @@ async function showStockChart(company) {
   });
 }
 
-
-/**
- * Close the stock chart modal
- */
 function closeStockChart() {
   document.getElementById('stockChartModal').classList.remove('open');
 }
 
-/********************** UPDATE INIT FUNCTION **********************/
-// Add this to your init() function's Promise.all() array:
-//
-// Before (old):
-// await Promise.all([loadRoster(), loadCounts(), loadSerpDaily(), loadBoards(), 
-//                    loadStockData().then(data => globalStockData = data)]);
-//
-// After (new):
-// await Promise.all([
-//   loadRoster(), 
-//   loadCounts(), 
-//   loadSerpDaily(), 
-//   loadBoards(), 
-//   loadStockData().then(data => globalStockData = data),
-//   loadNegativeSummary().then(data => negativeSummaryMap = data)  // <-- ADD THIS LINE
-// ]);
-
-
-function closeStockChart() {
-  document.getElementById('stockChartModal').classList.remove('open');
-}
-
-/* ===== NEW: pager helpers ===== */
 function clampDateStart(total){
   if (total <= DATE_WINDOW_SIZE) return 0;
   const maxStart = total - DATE_WINDOW_SIZE;
   const start = (dateWindowStart ?? maxStart);
   return Math.min(Math.max(0, start), maxStart);
 }
+
 function sliceWindow(arr, start, size){ return arr.slice(start, start + size); }
+
 function updateDateRangeUI(allDates){
   const start = clampDateStart(allDates.length);
   const end = Math.min(allDates.length, start + DATE_WINDOW_SIZE);
@@ -1176,6 +1083,7 @@ function updateDateRangeUI(allDates){
   document.querySelectorAll('.dates-prev').forEach(b => b.disabled = atStart);
   document.querySelectorAll('.dates-next').forEach(b => b.disabled = atEnd);
 }
+
 function hookDatePager(allDates){
   const goPrev = () => {
     const total = allDates.length;
@@ -1195,7 +1103,6 @@ function hookDatePager(allDates){
   document.querySelectorAll('.dates-next').forEach(b => b.onclick = goNext);
 }
 
-/********************** CSV helpers **********************/
 async function fetchCsv(url){
   const r = await fetch(url, {cache:'no-store'});
   if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
@@ -1206,15 +1113,15 @@ async function fetchCsv(url){
     });
   });
 }
+
 async function fetchCsvAny(candidates){
   for (const u of candidates){
     try { const rows = await fetchCsv(u); if (Array.isArray(rows)) return rows; }
-    catch(e){ /* next */ }
+    catch(e){ }
   }
   return [];
 }
 
-/********************** Loaders for charts/boards/roster **********************/
 async function loadRoster(){
   const rows = await fetchCsvAny(ROSTER_CANDIDATES);
   rosterMap = new Map();
@@ -1228,6 +1135,7 @@ async function loadRoster(){
     }
   });
 }
+
 async function loadBoards(){
   boardsByCeo = new Map();
   try{
@@ -1252,6 +1160,7 @@ async function loadBoards(){
     boardsByCeo = new Map();
   }
 }
+
 async function loadCounts(){
   const rows = await fetchCsvAny(COUNTS_CANDIDATES);
   allCountsRows = rows
@@ -1266,6 +1175,7 @@ async function loadCounts(){
     }))
     .filter(r => isISODate(r.date) && r.ceo);
 }
+
 async function loadSerpDaily(){
   try{
     const rows = await fetchCsv(SERPS_DAILY_CSV);
@@ -1280,7 +1190,6 @@ async function loadSerpDaily(){
   }catch(e){ serpsDaily = []; }
 }
 
-/********************** Risk **********************/
 function computeRisk(negPct, ctrlPct){
   if (negPct == null || isNaN(negPct)) return 'N/A';
   if (negPct > 0) return 'High';
@@ -1288,7 +1197,6 @@ function computeRisk(negPct, ctrlPct){
   return (ctrlPct < 0.35) ? 'Medium' : 'Low';
 }
 
-/********************** NEW: per-date table sources **********************/
 function toPct01(x){
   if (x == null || x === '') return null;
   const n = +String(x).replace('%','').trim();
@@ -1315,7 +1223,7 @@ async function getArticlesForDate(d){
       }
       map.set(ceo, { company, theme, neg_pct: neg });
     });
-  }catch(e){ /* missing is allowed */ }
+  }catch(e){ }
   _articlesCache.set(d, map);
   return map;
 }
@@ -1334,12 +1242,11 @@ async function getSerpAggForDate(d){
         controlled: +r.controlled || 0
       });
     });
-  }catch(e){ /* allowed */ }
+  }catch(e){ }
   _serpAggCache.set(d, map);
   return map;
 }
 
-/********************** UI bootstrap **********************/
 async function init(){
   await Promise.all([
     loadRoster(), 
@@ -1397,7 +1304,6 @@ async function init(){
   };
 }
 
-/********************** Data → view rows **********************/
 async function buildRowsForDate(d){
   const articles = await getArticlesForDate(d);
   const serpAgg  = await getSerpAggForDate(d);
@@ -1413,7 +1319,6 @@ async function buildRowsForDate(d){
     }
     const risk = computeRisk(negSerpPct, ctrlPct);
 
-    // Get stock data for sorting
     const stock = globalStockData[a.company];
     const dailyChange = stock?.dailyChange ?? null;
 
@@ -1432,7 +1337,6 @@ async function buildRowsForDate(d){
   return out;
 }
 
-/********************** Rendering **********************/
 async function renderAll(){
   const d = document.getElementById('dateSelect').value;
   const filter = document.getElementById('filterInput').value.trim().toLowerCase();
@@ -1536,14 +1440,12 @@ function renderTable(){
   
   tbody.innerHTML = rowsHTML;
   
-  // Now inject sparklines
   pageRows.forEach(r => {
     const stock = globalStockData[r.company];
     if (stock && stock.priceHistory && stock.priceHistory.length >= 2) {
       const sparklineId = `sparkline-${r.company.replace(/[^a-zA-Z0-9]/g, '-')}`;
       const container = document.getElementById(sparklineId);
       if (container) {
-        // Calculate 30-day change from the sparkline data itself
         const firstPrice = stock.priceHistory[0];
         const lastPrice = stock.priceHistory[stock.priceHistory.length - 1];
         const isPositive = lastPrice >= firstPrice;
@@ -1551,7 +1453,6 @@ function renderTable(){
         const canvas = createSparkline(stock.priceHistory, isPositive);
         if (canvas) container.appendChild(canvas);
         
-        // Add click handler to sparkline cell
         const sparklineCell = container.closest('td');
         if (sparklineCell) {
           sparklineCell.onclick = (e) => {
@@ -1571,6 +1472,7 @@ function renderTable(){
       renderCharts();
     });
   });
+  
   tbody.querySelectorAll('.serpBtn').forEach(btn=>{
     btn.onclick = ()=>{
       const ceo = btn.getAttribute('data-ceo');
@@ -1578,12 +1480,14 @@ function renderTable(){
       showSerp({ceo, company});
     };
   });
+  
   tbody.querySelectorAll('.headBtn').forEach(btn=>{
     btn.onclick = ()=>{
       const ceo = btn.getAttribute('data-ceo');
       showHeadlines({ceo});
     };
   });
+  
   tbody.querySelectorAll('.boardsBtn').forEach(btn=>{
     btn.onclick = ()=>{
       const ceo = btn.getAttribute('data-ceo');
@@ -1595,7 +1499,6 @@ function renderTable(){
   document.getElementById('pageTotal').textContent = String(Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE)));
 }
 
-/********************** Charts (windowed + synced) **********************/
 function getDateSeries(){
   const byDate = new Map();
   allCountsRows.forEach(r=>{
@@ -1751,19 +1654,18 @@ function renderCharts(){
   });
 }
 
-/********************** Modals **********************/
 const modal = document.getElementById('modal');
 const modalTitle = document.getElementById('modalTitle');
 const modalContent = document.getElementById('modalContent');
 document.getElementById('modalClose').onclick = ()=> modal.classList.remove('open');
 modal.addEventListener('click', e=>{ if (e.target===modal) modal.classList.remove('open'); });
+
 function openModal(title, html){
   modalTitle.textContent = title;
   modalContent.innerHTML = html;
   modal.classList.add('open');
 }
 
-/********************** Boards modal **********************/
 function showBoards(ceo){
   const key = canonName(ceo);
   let boards = boardsByCeo.get(ceo) || boardsByCeo.get(key);
@@ -1788,7 +1690,6 @@ function showBoards(ceo){
   openModal(`Boards — ${ceo}`, html);
 }
 
-/********************** Headlines modal **********************/
 async function showHeadlines({ ceo }) {
   const d = document.getElementById('dateSelect').value;
   const file = HEADLINES_PATH_CEO(d);
@@ -1836,8 +1737,6 @@ async function showHeadlines({ ceo }) {
   openModal(`Headlines — ${esc(ceo)}`, `<div class="serp-cards">${cards}</div>`);
 }
 
-
-/********************** SERP modal **********************/
 async function showSerp(row){
   const d = document.getElementById('dateSelect').value;
   const path = SERP_ROWS_PATH(d);
@@ -1897,7 +1796,6 @@ async function showSerp(row){
   openModal(`SERP — ${esc(row.ceo)}`, `${metrics}<div class="serp-cards">${cards}</div>`);
 }
 
-/********************** Init **********************/
 init();
 </script>
 </body>
