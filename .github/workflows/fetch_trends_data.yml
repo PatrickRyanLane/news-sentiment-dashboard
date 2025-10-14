@@ -4,7 +4,7 @@ on:
   schedule:
     # Run once daily at 6:00 PM ET (23:00 UTC) on weekdays
     # Less frequent than stock data due to Google Trends rate limits
-    - cron: '0 8 * * 1-5'
+    - cron: '0 7 * * 1-5'
   
   workflow_dispatch:  # Allow manual trigger
 
