@@ -43,12 +43,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1  # Shallow clone
+          # Alert script likely reads recent data files to determine what to send
+          sparse-checkout: |
+            scripts/
+            rosters/
+            data/processed_articles/
+            data/processed_serps/
+            .github/
+          sparse-checkout-cone-mode: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: "pip"
+
+      - name: Ensure data directory for alert tracking
+        run: |
+          mkdir -p data/email_alerts
 
       - name: Install dependencies
         run: |

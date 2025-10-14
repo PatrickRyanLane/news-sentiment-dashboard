@@ -8,7 +8,7 @@ on:
         description: "Run date in UTC (YYYY-MM-DD). Leave blank for today."
         required: false
         type: string
-  # Scheduled run — adjust as you like
+  # Scheduled run – adjust as you like
   schedule:
     - cron: "10 9 * * *"   # 05:10 ET daily
 
@@ -29,7 +29,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # needed so we can pull/rebase before pushing
+          fetch-depth: 1  # Shallow clone - scripts only process today's data
+          sparse-checkout: |
+            scripts/
+            rosters/
+            data/daily_counts/
+            .github/
+          sparse-checkout-cone-mode: false
 
       - name: Setup Python
         uses: actions/setup-python@v5

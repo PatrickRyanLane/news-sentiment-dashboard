@@ -21,12 +21,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # needed for rebase operations
+          fetch-depth: 1  # Shallow - backfill processes day by day, doesn't need history
+          # Backfill needs to read/write data files
+          sparse-checkout: |
+            scripts/
+            rosters/
+            data/
+            .github/
+          sparse-checkout-cone-mode: false
           
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies
         shell: bash

@@ -14,21 +14,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Get full history for accurate date processing
+          fetch-depth: 1  # Shallow clone - don't need full git history
+          # This script READS historical data, so we need data/ folder
+          sparse-checkout: |
+            scripts/
+            rosters/
+            data/processed_articles/
+            .github/
+          sparse-checkout-cone-mode: false
       
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+          cache: 'pip'  # Cache dependencies
       
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pandas
       
+      - name: Ensure output directory
+        run: |
+          mkdir -p data
+      
       - name: Run negative articles aggregation
         run: |
-          echo "🔄 Starting negative articles aggregation..."
+          echo "📄 Starting negative articles aggregation..."
           python scripts/aggregate_negative_articles.py --days-back 90
       
       - name: Check for changes
@@ -61,7 +73,7 @@ jobs:
           
           📊 Rows: $ROWS
           💾 Size: $SIZE
-          🕒 Generated: $DATE
+          🕐 Generated: $DATE
           
           Automated update via GitHub Actions"
           
@@ -82,7 +94,7 @@ jobs:
             echo "✅ **File created successfully**" >> $GITHUB_STEP_SUMMARY
             echo "- 📊 Total rows: $ROWS" >> $GITHUB_STEP_SUMMARY
             echo "- 💾 File size: $SIZE" >> $GITHUB_STEP_SUMMARY
-            echo "- 📁 Location: \`data/negative-articles-summary.csv\`" >> $GITHUB_STEP_SUMMARY
+            echo "- 📂 Location: \`data/negative-articles-summary.csv\`" >> $GITHUB_STEP_SUMMARY
             
             if [[ "${{ steps.check_changes.outputs.changes }}" == "true" ]]; then
               echo "- ✅ Changes committed and pushed" >> $GITHUB_STEP_SUMMARY

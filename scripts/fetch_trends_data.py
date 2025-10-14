@@ -103,7 +103,9 @@ def fetch_trends_data():
                 search_terms = [company]
                 
                 # Re-initialize pytrends for each request to avoid session issues
-                pytrends = TrendReq(hl='en-US', tz=360, timeout=(10, 25), retries=2, backoff_factor=0.5)
+                # Note: Removed retries/backoff_factor due to urllib3 compatibility issues
+                # We handle retries at the script level instead
+                pytrends = TrendReq(hl='en-US', tz=360, timeout=(10, 25))
                 
                 pytrends.build_payload(search_terms, timeframe=timeframe, geo='US')
                 
