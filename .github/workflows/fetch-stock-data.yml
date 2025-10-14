@@ -1,4 +1,4 @@
-name: Fetch Stock Data (Optimized)
+name: Fetch Stock Data
 
 on:
   schedule:
@@ -20,6 +20,7 @@ jobs:
             scripts/
             rosters/
             .github/
+            data/stock_prices/
           sparse-checkout-cone-mode: false
       
       - name: Create data directory
