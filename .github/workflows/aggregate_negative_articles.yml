@@ -20,6 +20,7 @@ jobs:
             scripts/
             rosters/
             data/processed_articles/
+            data/daily_counts
             .github/
           sparse-checkout-cone-mode: false
       
@@ -27,7 +28,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          cache: 'pip'  # Cache dependencies
+          
       
       - name: Install dependencies
         run: |
@@ -46,7 +47,7 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          if [[ -n $(git status --porcelain data/negative-articles-summary.csv) ]]; then
+          if [[ -n $(git status --porcelain data/daily_counts/negative-articles-summary.csv) ]]; then
             echo "changes=true" >> $GITHUB_OUTPUT
             echo "✅ Changes detected in negative-articles-summary.csv"
           else
@@ -61,11 +62,11 @@ jobs:
           git config --local user.name "github-actions[bot]"
           
           # Add the summary file
-          git add data/negative-articles-summary.csv
+          git add data/daily_counts/negative-articles-summary.csv
           
           # Get stats for commit message
-          ROWS=$(wc -l < data/negative-articles-summary.csv)
-          SIZE=$(du -h data/negative-articles-summary.csv | cut -f1)
+          ROWS=$(wc -l < data/daily_counts/negative-articles-summary.csv)
+          SIZE=$(du -h data/daily_counts/negative-articles-summary.csv | cut -f1)
           DATE=$(date -u +"%Y-%m-%d %H:%M UTC")
           
           # Commit with informative message
@@ -88,13 +89,13 @@ jobs:
           echo "### Negative Articles Aggregation Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [[ -f data/negative-articles-summary.csv ]]; then
-            ROWS=$(wc -l < data/negative-articles-summary.csv)
-            SIZE=$(du -h data/negative-articles-summary.csv | cut -f1)
+          if [[ -f data/daily_counts/negative-articles-summary.csv ]]; then
+            ROWS=$(wc -l < data/daily_counts/negative-articles-summary.csv)
+            SIZE=$(du -h data/daily_counts/negative-articles-summary.csv | cut -f1)
             echo "✅ **File created successfully**" >> $GITHUB_STEP_SUMMARY
             echo "- 📊 Total rows: $ROWS" >> $GITHUB_STEP_SUMMARY
             echo "- 💾 File size: $SIZE" >> $GITHUB_STEP_SUMMARY
-            echo "- 📂 Location: \`data/negative-articles-summary.csv\`" >> $GITHUB_STEP_SUMMARY
+            echo "- 📂 Location: \`data/daily_counts/negative-articles-summary.csv\`" >> $GITHUB_STEP_SUMMARY
             
             if [[ "${{ steps.check_changes.outputs.changes }}" == "true" ]]; then
               echo "- ✅ Changes committed and pushed" >> $GITHUB_STEP_SUMMARY

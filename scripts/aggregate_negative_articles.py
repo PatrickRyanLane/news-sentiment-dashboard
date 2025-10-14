@@ -5,7 +5,7 @@ Aggregate negative article data for stock chart heatmap visualization.
 UPDATED: Handles brand articles without CEO column using smart company name matching.
 Includes fuzzy matching for common company name variations.
 
-Output: data/negative-articles-summary.csv
+Output: data/daily_counts/negative-articles-summary.csv
 """
 
 import argparse
@@ -285,7 +285,7 @@ def process_brand_articles(file_path, exact_mapping, normalized_mapping):
 def create_negative_summary(days_back=90, roster_path='rosters/main-roster.csv'):
     """Create aggregated negative articles summary from last N days."""
     articles_dir = Path("data/processed_articles")
-    output_file = Path("data/negative-articles-summary.csv")
+    output_file = Path("data/daily_counts/negative-articles-summary.csv")
     
     if not articles_dir.exists():
         print(f"❌ Articles directory not found: {articles_dir}")

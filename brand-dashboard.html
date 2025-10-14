@@ -811,7 +811,7 @@ async function loadNegativeSummary() {
   console.log('📰 Loading negative articles summary...');
   
   try {
-    const rows = await fetchCsv('data/negative-articles-summary.csv');
+    const rows = await fetchCsv('data/daily_counts/negative-articles-summary.csv');
     
     console.log(`📊 Loaded ${rows.length} total rows from summary file`);
     
