@@ -208,6 +208,38 @@ tbody td:first-child{background:var(--black)}
   border-color: #6de5f5;
 }
 
+/* Trends toggle button */
+.trends-toggle {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #a855f7;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.trends-toggle:hover {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: rgba(168, 85, 247, 0.5);
+  transform: translateY(-1px);
+}
+
+.trends-toggle.active {
+  background: #a855f7;
+  color: white;
+  border-color: #a855f7;
+}
+
+.trends-toggle.active:hover {
+  background: #b975f7;
+  border-color: #b975f7;
+}
+
+
 #stockChartModal .content {
   padding: 18px;
 }
@@ -595,6 +627,7 @@ body:has(#stockChartModal.open) {
     <header>
       <h3 id="stockChartTitle">Stock Price History</h3>
       <button id="volumeToggle" class="volume-toggle">📊 Volume</button>
+      <button id="trendsToggle" class="trends-toggle">🔍 Trends</button>
       <span class="close" onclick="closeStockChart()">&times;</span>
     </header>
     <div class="content">
@@ -634,6 +667,8 @@ const PAGE_SIZE = 25;
 let newsChart, serpChart, stockChart;
 let globalStockData = {};
 let showVolume = false; // Toggle state for volume display
+let showTrends = false; // Toggle state for trends display
+let globalTrendsData = {}; // Trends data by company
 
 const _articlesCache = new Map();
 const _serpAggCache  = new Map();
@@ -816,6 +851,71 @@ async function loadNegativeSummary() {
 /**
  * Enhanced stock chart with negative article heatmap markers, responsive design, improved legend
  */
+
+// Load Google Trends data
+async function loadTrendsData() {
+  try {
+    const now = new Date();
+    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    
+    console.log('🔍 Looking for most recent trends data...');
+    
+    for (let daysBack = 0; daysBack < 7; daysBack++) {
+      const checkDate = new Date(todayUTC);
+      checkDate.setUTCDate(checkDate.getUTCDate() - daysBack);
+      const dateStr = checkDate.toISOString().split('T')[0];
+      
+      try {
+        const url = `data/trends_data/${dateStr}-trends-data.csv`;
+        console.log(`🔍 Trying: ${url}`);
+        
+        const response = await fetch(url, {cache:'no-store'});
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const text = await response.text();
+        const trendsData = parseTrendsCSV(text);
+        
+        console.log(`✅ Successfully loaded trends data from ${dateStr} (${daysBack} day(s) old)`);
+        console.log(`📈 Found trends for ${Object.keys(trendsData).length} companies`);
+        
+        return trendsData;
+      } catch (error) {
+        console.log(`⚠️  ${dateStr}: ${error.message}`);
+      }
+    }
+    
+    console.warn('⚠️  No trends data found in the last 7 days');
+    return {};
+    
+  } catch (error) {
+    console.error('❌ TRENDS DATA LOAD FAILED:', error);
+    return {};
+  }
+}
+
+function parseTrendsCSV(csvText) {
+  const lines = csvText.trim().split('\n');
+  const trendsData = {};
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+
+    const values = line.split(',');
+    if (values.length < 3) continue;
+
+    const company = values[0];
+    trendsData[company] = {
+      company: values[0],
+      trendsHistory: values[1] ? values[1].split('|').map(v => parseFloat(v)).filter(v => !isNaN(v)) : [],
+      dateHistory: values[2] ? values[2].split('|') : [],
+      lastUpdated: values[3] || ''
+    };
+  }
+
+  return trendsData;
+}
+
 async function showStockChart(company) {
   const stock = globalStockData[company];
   if (!stock || !stock.priceHistory || !stock.priceHistory.length) {
@@ -926,6 +1026,27 @@ async function showStockChart(company) {
     });
   }
   
+  const trendsData = globalTrendsData[company];
+  if (showTrends && trendsData && trendsData.trendsHistory && trendsData.trendsHistory.length > 0) {
+    datasets.push({
+      label: 'Search Interest',
+      data: trendsData.trendsHistory,
+      borderColor: '#a855f7',
+      backgroundColor: 'rgba(168, 85, 247, 0.1)',
+      borderWidth: 2,
+      tension: 0.3,
+      fill: false,
+      yAxisID: 'yTrends',
+      type: 'line',
+      order: 0,
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      pointBackgroundColor: '#a855f7',
+      pointBorderColor: '#ffffff',
+      pointBorderWidth: 1
+    });
+  }
+  
   stockChart = new Chart(ctx, {
     type: 'line',
     data: {
@@ -941,7 +1062,7 @@ async function showStockChart(company) {
       },
       plugins: {
         legend: { 
-          display: true,
+          display: false,
           position: 'top',
           labels: {
             color: '#ffffff',
@@ -972,6 +1093,16 @@ async function showStockChart(company) {
                   strokeStyle: 'rgba(88, 219, 237, 0.5)',
                   lineWidth: 1,
                   pointStyle: 'rect'
+                });
+              }
+              
+              if (showTrends && trendsData && trendsData.trendsHistory && trendsData.trendsHistory.length > 0) {
+                labels.push({
+                  text: 'Search Interest (0-100)',
+                  fillStyle: 'rgba(168, 85, 247, 0.1)',
+                  strokeStyle: '#a855f7',
+                  lineWidth: 2,
+                  pointStyle: 'line'
                 });
               }
               
@@ -1047,6 +1178,10 @@ async function showStockChart(company) {
                     ? `${(vol / 1000).toFixed(2)}K` 
                     : vol.toFixed(0);
                 return [`Volume: ${volStr}`];
+              }
+              
+              if (context.dataset.yAxisID === 'yTrends') {
+                return [`Search Interest: ${context.parsed.y.toFixed(0)}/100`];
               }
               
               lines.push(`Price: $${context.parsed.y.toFixed(2)}`);
@@ -1125,6 +1260,26 @@ async function showStockChart(company) {
             display: false
           }
         },
+        yTrends: {
+          type: 'linear',
+          position: 'right',
+          display: showTrends && trendsData && trendsData.trendsHistory && trendsData.trendsHistory.length > 0,
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            color: 'rgba(168, 85, 247, 0.8)',
+            font: {
+              size: window.innerWidth < 768 ? 9 : 10
+            },
+            callback: function(value) {
+              return value.toFixed(0);
+            }
+          },
+          grid: {
+            display: false
+          },
+          offset: showVolume
+        },
         x: {
           ticks: {
             color: '#ebf2f2',
@@ -1161,6 +1316,30 @@ async function showStockChart(company) {
     
     newBtn.onclick = () => {
       showVolume = !showVolume;
+      showStockChart(company);
+    };
+  }
+  
+  const trendsBtn = document.getElementById('trendsToggle');
+  if (trendsBtn) {
+    if (showTrends) {
+      trendsBtn.classList.add('active');
+    } else {
+      trendsBtn.classList.remove('active');
+    }
+    
+    const trendsData = globalTrendsData[company];
+    if (!trendsData || !trendsData.trendsHistory || trendsData.trendsHistory.length === 0) {
+      trendsBtn.style.display = 'none';
+    } else {
+      trendsBtn.style.display = 'block';
+    }
+    
+    const newTrendsBtn = trendsBtn.cloneNode(true);
+    trendsBtn.parentNode.replaceChild(newTrendsBtn, trendsBtn);
+    
+    newTrendsBtn.onclick = () => {
+      showTrends = !showTrends;
       showStockChart(company);
     };
   }
@@ -1306,7 +1485,8 @@ async function init(){
     loadCounts(), 
     loadSerpDaily(), 
     loadStockData().then(data => globalStockData = data),
-    loadNegativeSummary().then(data => negativeSummaryMap = data)
+    loadNegativeSummary().then(data => negativeSummaryMap = data),
+    loadTrendsData().then(data => globalTrendsData = data)
   ]);
 
   console.log('📈 Stock data loaded. Companies with stock data:', Object.keys(globalStockData).length);
