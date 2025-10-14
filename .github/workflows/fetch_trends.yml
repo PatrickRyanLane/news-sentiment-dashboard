@@ -1,0 +1,61 @@
+name: Fetch Google Trends Data
+
+on:
+  schedule:
+    # Run once daily at 6:00 PM ET (23:00 UTC) on weekdays
+    # Less frequent than stock data due to Google Trends rate limits
+    - cron: '0 23 * * 1-5'
+  
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  fetch-trends:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytrends pandas
+      
+      - name: Fetch Google Trends data
+        run: |
+          python scripts/fetch_trends_data.py
+        continue-on-error: true  # Don't fail workflow if rate limited
+      
+      - name: Check if data was created
+        id: check_data
+        run: |
+          if [ -n "$(find data/trends_data -name '*-trends-data.csv' -mmin -5 2>/dev/null)" ]; then
+            echo "data_created=true" >> $GITHUB_OUTPUT
+          else
+            echo "data_created=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push trends data
+        if: steps.check_data.outputs.data_created == 'true'
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add data/trends_data/
+          git diff --staged --quiet || git commit -m "Update Google Trends data - $(date +'%Y-%m-%d')"
+          git push
+      
+      - name: Report status
+        if: always()
+        run: |
+          if [ "${{ steps.check_data.outputs.data_created }}" == "true" ]; then
+            echo "✅ Google Trends data collected and committed successfully"
+          else
+            echo "⚠️  No new trends data created (may have hit rate limit)"
+            echo "This is normal - Google Trends has strict limits"
+            echo "Data will be collected on next scheduled run"
+          fi
