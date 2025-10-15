@@ -55,11 +55,12 @@ jobs:
             elif [ "$HOUR" -eq 22 ]; then
               BATCH=3
             else
-              echo "Error: Unknown schedule time"
-              exit 1
+              # Default to batch 1 for manual testing
+              BATCH=1
+              echo "⚠️  Not a scheduled time. Defaulting to batch 1 for testing."
             fi
             
-            echo "Auto-detected batch from schedule: $BATCH"
+            echo "Auto-detected batch: $BATCH"
           fi
           
           echo "batch=$BATCH" >> $GITHUB_OUTPUT
