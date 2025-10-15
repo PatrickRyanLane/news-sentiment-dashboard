@@ -27,7 +27,6 @@ jobs:
             requirements.txt
             scripts/
             rosters/
-            data/
             .github/
           sparse-checkout-cone-mode: false
           

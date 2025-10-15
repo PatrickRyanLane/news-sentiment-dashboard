@@ -50,7 +50,8 @@ jobs:
             requirements.txt
             scripts/
             rosters/
-            data/
+            data/processed_articles/
+            data/processed_serps/
             .github/
           sparse-checkout-cone-mode: false
 
