@@ -101,7 +101,7 @@ jobs:
           git pull --rebase --autostash origin main
 
           # Stage & commit any generated/updated files
-          git add -A
+          git add -A --no-sparse
           if git diff --cached --quiet; then
             echo "No data changes to commit."
             exit 0

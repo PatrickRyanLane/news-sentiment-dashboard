@@ -87,7 +87,7 @@ jobs:
           git checkout main
           git pull --rebase --autostash origin main
 
-          git add -A
+          git add -A --no-sparse
           if git diff --cached --quiet; then
             echo "No data changes to commit."
             exit 0
