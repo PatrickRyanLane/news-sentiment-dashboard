@@ -99,7 +99,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-          git add -A --no-sparse
+          # Use --sparse to allow adding files outside sparse-checkout definition
+          git add -A --sparse
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else

@@ -100,8 +100,8 @@ jobs:
           git checkout main
           git pull --rebase --autostash origin main
 
-          # Stage & commit any generated/updated files
-          git add -A --no-sparse
+          # Use --sparse to allow adding files outside sparse-checkout definition
+          git add -A --sparse
           if git diff --cached --quiet; then
             echo "No data changes to commit."
             exit 0
