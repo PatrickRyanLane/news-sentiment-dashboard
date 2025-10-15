@@ -2,8 +2,8 @@ name: Fetch Stock Data
 
 on:
   schedule:
-    # Run at 5:00 PM ET (21:00 UTC) after market close on weekdays
-    - cron: '0 21 * * 1-5'
+    # Run at 9:30 AM ET after market open on weekdays
+    - cron: '30 13 * * 1-5'
   
   workflow_dispatch:  # Allow manual trigger
 

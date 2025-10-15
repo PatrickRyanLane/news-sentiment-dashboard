@@ -1008,7 +1008,10 @@ async function showStockChart(company) {
   });
   
   const ctx = document.getElementById('stockChart').getContext('2d');
-  const isPositive = (stock.sevenDayChange !== null && stock.sevenDayChange >= 0);
+  // Match sparkline logic: compare first to last price in 30-day window
+  const firstPrice = stock.priceHistory[0];
+  const lastPrice = stock.priceHistory[stock.priceHistory.length - 1];
+  const isPositive = lastPrice >= firstPrice;
   
   const datasets = [{
     label: 'Closing Price ($)',
