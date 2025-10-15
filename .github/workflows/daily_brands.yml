@@ -31,22 +31,15 @@ jobs:
         with:
           fetch-depth: 1  # Shallow clone - scripts only process today's data
           sparse-checkout: |
+            requirements.txt
             scripts/
             rosters/
-            data/daily_counts/
+            data/
             .github/
           sparse-checkout-cone-mode: false
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pandas requests feedparser vaderSentiment
+      - name: Setup Python environment
+        uses: ./.github/actions/setup-python-env
 
       - name: Ensure folders (NEW STRUCTURE)
         run: |

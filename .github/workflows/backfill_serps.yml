@@ -24,29 +24,15 @@ jobs:
           fetch-depth: 1  # Shallow - backfill processes day by day, doesn't need history
           # Backfill needs to read/write data files
           sparse-checkout: |
+            requirements.txt
             scripts/
             rosters/
             data/
             .github/
           sparse-checkout-cone-mode: false
           
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          
-
-      - name: Install dependencies
-        shell: bash
-        run: |
-          set -euo pipefail
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then
-            python -m pip install -r requirements.txt
-          else
-            # minimal deps for both brand & CEO scripts
-            python -m pip install pandas requests vaderSentiment
-          fi
+      - name: Setup Python environment
+        uses: ./.github/actions/setup-python-env
 
       - name: Ensure folders (NEW STRUCTURE)
         run: |

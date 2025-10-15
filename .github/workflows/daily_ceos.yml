@@ -16,7 +16,7 @@ permissions:
 # Prevent overlapping runs
 concurrency:
   group: daily-ceos-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   run:
@@ -31,22 +31,15 @@ jobs:
         with:
           fetch-depth: 1  # Shallow clone - scripts only process today's data
           sparse-checkout: |
+            requirements.txt
             scripts/
             rosters/
-            data/daily_counts/
+            data/
             .github/
           sparse-checkout-cone-mode: false
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          
-
-      - name: Install deps
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install pandas requests feedparser vaderSentiment
+      - name: Setup Python environment
+        uses: ./.github/actions/setup-python-env
 
       - name: Ensure folders (NEW STRUCTURE)
         run: |

@@ -14,12 +14,14 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1  # Shallow clone - no git history
           sparse-checkout: |
+            requirements.txt
             scripts/
             rosters/
+            data/
             .github/
           sparse-checkout-cone-mode: false
       
@@ -28,15 +30,8 @@ jobs:
           mkdir -p data/trends_data
           mkdir -p data/stock_prices
       
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-      
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytrends pandas
+      - name: Setup Python environment
+        uses: ./.github/actions/setup-python-env
       
       - name: Fetch Google Trends data
         run: |

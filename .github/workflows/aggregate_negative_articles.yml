@@ -12,28 +12,20 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1  # Shallow clone - don't need full git history
           # This script READS historical data, so we need data/ folder
           sparse-checkout: |
+            requirements.txt
             scripts/
             rosters/
-            data/processed_articles/
-            data/daily_counts
+            data/
             .github/
           sparse-checkout-cone-mode: false
       
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-          
-      
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pandas
+      - name: Setup Python environment
+        uses: ./.github/actions/setup-python-env
       
       - name: Ensure output directory
         run: |

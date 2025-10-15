@@ -47,30 +47,20 @@ jobs:
           fetch-depth: 1  # Shallow clone
           # Alert script likely reads recent data files to determine what to send
           sparse-checkout: |
+            requirements.txt
             scripts/
             rosters/
-            data/processed_articles/
-            data/processed_serps/
+            data/
             .github/
           sparse-checkout-cone-mode: false
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - name: Setup Python environment
+        uses: ./.github/actions/setup-python-env
           
 
       - name: Ensure data directory for alert tracking
         run: |
           mkdir -p data/email_alerts
-
-      - name: Install dependencies
-        run: |
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          else
-            pip install pandas requests
-          fi
 
       - name: Download last cooldown artifact
         uses: dawidd6/action-download-artifact@v6
