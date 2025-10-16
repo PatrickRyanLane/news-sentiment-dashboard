@@ -34,6 +34,7 @@ jobs:
             requirements.txt
             scripts/
             rosters/
+            data/daily_counts
             .github/
           sparse-checkout-cone-mode: false
 

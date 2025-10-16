@@ -54,7 +54,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           
           # Add the summary file
-          git add data/daily_counts/negative-articles-summary.csv
+          git add --sparse data/daily_counts/negative-articles-summary.csv
           
           # Get stats for commit message
           ROWS=$(wc -l < data/daily_counts/negative-articles-summary.csv)
