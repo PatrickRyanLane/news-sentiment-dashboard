@@ -15,7 +15,7 @@
   --bg:#044152; --card:#092e37; --muted:#a2ebf3; --text:#ebf2f2; --accent:#58dbed; --black:#1f2121;
   --pill-neg:#ff8261; --pill-neu:#cfdbdd; --pill-pos:#82c618;
   --stroke:#0e2230; --chip:#12343e; --chipBorder:#174550;
-  --stock-pos:#22c55e; --stock-neg:#ef4444;
+  --stock-pos:#82c616; --stock-neg:#ff8261;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
@@ -780,7 +780,7 @@ function createSparkline(prices, isPositive) {
   const stepX = (width - padding * 2) / (prices.length - 1);
 
   ctx.beginPath();
-  ctx.strokeStyle = isPositive ? '#22c55e' : '#ef4444';
+  ctx.strokeStyle = isPositive ? '#82c616' : '#ff8261';
   ctx.lineWidth = 1.5;
 
   prices.forEach((price, i) => {
@@ -1002,8 +1002,8 @@ async function showStockChart(company) {
   const datasets = [{
     label: 'Closing Price ($)',
     data: stock.priceHistory,
-    borderColor: isPositive ? '#22c55e' : '#ef4444',
-    backgroundColor: isPositive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+    borderColor: isPositive ? '#82c616' : '#ff8261',
+    backgroundColor: isPositive ? 'rgba(130, 198, 22, 0.1)' : 'rgba(255, 130, 97, 0.1)',
     borderWidth: 2,
     tension: 0.1,
     fill: true,
@@ -1082,8 +1082,8 @@ async function showStockChart(company) {
               const labels = [
                 {
                   text: 'Stock Price',
-                  fillStyle: isPositive ? '#22c55e' : '#ef4444',
-                  strokeStyle: isPositive ? '#22c55e' : '#ef4444',
+                  fillStyle: isPositive ? '#82c616' : '#ff8261',
+                  strokeStyle: isPositive ? '#82c616' : '#ff8261',
                   lineWidth: 2,
                   pointStyle: 'line'
                 }
