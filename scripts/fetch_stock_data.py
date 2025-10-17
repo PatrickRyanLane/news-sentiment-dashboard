@@ -1,7 +1,7 @@
 """
 Fetch stock price data for companies in the roster.
 Retrieves opening prices and calculates daily and 7-day percentage changes.
-Stores 90 days of historical price data for charting.
+Stores 30 days of historical price data and trading volume for charting.
 """
 
 import yfinance as yf
@@ -19,7 +19,8 @@ OUTPUT_DIR = PROJECT_ROOT / 'data' / 'stock_prices'
 def fetch_stock_data():
     """
     Fetch stock data for all companies in the roster.
-    Returns a DataFrame with ticker, company, opening price, daily change %, 7-day change %, and 90-day price history.
+    Returns a DataFrame with ticker, company, opening price, daily change %, 7-day change %, 
+    90-day price history, and trading volume history.
     """
     print("Loading roster...")
     roster_df = pd.read_csv(ROSTER_PATH)
@@ -81,10 +82,15 @@ def fetch_stock_data():
             # Calculate 7-day percentage change
             seven_day_change = ((today_open - week_ago_close) / week_ago_close) * 100
             
-            # Store last 90 days of closing prices for charting
-            recent_history = hist.tail(90)
+            # Store last 30 days of closing prices and trading volume for charting
+            recent_history = hist.tail(30)
             price_history = recent_history['Close'].tolist()
+            volume_history = recent_history['Volume'].tolist()
             date_history = recent_history.index.strftime('%Y-%m-%d').tolist()
+            
+            # Calculate average volume for display
+            avg_volume = sum(volume_history) / len(volume_history) if volume_history else 0
+            vol_str = f"{avg_volume/1000000:.1f}M" if avg_volume >= 1000000 else f"{avg_volume/1000:.1f}K"
             
             results.append({
                 'ticker': ticker,
@@ -94,10 +100,11 @@ def fetch_stock_data():
                 'seven_day_change_pct': round(seven_day_change, 2),
                 'price_history': '|'.join(map(str, price_history)),
                 'date_history': '|'.join(date_history),
-                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'volume_history': '|'.join(map(str, [int(v) for v in volume_history]))
             })
             
-            print(f"  ✓ {company}: ${today_open:.2f} (Daily: {daily_change:+.2f}%, 7-day: {seven_day_change:+.2f}%) - {len(price_history)} days stored")
+            print(f"  ✓ {company}: ${today_open:.2f} (Daily: {daily_change:+.2f}%, 7-day: {seven_day_change:+.2f}%) - {len(price_history)} days, Avg Vol: {vol_str}")
             
         except Exception as e:
             print(f"  ✗ Error fetching {ticker} ({company}): {str(e)}")

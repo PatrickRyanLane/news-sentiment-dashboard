@@ -5,30 +5,30 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>CEO Risk Dashboard</title>
 
-<!-- Chart.js + PapaParse CDN -->
+<!-- Chart.js + PapaParse + Annotation Plugin CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
 :root {
-  /* New palette */
   --bg: #044152;
   --card: #092e37;
-  --muted: #a2ebf3;          /* lighter accent text */
-  --text: #ebf2f2;           /* main text color */
-  --accent: #58dbed;         /* links, highlights */
+  --muted: #a2ebf3;
+  --text: #ebf2f2;
+  --accent: #58dbed;
   --black: #1f2121;
   
   --pill-neg: #ff8261;
   --pill-neu: #cfdbdd;
   --pill-pos: #82c618;
 
-  --stroke: #0e2230;          /* border stroke */
+  --stroke: #0e2230;
   --chip: #12343e;
   --chipBorder: #174550;
   
-  --stock-pos:#22c55e; 
-  --stock-neg:#ef4444;
+  --stock-pos:#82c616; 
+  --stock-neg:#ff8261;
 }
 
 *{box-sizing:border-box}
@@ -37,18 +37,14 @@ body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 Inter,system-
 h1{font-size:28px;margin:6px 0 18px}
 
 /* Controls */
-.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 16px}
 .card{background:var(--card);border:1px solid var(--stroke);border-radius:12px;padding:12px 12px}
 select,input[type="text"]{background:#1f2121;border:1px solid #23314d;border-radius:10px;color:var(--text);padding:8px 10px}
 button{background:#1f2121;border:1px solid #2a3b5e;color:var(--text);border-radius:10px;padding:8px 12px;cursor:pointer}
 button:hover{filter:brightness(1.08)}
 
-/* Grid for charts */
-/* Spacing */
-.controls{ margin:0 0 16px }             /* a touch more space under controls */
 .grid{
   display:grid;
-  /* Both rows scale the same with viewport height, but never shrink below a comfy minimum */
   grid-template-rows: minmax(340px, 40vh) minmax(340px, 40vh);
   gap:16px;
   margin:16px 0;
@@ -56,24 +52,20 @@ button:hover{filter:brightness(1.08)}
 
 @media (min-width:980px){
   .grid{
-    /* Slightly taller on wider screens, still equal heights */
     grid-template-rows: minmax(360px, 42vh) minmax(360px, 42vh);
     gap:18px;
   }
 }
 
-/* Chart cards: add padding-bottom so long tick labels never clip */
 .chart-card{ background:var(--card); border:1px solid var(--stroke);
   border-radius:12px; padding:12px 12px 48px; position:relative }
 
-/* The magic: let Chart.js fill the card and respond to resizes */
 .chart-card canvas{
   width:100% !important;
   height:100% !important;
-  display:block;              /* removes baseline gap */
+  display:block;
 }
 
-/* NEW: chart pagination controls (top-right) */
 .chart-actions{
   position:absolute;
   top:10px; right:12px;
@@ -100,51 +92,43 @@ tbody tr:hover{background:rgba(88,219,237,.08)}
 tbody tr td:first-child{border-left:1px solid #0f1831;border-radius:10px 0 0 10px}
 tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 0}
 
-/* CEO column styling with company sub-header */
 .ceo-cell-content{display:flex;align-items:center;gap:8px}
 .ceo-name-block{display:flex;flex-direction:column;gap:2px}
 .ceo-name{font-weight:500}
 .company-subheader{font-size:11px;color:#7a9ca3;font-weight:400}
 
-/* Stock styling */
 .stock-price{font-family:'Courier New',monospace;font-weight:500;color:var(--text)}
 .stock-change{font-weight:600}
 .stock-change.positive{color:var(--stock-pos)}
 .stock-change.negative{color:var(--stock-neg)}
 
-/* Sparkline */
 .sparkline-cell{text-align:center;padding:6px 8px !important;cursor:pointer}
 .sparkline-cell:hover{background:rgba(88,219,237,.15)}
 .sparkline{display:inline-block;vertical-align:middle}
 
 .pill{font-size:12px;border-radius:999px;padding:3px 8px;border:1px solid var(--chipBorder);background:var(--chip);color:#cfe0ff}
-.pill.low  { background:rgba(130,198,24,.15); color:#82c618; }   /* green */
-.pill.med  { background:rgba(207,219,221,.25); color:#cfdbdd; } /* grey/neutral */
-.pill.high { background:rgba(255,130,97,.15); color:#ff8261; }  /* red/orange */
+.pill.low  { background:rgba(130,198,24,.15); color:#82c618; }
+.pill.med  { background:rgba(207,219,221,.25); color:#cfdbdd; }
+.pill.high { background:rgba(255,130,97,.15); color:#ff8261; }
 .link{color:var(--accent);text-decoration:underline}
-/* ===== Mobile horizontal scroll (Option A) ===== */
+
 .table-scroll{
   overflow-x:auto;
-  -webkit-overflow-scrolling:touch; /* momentum scroll on iOS */
+  -webkit-overflow-scrolling:touch;
 }
 
-/* Optional: nicer thin scrollbar on mobile */
 .table-scroll::-webkit-scrollbar{height:8px}
 .table-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.05);border-radius:8px}
 .table-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px}
 
-/* Keep the table wide enough to require horizontal scroll on small screens */
 @media (max-width: 960px){
-  .table-card{ padding:8px }                               /* a bit tighter padding */
+  .table-card{ padding:8px }
   .table-hint{ font-size:12px }
-  thead th, tbody td{ padding:6px 4px }                   /* smaller cell padding */
-
-  /* Slightly smaller pills/buttons for space */
+  thead th, tbody td{ padding:6px 4px }
   .pill{ font-size:11px; padding:3px 8px }
   .pagination{ gap:6px; flex-wrap:wrap }
 }
 
-/* Make the first column sticky so the CEO remains visible while scrolling */
 tbody td:first-child,
 thead th:first-child{
   position: sticky;
@@ -158,11 +142,8 @@ tbody td:first-child{
   background: var(--black);
 }
 
-/* Pagination */
 .pagination{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:8px}
 
-/* Modal */
-/* Modal (update these rules) */
 .modal{
   position:fixed;
   inset:0;
@@ -171,7 +152,7 @@ tbody td:first-child{
   align-items:center;
   justify-content:center;
   padding:24px;
-  z-index:10000;          /* <-- ensure overlay is above sticky cells */
+  z-index:10000;
 }
 .modal.open{ display:flex; }
 
@@ -180,7 +161,7 @@ tbody td:first-child{
   max-height:85vh; overflow:auto;
   background:#0e152a; border:1px solid #1b2745; border-radius:16px;
   position:relative;
-  z-index:10001;          /* <-- box above overlay */
+  z-index:10001;
 }
 .modal header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #12203d}
 .modal header h3{margin:0;font-size:16px}
@@ -216,11 +197,9 @@ tbody td:first-child{
 }
 .muted{color:var(--muted)}
 
-/* Stock chart modal */
-#stockChartModal .box{max-width:1000px}
-#stockChart{width:100%;height:400px}
+#stockChartModal .box{max-width:1000px; width:95%; max-height:90vh; overflow:auto;}
+#stockChart{width:100% !important; height:450px !important; min-height:400px;}
 
-/* SERP card layout */
 .serp-cards{display:grid;gap:12px;margin-top:12px}
 .serp-card{background:var(--card);border:1px solid var(--stroke);border-radius:12px;padding:14px 16px}
 .serp-domain{font-size:12px;color:var(--muted);margin-bottom:4px}
@@ -228,6 +207,363 @@ tbody td:first-child{
 .serp-snippet{color:var(--muted);margin-top:6px;line-height:1.35}
 .serp-metrics{margin:4px 0 0;color:var(--muted)}
 .serp-metrics b{color:var(--text)}
+
+#stockChartModal header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid #12203d;
+  gap: 12px;
+}
+
+#stockChartModal header h3 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.3;
+  flex: 1;
+  padding-right: 12px;
+}
+
+/* Volume toggle button */
+.volume-toggle {
+  background: rgba(88, 219, 237, 0.15);
+  border: 1px solid rgba(88, 219, 237, 0.3);
+  color: var(--accent);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.volume-toggle:hover {
+  background: rgba(88, 219, 237, 0.25);
+  border-color: rgba(88, 219, 237, 0.5);
+  transform: translateY(-1px);
+}
+
+.volume-toggle.active {
+  background: var(--accent);
+  color: var(--black);
+  border-color: var(--accent);
+}
+
+.volume-toggle.active:hover {
+  background: #6de5f5;
+  border-color: #6de5f5;
+}
+
+/* Trends toggle button */
+.trends-toggle {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #a855f7;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.trends-toggle:hover {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: rgba(168, 85, 247, 0.5);
+  transform: translateY(-1px);
+}
+
+.trends-toggle.active {
+  background: #a855f7;
+  color: white;
+  border-color: #a855f7;
+}
+
+.trends-toggle.active:hover {
+  background: #b975f7;
+  border-color: #b975f7;
+}
+
+
+#stockChartModal .content {
+  padding: 18px;
+}
+
+.sparkline-cell {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.sparkline-cell:hover {
+  background: rgba(88, 219, 237, 0.2) !important;
+}
+
+.sparkline-cell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  pointer-events: none;
+  transition: border-color 0.2s ease;
+}
+
+.sparkline-cell:hover::after {
+  border-color: rgba(88, 219, 237, 0.4);
+}
+
+.sparkline-cell:hover .sparkline {
+  filter: brightness(1.2);
+}
+
+.stock-chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.stock-chart-loading::before {
+  content: '📊';
+  font-size: 32px;
+  margin-right: 12px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes chartFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#stockChart {
+  animation: chartFadeIn 0.3s ease-out;
+}
+
+#stockChartModal .close {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+  font-size: 32px;
+  line-height: 28px;
+  font-weight: 300;
+  padding: 0 4px;
+  margin: -4px 0;
+}
+
+#stockChartModal .close:hover {
+  color: var(--accent) !important;
+  transform: scale(1.15);
+}
+
+#stockChartModal .close:active {
+  transform: scale(0.95);
+}
+
+.sparkline {
+  transition: opacity 0.2s ease;
+}
+
+.sparkline-cell:active .sparkline {
+  opacity: 0.7;
+}
+
+@media (max-width: 1024px) {
+  #stockChartModal .box {
+    width: 92%;
+    max-width: 900px;
+  }
+  
+  #stockChart {
+    height: 420px !important;
+    min-height: 380px;
+  }
+  
+  #stockChartModal header h3 {
+    font-size: 15px;
+  }
+  
+  #stockChartModal .content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  #stockChartModal .box {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100vh;
+    margin: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #stockChartModal header {
+    padding: 12px 16px;
+    flex-shrink: 0;
+  }
+  
+  #stockChartModal header h3 {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  #stockChartModal .close {
+    font-size: 28px;
+    line-height: 24px;
+  }
+  
+  #stockChartModal .content {
+    padding: 12px 16px 16px;
+    overflow-y: auto;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  #stockChart {
+    height: 350px !important;
+    min-height: 300px;
+    max-height: 60vh;
+  }
+  
+  #stockChartModal .close {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  #stockChartModal header h3 {
+    font-size: 13px;
+  }
+  
+  #stockChart {
+    height: 320px !important;
+    min-height: 280px;
+  }
+  
+  #stockChartModal .content {
+    padding: 10px 12px 14px;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  #stockChart {
+    height: 70vh !important;
+    min-height: 250px;
+  }
+}
+
+@media (min-width: 1400px) {
+  #stockChartModal .box {
+    max-width: 1200px;
+  }
+  
+  #stockChart {
+    height: 500px !important;
+  }
+  
+  #stockChartModal header h3 {
+    font-size: 18px;
+  }
+}
+
+body:has(#stockChartModal.open) {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .sparkline-cell {
+    padding: 10px 8px !important;
+  }
+  
+  button {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+}
+
+@media (min-width: 769px) {
+  #stockChartModal {
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+}
+
+/* ===== ENHANCED HEATMAP LEGEND STYLES ===== */
+.heatmap-legend {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  background: rgba(30, 40, 55, 0.7);
+  border: 1px solid rgba(88, 219, 237, 0.2);
+  border-radius: 8px;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  flex-wrap: wrap;
+  color: #e3f2f7;
+}
+
+.heatmap-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.heatmap-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+
+.heatmap-legend-dot.medium {
+  background: #ffaa44;
+}
+
+.heatmap-legend-dot.high {
+  background: #ff4444;
+}
+
+@media (max-width: 768px) {
+  .heatmap-legend {
+    font-size: 12px;
+    gap: 14px;
+    padding: 8px 12px;
+  }
+  
+  .heatmap-legend-dot {
+    width: 10px;
+    height: 10px;
+  }
+}
+
 </style>
 </head>
 
@@ -274,7 +610,7 @@ tbody td:first-child{
   </div>
 
   <div class="table-card">
-    <p class="table-hint">Select a CEO using the checkbox to view their trend lines. Click the sparkline to see the company's 90-day stock chart.</p>
+    <p class="table-hint">Select a CEO using the checkbox to view their trend lines. Click the sparkline to see the company's 30-day stock chart with negative article markers.</p>
     <div class="table-scroll">
       <table>
         <thead>
@@ -282,7 +618,7 @@ tbody td:first-child{
             <th>CEO</th>
             <th>Stock<br>Price</th>
             <th data-key="daily_change">Daily Change ▲▼</th>
-            <th>90-Day<br>Trend</th>
+            <th>30-Day<br>Trend</th>
             <th data-key="neg_news">Negative<br>News % ▲▼</th>
             <th data-key="neg_serp">Negative<br>SERP % ▲▼</th>
             <th data-key="ctrl_pct">SERP<br>Control % ▲▼</th>
@@ -304,7 +640,6 @@ tbody td:first-child{
   </div>
 </div>
 
-<!-- Modal -->
 <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="box">
     <header>
@@ -315,21 +650,32 @@ tbody td:first-child{
   </div>
 </div>
 
-<!-- Stock Chart Modal -->
+<!-- Stock Chart Modal with Heatmap Legend -->
 <div id="stockChartModal" class="modal" role="dialog" aria-modal="true">
   <div class="box">
     <header>
       <h3 id="stockChartTitle">Stock Price History</h3>
+      <button id="volumeToggle" class="volume-toggle">📊 Volume</button>
+      <button id="trendsToggle" class="trends-toggle">🔍 Trends</button>
       <span class="close" onclick="closeStockChart()">&times;</span>
     </header>
     <div class="content">
       <canvas id="stockChart"></canvas>
+      <div id="heatmapLegend" class="heatmap-legend" style="display: none;">
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-dot medium"></div>
+          <span>3-5 Negative Articles</span>
+        </div>
+        <div class="heatmap-legend-item">
+          <div class="heatmap-legend-dot high"></div>
+          <span>6+ Negative Articles</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-/********************** Config **********************/
 const COUNTS_CANDIDATES = ['data/daily_counts/ceo-articles-daily-counts-chart.csv'];
 const ROSTER_CANDIDATES = ['rosters/main-roster.csv'];
 const SERPS_DAILY_CSV = 'data/daily_counts/ceo-serps-daily-counts-chart.csv';
@@ -337,8 +683,8 @@ const BOARDS_CSV = 'rosters/boards-roster.csv';
 const SERP_ROWS_PATH = d => `data/processed_serps/${d}-ceo-serps-modal.csv`;
 const ARTICLES_DAILY_PATH = d => `data/processed_articles/${d}-ceo-articles-table.csv`;
 const SERP_PROCESSED_PATH = d => `data/processed_serps/${d}-ceo-serps-table.csv`;
+const HEADLINES_PATH_CEO = d => `data/processed_articles/${d}-ceo-articles-modal.csv`;
 
-/********************** Runtime **********************/
 let rosterMap = new Map();
 let companyToCeo = new Map();
 let allCountsRows = [];
@@ -352,14 +698,18 @@ const PAGE_SIZE = 25;
 
 let newsChart, serpChart, stockChart;
 let globalStockData = {};
+let showVolume = false; // Toggle state for volume display
+let showTrends = false; // Toggle state for trends display
+let globalTrendsData = {}; // Trends data by company
 
 const _articlesCache = new Map();
 const _serpAggCache  = new Map();
 
 const DATE_WINDOW_SIZE = 30;
 let dateWindowStart = null;
+let negativeSummaryMap = null;
+const NEGATIVE_ARTICLE_THRESHOLD = 3;
 
-/********************** Utils **********************/
 const isISODate = s => /^\d{4}-\d{2}-\d{2}$/.test(String(s||'').trim());
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m]));
 function fmtPct(v){ 
@@ -371,44 +721,42 @@ const canonName = s => String(s || '')
   .replace(/\s+/g, ' ')
   .trim();
 
-/********************** Stock Data **********************/
 async function loadStockData() {
   try {
-    // Get today's date in UTC (matching the workflow's perspective)
     const now = new Date();
     const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-    const today = todayUTC.toISOString().split('T')[0];
     
-    console.log('📊 Attempting to load stock data for:', today);
-    let stockData = {};
+    console.log('📊 Looking for most recent stock data...');
     
-    try {
-      console.log('🔍 Trying today file:', `data/stock_prices/${today}-stock-data.csv`);
-      const response = await fetch(`data/stock_prices/${today}-stock-data.csv`, {cache:'no-store'});
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const text = await response.text();
-      stockData = parseStockCSV(text);
-      console.log('✅ Loaded today stock data, companies:', Object.keys(stockData).length);
-    } catch (todayError) {
-      console.warn('⚠️  Today file failed:', todayError.message);
+    for (let daysBack = 0; daysBack < 7; daysBack++) {
+      const checkDate = new Date(todayUTC);
+      checkDate.setUTCDate(checkDate.getUTCDate() - daysBack);
+      const dateStr = checkDate.toISOString().split('T')[0];
       
-      // Try yesterday in UTC
-      const yesterdayUTC = new Date(todayUTC);
-      yesterdayUTC.setUTCDate(yesterdayUTC.getUTCDate() - 1);
-      const yesterday = yesterdayUTC.toISOString().split('T')[0];
-      
-      console.log('🔍 Trying yesterday file:', `data/stock_prices/${yesterday}-stock-data.csv`);
-      const response = await fetch(`data/stock_prices/${yesterday}-stock-data.csv`, {cache:'no-store'});
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const text = await response.text();
-      stockData = parseStockCSV(text);
-      console.log('✅ Loaded yesterday stock data, companies:', Object.keys(stockData).length);
+      try {
+        const url = `data/stock_prices/${dateStr}-stock-data.csv`;
+        console.log(`🔍 Trying: ${url}`);
+        
+        const response = await fetch(url, {cache:'no-store'});
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const text = await response.text();
+        const stockData = parseStockCSV(text);
+        
+        console.log(`✅ Successfully loaded stock data from ${dateStr} (${daysBack} day(s) old)`);
+        console.log(`📈 Found data for ${Object.keys(stockData).length} companies`);
+        
+        return stockData;
+      } catch (error) {
+        console.log(`⚠️  ${dateStr}: ${error.message}`);
+      }
     }
     
-    return stockData;
+    console.error('❌ No stock data found in the last 7 days');
+    return {};
+    
   } catch (error) {
     console.error('❌ STOCK DATA LOAD FAILED:', error);
-    console.error('📋 Stock data will not be displayed. Check network tab for failed requests.');
     return {};
   }
 }
@@ -433,7 +781,8 @@ function parseStockCSV(csvText) {
       sevenDayChange: parseFloat(values[4]) || null,
       priceHistory: values[5] ? values[5].split('|').map(p => parseFloat(p)).filter(p => !isNaN(p)) : [],
       dateHistory: values[6] ? values[6].split('|') : [],
-      lastUpdated: values[7]
+      lastUpdated: values[7],
+      volumeHistory: values[8] ? values[8].split('|').map(v => parseFloat(v)).filter(v => !isNaN(v)) : []
     };
   }
   
@@ -460,7 +809,7 @@ function createSparkline(prices, isPositive) {
   const stepX = (width - padding * 2) / (prices.length - 1);
   
   ctx.beginPath();
-  ctx.strokeStyle = isPositive ? '#22c55e' : '#ef4444';
+  ctx.strokeStyle = isPositive ? '#82c616' : '#ff8261';
   ctx.lineWidth = 1.5;
   
   prices.forEach((price, i) => {
@@ -479,7 +828,109 @@ function createSparkline(prices, isPositive) {
   return canvas;
 }
 
-function showStockChart(company) {
+async function loadNegativeSummary() {
+  console.log('📰 Loading negative articles summary...');
+  
+  try {
+    const rows = await fetchCsv('data/daily_counts/negative-articles-summary.csv');
+    
+    const summaryMap = new Map();
+    
+    rows.forEach(r => {
+      const company = String(r.company || '').trim();
+      if (!company || company === 'nan') return;
+      
+      const count = parseInt(r.negative_count) || 0;
+      if (count < NEGATIVE_ARTICLE_THRESHOLD) return;
+      
+      if (!summaryMap.has(company)) {
+        summaryMap.set(company, []);
+      }
+      
+      summaryMap.get(company).push({
+        date: String(r.date || '').trim(),
+        count: count,
+        headlines: (r.top_headlines || '').split('|').filter(h => h.trim()),
+        type: String(r.article_type || 'unknown').trim()
+      });
+    });
+    
+    console.log(`✅ Loaded negative summary for ${summaryMap.size} companies`);
+    
+    return summaryMap;
+    
+  } catch (e) {
+    console.error('❌ Failed to load negative summary:', e);
+    return new Map();
+  }
+}
+
+
+// Load Google Trends data
+async function loadTrendsData() {
+  try {
+    const now = new Date();
+    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    
+    console.log('🔍 Looking for most recent trends data...');
+    
+    for (let daysBack = 0; daysBack < 7; daysBack++) {
+      const checkDate = new Date(todayUTC);
+      checkDate.setUTCDate(checkDate.getUTCDate() - daysBack);
+      const dateStr = checkDate.toISOString().split('T')[0];
+      
+      try {
+        const url = `data/trends_data/${dateStr}-trends-data.csv`;
+        console.log(`🔍 Trying: ${url}`);
+        
+        const response = await fetch(url, {cache:'no-store'});
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const text = await response.text();
+        const trendsData = parseTrendsCSV(text);
+        
+        console.log(`✅ Successfully loaded trends data from ${dateStr} (${daysBack} day(s) old)`);
+        console.log(`📈 Found trends for ${Object.keys(trendsData).length} companies`);
+        
+        return trendsData;
+      } catch (error) {
+        console.log(`⚠️  ${dateStr}: ${error.message}`);
+      }
+    }
+    
+    console.warn('⚠️  No trends data found in the last 7 days');
+    return {};
+    
+  } catch (error) {
+    console.error('❌ TRENDS DATA LOAD FAILED:', error);
+    return {};
+  }
+}
+
+function parseTrendsCSV(csvText) {
+  const lines = csvText.trim().split('\n');
+  const trendsData = {};
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+
+    const values = line.split(',');
+    if (values.length < 3) continue;
+
+    const company = values[0];
+    trendsData[company] = {
+      company: values[0],
+      trendsHistory: values[1] ? values[1].split('|').map(v => parseFloat(v)).filter(v => !isNaN(v)) : [],
+      dateHistory: values[2] ? values[2].split('|') : [],
+      lastUpdated: values[3] || ''
+    };
+  }
+
+  return trendsData;
+}
+
+async function showStockChart(company) {
   const stock = globalStockData[company];
   if (!stock || !stock.priceHistory || !stock.priceHistory.length) {
     alert('No stock data available for this company');
@@ -488,75 +939,442 @@ function showStockChart(company) {
   
   const modal = document.getElementById('stockChartModal');
   document.getElementById('stockChartTitle').textContent = 
-    `${company} (${stock.ticker}) - 90-Day Price History`;
+    `${company} (${stock.ticker}) - 30-Day Price History`;
   modal.classList.add('open');
   
   if (stockChart) stockChart.destroy();
   
+  const negativeDates = negativeSummaryMap?.get(company) || [];
+  const relevantNegatives = negativeDates.filter(item => 
+    stock.dateHistory.includes(item.date)
+  );
+  
+  const negativesByDate = new Map();
+  relevantNegatives.forEach(item => {
+    if (!negativesByDate.has(item.date)) {
+      negativesByDate.set(item.date, {
+        totalCount: 0,
+        ceoCount: 0,
+        brandCount: 0,
+        allHeadlines: []
+      });
+    }
+    const agg = negativesByDate.get(item.date);
+    agg.totalCount += item.count;
+    if (item.type === 'ceo') agg.ceoCount += item.count;
+    if (item.type === 'brand') agg.brandCount += item.count;
+    agg.allHeadlines.push(...item.headlines);
+  });
+  
+  console.log(`📊 ${company}: ${negativesByDate.size} dates with ${NEGATIVE_ARTICLE_THRESHOLD}+ negative articles`);
+  
+  const legendEl = document.getElementById('heatmapLegend');
+  if (negativesByDate.size > 0) {
+    legendEl.style.display = 'flex';
+  } else {
+    legendEl.style.display = 'none';
+  }
+  
+  const annotations = {};
+  Array.from(negativesByDate.entries()).forEach(([date, data], idx) => {
+    const priceIndex = stock.dateHistory.indexOf(date);
+    if (priceIndex === -1) return;
+    
+    const price = stock.priceHistory[priceIndex];
+    const intensity = data.totalCount >= 6 ? 'high' : 'medium';
+    
+    annotations[`negArticle${idx}`] = {
+      type: 'point',
+      xValue: date,
+      yValue: price,
+      yScaleID: 'yPrice',
+      backgroundColor: intensity === 'high' ? '#ff4444' : '#ffaa44',
+      borderColor: '#ffffff',
+      borderWidth: 2,
+      radius: Math.min(data.totalCount + 3, 14),
+      enter(context) {
+        context.element.options.radius = Math.min(data.totalCount + 5, 18);
+        context.element.options.borderWidth = 3;
+        stockChart.update('none');
+        return true;
+      },
+      leave(context) {
+        context.element.options.radius = Math.min(data.totalCount + 3, 14);
+        context.element.options.borderWidth = 2;
+        stockChart.update('none');
+        return true;
+      }
+    };
+  });
+  
   const ctx = document.getElementById('stockChart').getContext('2d');
-  const isPositive = (stock.sevenDayChange !== null && stock.sevenDayChange >= 0);
+  // Match sparkline logic: compare first to last price in 30-day window
+  const firstPrice = stock.priceHistory[0];
+  const lastPrice = stock.priceHistory[stock.priceHistory.length - 1];
+  const isPositive = lastPrice >= firstPrice;
+  
+  const datasets = [{
+    label: 'Closing Price ($)',
+    data: stock.priceHistory,
+    borderColor: isPositive ? '#82c616' : '#ff8261',
+    backgroundColor: isPositive ? 'rgba(130, 198, 22, 0.1)' : 'rgba(255, 130, 97, 0.1)',
+    borderWidth: 2,
+    tension: 0.1,
+    fill: true,
+    pointRadius: 2,
+    pointHoverRadius: 5,
+    yAxisID: 'yPrice',
+    type: 'line',
+    order: 1
+  }];
+  
+  if (showVolume && stock.volumeHistory && stock.volumeHistory.length > 0) {
+    datasets.push({
+      label: 'Volume',
+      data: stock.volumeHistory,
+      backgroundColor: 'rgba(88, 219, 237, 0.3)',
+      borderColor: 'rgba(88, 219, 237, 0.5)',
+      borderWidth: 1,
+      yAxisID: 'yVolume',
+      type: 'bar',
+      order: 2,
+      barPercentage: 0.9,
+      categoryPercentage: 0.95
+    });
+  }
+  
+  const trendsData = globalTrendsData[company];
+  if (showTrends && trendsData && trendsData.trendsHistory && trendsData.trendsHistory.length > 0) {
+    datasets.push({
+      label: 'Search Interest',
+      data: trendsData.trendsHistory,
+      borderColor: '#a855f7',
+      backgroundColor: 'rgba(168, 85, 247, 0.1)',
+      borderWidth: 2,
+      tension: 0.3,
+      fill: false,
+      yAxisID: 'yTrends',
+      type: 'line',
+      order: 0,
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      pointBackgroundColor: '#a855f7',
+      pointBorderColor: '#ffffff',
+      pointBorderWidth: 1
+    });
+  }
   
   stockChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: stock.dateHistory,
-      datasets: [{
-        label: 'Closing Price ($)',
-        data: stock.priceHistory,
-        borderColor: isPositive ? '#22c55e' : '#ef4444',
-        backgroundColor: isPositive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-        borderWidth: 2,
-        tension: 0.1,
-        fill: true,
-        pointRadius: 2,
-        pointHoverRadius: 5
-      }]
+      datasets: datasets
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
       plugins: {
-        legend: { display: false },
+        legend: { 
+          display: false,
+          position: 'top',
+          labels: {
+            color: '#ffffff',
+            font: {
+              size: window.innerWidth < 768 ? 11 : 13,
+              weight: '500'
+            },
+            padding: 12,
+            usePointStyle: true,
+            pointStyle: 'circle',
+            boxWidth: 8,
+            boxHeight: 8,
+            generateLabels: function(chart) {
+              const labels = [
+                {
+                  text: 'Stock Price',
+                  fillStyle: isPositive ? '#82c616' : '#ff8261',
+                  strokeStyle: isPositive ? '#82c616' : '#ff8261',
+                  lineWidth: 2,
+                  pointStyle: 'line'
+                }
+              ];
+              
+              if (showVolume && stock.volumeHistory && stock.volumeHistory.length > 0) {
+                labels.push({
+                  text: 'Trading Volume',
+                  fillStyle: 'rgba(88, 219, 237, 0.3)',
+                  strokeStyle: 'rgba(88, 219, 237, 0.5)',
+                  lineWidth: 1,
+                  pointStyle: 'rect'
+                });
+              }
+              
+              if (showTrends && trendsData && trendsData.trendsHistory && trendsData.trendsHistory.length > 0) {
+                labels.push({
+                  text: 'Search Interest (0-100)',
+                  fillStyle: 'rgba(168, 85, 247, 0.1)',
+                  strokeStyle: '#a855f7',
+                  lineWidth: 2,
+                  pointStyle: 'line'
+                });
+              }
+              
+              if (negativesByDate.size > 0) {
+                let totalCeo = 0, totalBrand = 0;
+                negativesByDate.forEach(data => {
+                  totalCeo += data.ceoCount;
+                  totalBrand += data.brandCount;
+                });
+                
+                if (totalCeo > 0 && totalBrand > 0) {
+                  labels.push({
+                    text: `Negative Articles (${totalCeo} CEO, ${totalBrand} Brand)`,
+                    fillStyle: '#ffaa44',
+                    strokeStyle: '#ffffff',
+                    lineWidth: 2,
+                    pointStyle: 'circle'
+                  });
+                } else if (totalCeo > 0) {
+                  labels.push({
+                    text: `Negative CEO Articles (${totalCeo})`,
+                    fillStyle: '#ffaa44',
+                    strokeStyle: '#ffffff',
+                    lineWidth: 2,
+                    pointStyle: 'circle'
+                  });
+                } else if (totalBrand > 0) {
+                  labels.push({
+                    text: `Negative Brand Articles (${totalBrand})`,
+                    fillStyle: '#ffaa44',
+                    strokeStyle: '#ffffff',
+                    lineWidth: 2,
+                    pointStyle: 'circle'
+                  });
+                }
+              }
+              
+              return labels;
+            }
+          }
+        },
+        annotation: {
+          annotations: annotations
+        },
         tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: 'rgba(255, 255, 255, 0.3)',
+          borderWidth: 1,
+          padding: window.innerWidth < 768 ? 10 : 14,
+          displayColors: false,
+          titleFont: {
+            size: window.innerWidth < 768 ? 12 : 13,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: window.innerWidth < 768 ? 11 : 12
+          },
           callbacks: {
+            title: function(tooltipItems) {
+              if (!tooltipItems || tooltipItems.length === 0) return '';
+              return tooltipItems[0].label;
+            },
             label: function(context) {
-              return '$' + context.parsed.y.toFixed(2);
+              const lines = [];
+              
+              if (context.dataset.yAxisID === 'yVolume') {
+                const vol = context.parsed.y;
+                const volStr = vol >= 1000000 
+                  ? `${(vol / 1000000).toFixed(2)}M` 
+                  : vol >= 1000 
+                    ? `${(vol / 1000).toFixed(2)}K` 
+                    : vol.toFixed(0);
+                return [`Volume: ${volStr}`];
+              }
+              
+              if (context.dataset.yAxisID === 'yTrends') {
+                return [`Search Interest: ${context.parsed.y.toFixed(0)}/100`];
+              }
+              
+              lines.push(`Price: $${context.parsed.y.toFixed(2)}`);
+              
+              const date = context.label;
+              const negData = negativesByDate.get(date);
+              
+              if (negData) {
+                lines.push('');
+                lines.push(`⚠️  ${negData.totalCount} Negative Article${negData.totalCount > 1 ? 's' : ''}`);
+                
+                if (negData.ceoCount > 0) {
+                  lines.push(`   CEO: ${negData.ceoCount}`);
+                }
+                if (negData.brandCount > 0) {
+                  lines.push(`   Brand: ${negData.brandCount}`);
+                }
+                
+                const previewHeadlines = negData.allHeadlines.slice(0, 3);
+                if (previewHeadlines.length > 0) {
+                  lines.push('');
+                  previewHeadlines.forEach((headline, i) => {
+                    const maxLength = window.innerWidth < 768 ? 40 : 55;
+                    const truncated = headline.length > maxLength 
+                      ? headline.substring(0, maxLength - 3) + '...' 
+                      : headline;
+                    lines.push(`• ${truncated}`);
+                  });
+                  
+                  if (negData.allHeadlines.length > 3) {
+                    lines.push(`   ... and ${negData.allHeadlines.length - 3} more`);
+                  }
+                }
+              }
+              
+              return lines;
             }
           }
         }
       },
       scales: {
-        y: {
+        yPrice: {
+          type: 'linear',
+          position: 'left',
           beginAtZero: false,
           ticks: {
+            color: '#ebf2f2',
+            font: {
+              size: window.innerWidth < 768 ? 10 : 11
+            },
             callback: function(value) {
               return '$' + value.toFixed(2);
             }
+          },
+          grid: {
+            color: 'rgba(255,255,255,.08)'
           }
+        },
+        yVolume: {
+          type: 'linear',
+          position: 'right',
+          display: showVolume && stock.volumeHistory && stock.volumeHistory.length > 0,
+          beginAtZero: true,
+          ticks: {
+            color: 'rgba(88, 219, 237, 0.8)',
+            font: {
+              size: window.innerWidth < 768 ? 9 : 10
+            },
+            callback: function(value) {
+              if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+              if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
+              return value.toFixed(0);
+            }
+          },
+          grid: {
+            display: false
+          }
+        },
+        yTrends: {
+          type: 'linear',
+          position: 'right',
+          display: showTrends && trendsData && trendsData.trendsHistory && trendsData.trendsHistory.length > 0,
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            color: 'rgba(168, 85, 247, 0.8)',
+            font: {
+              size: window.innerWidth < 768 ? 9 : 10
+            },
+            callback: function(value) {
+              return value.toFixed(0);
+            }
+          },
+          grid: {
+            display: false
+          },
+          offset: showVolume
         },
         x: {
           ticks: {
-            maxTicksLimit: 10,
+            color: '#ebf2f2',
+            font: {
+              size: window.innerWidth < 768 ? 9 : 11
+            },
+            maxTicksLimit: window.innerWidth < 768 ? 6 : 10,
             autoSkip: true
+          },
+          grid: {
+            color: 'rgba(255,255,255,.05)'
           }
         }
       }
     }
   });
+  
+  const volumeBtn = document.getElementById('volumeToggle');
+  if (volumeBtn) {
+    if (showVolume) {
+      volumeBtn.classList.add('active');
+    } else {
+      volumeBtn.classList.remove('active');
+    }
+    
+    if (!stock.volumeHistory || stock.volumeHistory.length === 0) {
+      volumeBtn.style.display = 'none';
+    } else {
+      volumeBtn.style.display = 'block';
+    }
+    
+    const newBtn = volumeBtn.cloneNode(true);
+    volumeBtn.parentNode.replaceChild(newBtn, volumeBtn);
+    
+    newBtn.onclick = () => {
+      showVolume = !showVolume;
+      showStockChart(company);
+    };
+  }
+  
+  const trendsBtn = document.getElementById('trendsToggle');
+  if (trendsBtn) {
+    if (showTrends) {
+      trendsBtn.classList.add('active');
+    } else {
+      trendsBtn.classList.remove('active');
+    }
+    
+    const trendsData = globalTrendsData[company];
+    if (!trendsData || !trendsData.trendsHistory || trendsData.trendsHistory.length === 0) {
+      trendsBtn.style.display = 'none';
+    } else {
+      trendsBtn.style.display = 'block';
+    }
+    
+    const newTrendsBtn = trendsBtn.cloneNode(true);
+    trendsBtn.parentNode.replaceChild(newTrendsBtn, trendsBtn);
+    
+    newTrendsBtn.onclick = () => {
+      showTrends = !showTrends;
+      showStockChart(company);
+    };
+  }
 }
 
 function closeStockChart() {
   document.getElementById('stockChartModal').classList.remove('open');
 }
 
-/* ===== NEW: pager helpers ===== */
 function clampDateStart(total){
   if (total <= DATE_WINDOW_SIZE) return 0;
   const maxStart = total - DATE_WINDOW_SIZE;
   const start = (dateWindowStart ?? maxStart);
   return Math.min(Math.max(0, start), maxStart);
 }
+
 function sliceWindow(arr, start, size){ return arr.slice(start, start + size); }
+
 function updateDateRangeUI(allDates){
   const start = clampDateStart(allDates.length);
   const end = Math.min(allDates.length, start + DATE_WINDOW_SIZE);
@@ -568,6 +1386,7 @@ function updateDateRangeUI(allDates){
   document.querySelectorAll('.dates-prev').forEach(b => b.disabled = atStart);
   document.querySelectorAll('.dates-next').forEach(b => b.disabled = atEnd);
 }
+
 function hookDatePager(allDates){
   const goPrev = () => {
     const total = allDates.length;
@@ -587,7 +1406,6 @@ function hookDatePager(allDates){
   document.querySelectorAll('.dates-next').forEach(b => b.onclick = goNext);
 }
 
-/********************** CSV helpers **********************/
 async function fetchCsv(url){
   const r = await fetch(url, {cache:'no-store'});
   if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
@@ -598,15 +1416,15 @@ async function fetchCsv(url){
     });
   });
 }
+
 async function fetchCsvAny(candidates){
   for (const u of candidates){
     try { const rows = await fetchCsv(u); if (Array.isArray(rows)) return rows; }
-    catch(e){ /* next */ }
+    catch(e){ }
   }
   return [];
 }
 
-/********************** Loaders for charts/boards/roster **********************/
 async function loadRoster(){
   const rows = await fetchCsvAny(ROSTER_CANDIDATES);
   rosterMap = new Map();
@@ -620,6 +1438,7 @@ async function loadRoster(){
     }
   });
 }
+
 async function loadBoards(){
   boardsByCeo = new Map();
   try{
@@ -644,6 +1463,7 @@ async function loadBoards(){
     boardsByCeo = new Map();
   }
 }
+
 async function loadCounts(){
   const rows = await fetchCsvAny(COUNTS_CANDIDATES);
   allCountsRows = rows
@@ -658,6 +1478,7 @@ async function loadCounts(){
     }))
     .filter(r => isISODate(r.date) && r.ceo);
 }
+
 async function loadSerpDaily(){
   try{
     const rows = await fetchCsv(SERPS_DAILY_CSV);
@@ -672,7 +1493,6 @@ async function loadSerpDaily(){
   }catch(e){ serpsDaily = []; }
 }
 
-/********************** Risk **********************/
 function computeRisk(negPct, ctrlPct){
   if (negPct == null || isNaN(negPct)) return 'N/A';
   if (negPct > 0) return 'High';
@@ -680,7 +1500,6 @@ function computeRisk(negPct, ctrlPct){
   return (ctrlPct < 0.35) ? 'Medium' : 'Low';
 }
 
-/********************** NEW: per-date table sources **********************/
 function toPct01(x){
   if (x == null || x === '') return null;
   const n = +String(x).replace('%','').trim();
@@ -707,7 +1526,7 @@ async function getArticlesForDate(d){
       }
       map.set(ceo, { company, theme, neg_pct: neg });
     });
-  }catch(e){ /* missing is allowed */ }
+  }catch(e){ }
   _articlesCache.set(d, map);
   return map;
 }
@@ -726,14 +1545,21 @@ async function getSerpAggForDate(d){
         controlled: +r.controlled || 0
       });
     });
-  }catch(e){ /* allowed */ }
+  }catch(e){ }
   _serpAggCache.set(d, map);
   return map;
 }
 
-/********************** UI bootstrap **********************/
 async function init(){
-  await Promise.all([loadRoster(), loadCounts(), loadSerpDaily(), loadBoards(), loadStockData().then(data => globalStockData = data)]);
+  await Promise.all([
+    loadRoster(), 
+    loadCounts(), 
+    loadSerpDaily(), 
+    loadBoards(), 
+    loadStockData().then(data => globalStockData = data),
+    loadNegativeSummary().then(data => negativeSummaryMap = data),
+    loadTrendsData().then(data => globalTrendsData = data)
+  ]);
   
   console.log('📈 Stock data loaded. Companies with stock data:', Object.keys(globalStockData).length);
   if (Object.keys(globalStockData).length === 0) {
@@ -782,7 +1608,6 @@ async function init(){
   };
 }
 
-/********************** Data → view rows **********************/
 async function buildRowsForDate(d){
   const articles = await getArticlesForDate(d);
   const serpAgg  = await getSerpAggForDate(d);
@@ -798,7 +1623,6 @@ async function buildRowsForDate(d){
     }
     const risk = computeRisk(negSerpPct, ctrlPct);
 
-    // Get stock data for sorting
     const stock = globalStockData[a.company];
     const dailyChange = stock?.dailyChange ?? null;
 
@@ -817,7 +1641,6 @@ async function buildRowsForDate(d){
   return out;
 }
 
-/********************** Rendering **********************/
 async function renderAll(){
   const d = document.getElementById('dateSelect').value;
   const filter = document.getElementById('filterInput').value.trim().toLowerCase();
@@ -921,19 +1744,19 @@ function renderTable(){
   
   tbody.innerHTML = rowsHTML;
   
-  // Now inject sparklines
   pageRows.forEach(r => {
     const stock = globalStockData[r.company];
     if (stock && stock.priceHistory && stock.priceHistory.length >= 2) {
       const sparklineId = `sparkline-${r.company.replace(/[^a-zA-Z0-9]/g, '-')}`;
       const container = document.getElementById(sparklineId);
       if (container) {
-        const isPositive = stock.sevenDayChange !== null && stock.sevenDayChange >= 0;
+        const firstPrice = stock.priceHistory[0];
+        const lastPrice = stock.priceHistory[stock.priceHistory.length - 1];
+        const isPositive = lastPrice >= firstPrice;
         container.innerHTML = '';
         const canvas = createSparkline(stock.priceHistory, isPositive);
         if (canvas) container.appendChild(canvas);
         
-        // Add click handler to sparkline cell
         const sparklineCell = container.closest('td');
         if (sparklineCell) {
           sparklineCell.onclick = (e) => {
@@ -953,6 +1776,7 @@ function renderTable(){
       renderCharts();
     });
   });
+  
   tbody.querySelectorAll('.serpBtn').forEach(btn=>{
     btn.onclick = ()=>{
       const ceo = btn.getAttribute('data-ceo');
@@ -960,12 +1784,14 @@ function renderTable(){
       showSerp({ceo, company});
     };
   });
+  
   tbody.querySelectorAll('.headBtn').forEach(btn=>{
     btn.onclick = ()=>{
       const ceo = btn.getAttribute('data-ceo');
       showHeadlines({ceo});
     };
   });
+  
   tbody.querySelectorAll('.boardsBtn').forEach(btn=>{
     btn.onclick = ()=>{
       const ceo = btn.getAttribute('data-ceo');
@@ -977,7 +1803,6 @@ function renderTable(){
   document.getElementById('pageTotal').textContent = String(Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE)));
 }
 
-/********************** Charts (windowed + synced) **********************/
 function getDateSeries(){
   const byDate = new Map();
   allCountsRows.forEach(r=>{
@@ -1133,19 +1958,18 @@ function renderCharts(){
   });
 }
 
-/********************** Modals **********************/
 const modal = document.getElementById('modal');
 const modalTitle = document.getElementById('modalTitle');
 const modalContent = document.getElementById('modalContent');
 document.getElementById('modalClose').onclick = ()=> modal.classList.remove('open');
 modal.addEventListener('click', e=>{ if (e.target===modal) modal.classList.remove('open'); });
+
 function openModal(title, html){
   modalTitle.textContent = title;
   modalContent.innerHTML = html;
   modal.classList.add('open');
 }
 
-/********************** Boards modal **********************/
 function showBoards(ceo){
   const key = canonName(ceo);
   let boards = boardsByCeo.get(ceo) || boardsByCeo.get(key);
@@ -1170,10 +1994,9 @@ function showBoards(ceo){
   openModal(`Boards — ${ceo}`, html);
 }
 
-/********************** Headlines modal **********************/
 async function showHeadlines({ ceo }) {
   const d = document.getElementById('dateSelect').value;
-  const file = `data/processed_articles/${d}-ceo-articles-modal.csv`;
+  const file = HEADLINES_PATH_CEO(d);
 
   let rows = [];
   try {
@@ -1218,8 +2041,6 @@ async function showHeadlines({ ceo }) {
   openModal(`Headlines — ${esc(ceo)}`, `<div class="serp-cards">${cards}</div>`);
 }
 
-
-/********************** SERP modal **********************/
 async function showSerp(row){
   const d = document.getElementById('dateSelect').value;
   const path = SERP_ROWS_PATH(d);
@@ -1279,7 +2100,6 @@ async function showSerp(row){
   openModal(`SERP — ${esc(row.ceo)}`, `${metrics}<div class="serp-cards">${cards}</div>`);
 }
 
-/********************** Init **********************/
 init();
 </script>
 </body>

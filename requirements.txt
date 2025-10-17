@@ -10,3 +10,4 @@ requests>=2.31
 python-dateutil>=2.9
 tqdm>=4.66
 yfinance>=0.2.40
+pytrends>=4.9.0

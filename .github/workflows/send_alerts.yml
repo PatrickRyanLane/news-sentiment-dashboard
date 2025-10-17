@@ -43,20 +43,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-          cache: "pip"
+          fetch-depth: 1  # Shallow clone
+          # Alert script likely reads recent data files to determine what to send
+          sparse-checkout: |
+            requirements.txt
+            scripts/
+            rosters/
+            data/processed_articles/
+            data/processed_serps/
+            .github/
+          sparse-checkout-cone-mode: false
 
-      - name: Install dependencies
+      - name: Setup Python environment
+        uses: ./.github/actions/setup-python-env
+          
+
+      - name: Ensure data directory for alert tracking
         run: |
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          else
-            pip install pandas requests
-          fi
+          mkdir -p data/email_alerts
 
       - name: Download last cooldown artifact
         uses: dawidd6/action-download-artifact@v6
