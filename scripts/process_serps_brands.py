@@ -8,6 +8,7 @@ Process daily BRAND SERP data:
     (1) Always-controlled platforms (and their subdomains):
         facebook.com, instagram.com, twitter.com, x.com, linkedin.com, play.google.com, apps.apple.com
     (2) Any domain (or its subdomains) present in rosters/main-roster.csv (Website column)
+        Multiple URLs can be separated by pipe (|) character
     (3) Domain contains the normalized brand token
 
 - If CONTROLLED and FORCE_POSITIVE_IF_CONTROLLED = True -> sentiment is forced to "positive"
@@ -113,6 +114,10 @@ def _norm_domain_for_name_match(host: str) -> str:
 # Roster loading
 # -----------------------
 def load_roster_domains(path: str = MAIN_ROSTER_PATH) -> Set[str]:
+    """
+    Load controlled domains from roster.
+    Supports pipe-separated URLs in a single cell: 'domain1.com|domain2.com|domain3.com'
+    """
     domains: Set[str] = set()
 
     if not os.path.exists(path):
@@ -136,12 +141,19 @@ def load_roster_domains(path: str = MAIN_ROSTER_PATH) -> Set[str]:
         for val in df[website_col].dropna().astype(str):
             val = val.strip()
             if val and val != "nan":
-                if not val.startswith(("http://", "https://")):
-                    val = f"http://{val}"
-                host = _hostname(val)
-                if host and "." in host:
-                    domains.add(host)
-                    
+                # Split on pipe character to support multiple URLs per company
+                urls = val.split("|")
+                
+                for url in urls:
+                    url = url.strip()
+                    if not url:
+                        continue
+                    if not url.startswith(("http://", "https://")):
+                        url = f"http://{url}"
+                    host = _hostname(url)
+                    if host and "." in host:
+                        domains.add(host)
+                        
     except Exception as e:
         print(f"[WARN] failed reading roster at {path}: {e}")
 

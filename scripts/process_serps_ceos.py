@@ -125,6 +125,10 @@ def fetch_csv_text(url: str, timeout=30):
     return r.text
 
 def load_roster_data():
+    """
+    Load roster data with support for pipe-separated URLs.
+    Example: 'apple.com|support.apple.com|developer.apple.com'
+    """
     if not MAIN_ROSTER_PATH.exists():
         raise FileNotFoundError(f"Main roster not found: {MAIN_ROSTER_PATH}")
 
@@ -170,16 +174,23 @@ def load_roster_data():
         for val in df[website_col].dropna().astype(str):
             val = val.strip()
             if val and val != "nan":
-                try:
-                    if not val.startswith(("http://", "https://")):
-                        val = f"https://{val}"
-                    parsed = urlparse(val)
-                    host = (parsed.netloc or parsed.path or "").lower().strip()
-                    host = host.replace("www.", "")
-                    if host and "." in host:
-                        controlled_domains.add(host)
-                except Exception:
-                    pass
+                # Split on pipe character to support multiple URLs per company
+                urls = val.split("|")
+                
+                for url in urls:
+                    url = url.strip()
+                    if not url:
+                        continue
+                    try:
+                        if not url.startswith(("http://", "https://")):
+                            url = f"https://{url}"
+                        parsed = urlparse(url)
+                        host = (parsed.netloc or parsed.path or "").lower().strip()
+                        host = host.replace("www.", "")
+                        if host and "." in host:
+                            controlled_domains.add(host)
+                    except Exception:
+                        pass
 
     return alias_map, ceo_to_company, controlled_domains
 
