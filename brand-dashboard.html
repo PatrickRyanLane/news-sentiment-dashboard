@@ -101,6 +101,61 @@ tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 
   .pill{font-size:11px}
 }
 
+/* Tooltips */
+.tooltip-header {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted #a2ebf3;
+  cursor: help;
+}
+
+.tooltip-header .tooltip-text {
+  visibility: hidden;
+  width: 240px;
+  background-color: #1f2121;
+  color: #ebf2f2;
+  text-align: left;
+  border: 1px solid #2a3b5e;
+  border-radius: 8px;
+  padding: 10px 12px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -120px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: normal;
+  white-space: normal;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.tooltip-header .tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #1f2121 transparent transparent transparent;
+}
+
+.tooltip-header:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .tooltip-header .tooltip-text {
+    width: 200px;
+    margin-left: -100px;
+    font-size: 11px;
+  }
+}
+
 /* Sticky first column (Company + checkbox) */
 thead th:first-child, tbody td:first-child{
   position:sticky;left:0;z-index:2;box-shadow:2px 0 0 0 rgba(255,255,255,.06);
@@ -588,7 +643,7 @@ body:has(#stockChartModal.open) {
           <tr>
             <th>Company</th>
             <th>Stock<br>Price</th>
-            <th data-key="daily_change">Daily Change ▲▼</th>
+            <th data-key="daily_change"><div class="tooltip-header">Overnight % Change ▲▼<span class="tooltip-text">Percentage change from yesterday's close to today's market open (overnight gap)</span></div></th>
             <th>30-Day<br>Trend</th>
             <th data-key="neg_news">Negative<br>News % ▲▼</th>
             <th data-key="neg_serp">Negative<br>SERP % ▲▼</th>

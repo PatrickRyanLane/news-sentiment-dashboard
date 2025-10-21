@@ -63,10 +63,10 @@ def fetch_stock_data():
             # Get today's opening price (most recent)
             today_open = hist['Open'].iloc[-1]
             
-            # Calculate daily change (today's open vs yesterday's close)
+            # Calculate overnight change (today's open vs yesterday's close)
             if len(hist) >= 2:
                 yesterday_close = hist['Close'].iloc[-2]
-                daily_change = ((today_open - yesterday_close) / yesterday_close) * 100
+                daily_change = ((yesterday_close - today_open) / yesterday_close) * 100
             else:
                 daily_change = 0
                 print(f"  ⚠️  Not enough data for daily change calculation for {ticker}")
