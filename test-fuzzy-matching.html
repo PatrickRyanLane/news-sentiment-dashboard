@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Test Fuzzy Matching</title>
+<style>
+  body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #e0e0e0; }
+  .match { background: #2d5a2d; padding: 4px; }
+  .no-match { background: #5a2d2d; padding: 4px; }
+  h2 { color: #58dbed; }
+  pre { background: #2a2a2a; padding: 12px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Fuzzy Matching Test</h1>
+<div id="output"></div>
+
+<script>
+// Fuzzy matching functions
+const COMPANY_SUFFIXES = [
+  ' Company', ' Corporation', ' Corp', ' Corp.', ' Inc', ' Inc.', 
+  ' Incorporated', ' LLC', ' L.L.C.', ' Ltd', ' Ltd.', ' Limited',
+  ' Co', ' Co.', ' Group', ' Holdings', ' Technologies', ' Enterprises',
+  ' Partners', ' & Co', ' & Company', ' plc', ' PLC', ' AG', ' SA', ' NV'
+];
+
+function normalizeCompanyName(name) {
+  if (!name) return '';
+  let normalized = String(name).trim().toLowerCase();
+  
+  COMPANY_SUFFIXES.forEach(suffix => {
+    const suffixLower = suffix.toLowerCase();
+    if (normalized.endsWith(suffixLower)) {
+      normalized = normalized.substring(0, normalized.length - suffixLower.length).trim();
+    }
+  });
+  
+  normalized = normalized.replace(/[^\w\s]/g, '').trim();
+  normalized = normalized.replace(/\s+/g, ' ');
+  
+  return normalized;
+}
+
+function isCompanyMatch(name1, name2) {
+  if (!name1 || !name2) return false;
+  if (name1 === name2) return true;
+  
+  const norm1 = normalizeCompanyName(name1);
+  const norm2 = normalizeCompanyName(name2);
+  
+  if (norm1 === norm2) return true;
+  
+  const short = norm1.length < norm2.length ? norm1 : norm2;
+  const long = norm1.length < norm2.length ? norm2 : norm1;
+  
+  if (long.startsWith(short) && short.length >= 2) {
+    return true;
+  }
+  
+  return false;
+}
+
+// Test cases
+const testCases = [
+  // 3M variations
+  { name1: '3M', name2: '3M Company', expected: true },
+  { name1: '3M', name2: '3m company', expected: true },
+  { name1: '3M Company', name2: '3m company', expected: true },
+  { name1: '3M', name2: '3M', expected: true },
+  
+  // Alphabet variations
+  { name1: 'Alphabet', name2: 'Alphabet Inc', expected: true },
+  { name1: 'Alphabet', name2: 'Alphabet Inc.', expected: true },
+  { name1: 'alphabet', name2: 'ALPHABET INC', expected: true },
+  
+  // Apple variations
+  { name1: 'Apple', name2: 'Apple Inc', expected: true },
+  { name1: 'Apple', name2: 'Apple Computer', expected: false }, // Different base name
+  
+  // Microsoft variations
+  { name1: 'Microsoft', name2: 'Microsoft Corporation', expected: true },
+  { name1: 'Microsoft', name2: 'Microsoft Corp.', expected: true },
+  
+  // Bank of America
+  { name1: 'Bank of America', name2: 'Bank of America Corp', expected: true },
+  { name1: 'Bank of America', name2: 'Bank of America Corporation', expected: true },
+  
+  // False positives to avoid
+  { name1: 'American Airlines', name2: 'American Express', expected: false },
+  { name1: 'Ford', name2: 'Ford Motor Company', expected: true },
+  { name1: 'General Motors', name2: 'General Electric', expected: false },
+  
+  // Edge cases
+  { name1: 'AT&T', name2: 'AT&T Inc.', expected: true },
+  { name1: 'CVS Health', name2: 'CVS Health Corporation', expected: true },
+  { name1: 'JPMorgan Chase', name2: 'JPMorgan Chase & Co.', expected: true }
+];
+
+// Run tests
+let html = '<h2>Test Results</h2><pre>';
+let passed = 0;
+let failed = 0;
+
+testCases.forEach(test => {
+  const result = isCompanyMatch(test.name1, test.name2);
+  const status = result === test.expected;
+  
+  if (status) {
+    passed++;
+    html += `<span class="match">✅ PASS</span> "${test.name1}" vs "${test.name2}" → ${result}\n`;
+  } else {
+    failed++;
+    html += `<span class="no-match">❌ FAIL</span> "${test.name1}" vs "${test.name2}" → ${result} (expected ${test.expected})\n`;
+  }
+  
+  // Show normalized versions for debugging
+  if (!status) {
+    html += `    Normalized: "${normalizeCompanyName(test.name1)}" vs "${normalizeCompanyName(test.name2)}"\n`;
+  }
+});
+
+html += `\n<strong>Summary: ${passed} passed, ${failed} failed</strong>\n`;
+html += '</pre>';
+
+// Test with actual problem companies
+html += '<h2>Your Problem Companies</h2><pre>';
+
+const yourCompanies = [
+  { selected: '3M', variations: ['3M', '3M Company', '3m company'] },
+  { selected: 'Alphabet', variations: ['Alphabet', 'Alphabet Inc', 'Alphabet Inc.'] }
+];
+
+yourCompanies.forEach(company => {
+  html += `\n<strong>Selecting "${company.selected}" would match:</strong>\n`;
+  company.variations.forEach(variation => {
+    const matches = isCompanyMatch(company.selected, variation);
+    html += `  ${matches ? '✅' : '❌'} "${variation}"\n`;
+  });
+});
+
+html += '</pre>';
+
+document.getElementById('output').innerHTML = html;
+</script>
+</body>
+</html>

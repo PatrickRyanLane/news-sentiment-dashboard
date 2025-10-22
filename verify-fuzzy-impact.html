@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Verify Fuzzy Matching Impact</title>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<style>
+  body { font-family: monospace; padding: 20px; background: #044152; color: #ebf2f2; }
+  .improved { background: #2d5a2d; padding: 8px; margin: 4px 0; }
+  .no-change { background: #5a5a2d; padding: 8px; margin: 4px 0; }
+  h2 { color: #58dbed; }
+  pre { background: #092e37; padding: 12px; border-radius: 4px; }
+  .big-improvement { color: #82c618; font-weight: bold; font-size: 1.2em; }
+</style>
+</head>
+<body>
+<h1>Fuzzy Matching Impact Analysis</h1>
+<p>This shows how many dates of data you'll get with fuzzy matching vs exact matching</p>
+<div id="output">Loading data...</div>
+
+<script>
+// Fuzzy matching functions
+const COMPANY_SUFFIXES = [
+  ' Company', ' Corporation', ' Corp', ' Corp.', ' Inc', ' Inc.', 
+  ' Incorporated', ' LLC', ' L.L.C.', ' Ltd', ' Ltd.', ' Limited',
+  ' Co', ' Co.', ' Group', ' Holdings', ' Technologies', ' Enterprises',
+  ' Partners', ' & Co', ' & Company', ' plc', ' PLC', ' AG', ' SA', ' NV'
+];
+
+function normalizeCompanyName(name) {
+  if (!name) return '';
+  let normalized = String(name).trim().toLowerCase();
+  
+  COMPANY_SUFFIXES.forEach(suffix => {
+    const suffixLower = suffix.toLowerCase();
+    if (normalized.endsWith(suffixLower)) {
+      normalized = normalized.substring(0, normalized.length - suffixLower.length).trim();
+    }
+  });
+  
+  normalized = normalized.replace(/[^\w\s]/g, '').trim();
+  normalized = normalized.replace(/\s+/g, ' ');
+  
+  return normalized;
+}
+
+function isCompanyMatch(name1, name2) {
+  if (!name1 || !name2) return false;
+  if (name1 === name2) return true;
+  
+  const norm1 = normalizeCompanyName(name1);
+  const norm2 = normalizeCompanyName(name2);
+  
+  if (norm1 === norm2) return true;
+  
+  const short = norm1.length < norm2.length ? norm1 : norm2;
+  const long = norm1.length < norm2.length ? norm2 : norm1;
+  
+  if (long.startsWith(short) && short.length >= 2) {
+    return true;
+  }
+  
+  return false;
+}
+
+async function fetchCsv(url) {
+  const r = await fetch(url, {cache:'no-store'});
+  if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
+  const t = await r.text();
+  return await new Promise((res,rej) => Papa.parse(t, {
+    header: true,
+    skipEmptyLines: true,
+    complete: o => res(o.data || []),
+    error: e => rej(e)
+  }));
+}
+
+async function analyze() {
+  const output = document.getElementById('output');
+  let html = '<pre>';
+  
+  try {
+    // Load the data
+    html += '📊 Loading data files...\n';
+    const articlesData = await fetchCsv('data/daily_counts/brand-articles-daily-counts-chart.csv');
+    const serpsData = await fetchCsv('data/daily_counts/brand-serps-daily-counts-chart.csv');
+    
+    html += `✅ Loaded ${articlesData.length} article rows\n`;
+    html += `✅ Loaded ${serpsData.length} SERP rows\n\n`;
+    
+    // Get all unique company names from articles (this is what appears in the table)
+    const tableCompanies = new Set(articlesData.map(r => r.company));
+    
+    // Find companies with variations
+    const companyGroups = new Map();
+    
+    // Group companies by their normalized form
+    [...tableCompanies, ...new Set(serpsData.map(r => r.company))].forEach(company => {
+      const normalized = normalizeCompanyName(company);
+      if (!companyGroups.has(normalized)) {
+        companyGroups.set(normalized, new Set());
+      }
+      companyGroups.get(normalized).add(company);
+    });
+    
+    // Find groups with multiple variations
+    const problemCompanies = [];
+    companyGroups.forEach((variations, normalized) => {
+      if (variations.size > 1) {
+        problemCompanies.push({
+          normalized,
+          variations: [...variations]
+        });
+      }
+    });
+    
+    html += `<h2>Found ${problemCompanies.length} companies with name variations:</h2>`;
+    
+    // Test each problematic company
+    const improvements = [];
+    
+    problemCompanies.forEach(group => {
+      // Pick the shortest variation as the likely table name
+      const tableName = group.variations.sort((a, b) => a.length - b.length)[0];
+      
+      // Count with exact match
+      const exactArticleDates = new Set(
+        articlesData.filter(r => r.company === tableName).map(r => r.date)
+      );
+      const exactSerpDates = new Set(
+        serpsData.filter(r => r.company === tableName).map(r => r.date)
+      );
+      
+      // Count with fuzzy match
+      const fuzzyArticleDates = new Set(
+        articlesData.filter(r => isCompanyMatch(r.company, tableName)).map(r => r.date)
+      );
+      const fuzzySerpDates = new Set(
+        serpsData.filter(r => isCompanyMatch(r.company, tableName)).map(r => r.date)
+      );
+      
+      const improvement = {
+        company: tableName,
+        variations: group.variations,
+        exactArticles: exactArticleDates.size,
+        fuzzyArticles: fuzzyArticleDates.size,
+        exactSerps: exactSerpDates.size,
+        fuzzySerps: fuzzySerpDates.size,
+        articleGain: fuzzyArticleDates.size - exactArticleDates.size,
+        serpGain: fuzzySerpDates.size - exactSerpDates.size
+      };
+      
+      improvements.push(improvement);
+    });
+    
+    // Sort by biggest improvement
+    improvements.sort((a, b) => (b.articleGain + b.serpGain) - (a.articleGain + a.serpGain));
+    
+    // Show results
+    html += '<div>';
+    improvements.forEach(imp => {
+      const totalGain = imp.articleGain + imp.serpGain;
+      const cssClass = totalGain > 0 ? 'improved' : 'no-change';
+      
+      html += `<div class="${cssClass}">`;
+      html += `<strong>${imp.company}</strong>\n`;
+      html += `  Variations: ${imp.variations.join(', ')}\n`;
+      html += `  Articles: ${imp.exactArticles} → ${imp.fuzzyArticles} dates`;
+      if (imp.articleGain > 0) {
+        html += ` <span class="big-improvement">(+${imp.articleGain}!)</span>`;
+      }
+      html += `\n`;
+      html += `  SERPs: ${imp.exactSerps} → ${imp.fuzzySerps} dates`;
+      if (imp.serpGain > 0) {
+        html += ` <span class="big-improvement">(+${imp.serpGain}!)</span>`;
+      }
+      html += `\n`;
+      
+      if (totalGain > 20) {
+        html += `  <span class="big-improvement">🎉 HUGE IMPROVEMENT: +${totalGain} total days of data!</span>\n`;
+      }
+      
+      html += '</div>';
+    });
+    html += '</div>';
+    
+    // Summary
+    const totalCompaniesImproved = improvements.filter(i => (i.articleGain + i.serpGain) > 0).length;
+    html += `\n<h2>Summary</h2>`;
+    html += `✅ ${totalCompaniesImproved} companies will show MORE data with fuzzy matching\n`;
+    html += `📈 Biggest improvements:\n`;
+    improvements.slice(0, 5).forEach(imp => {
+      const gain = imp.articleGain + imp.serpGain;
+      if (gain > 0) {
+        html += `   ${imp.company}: +${gain} days of data\n`;
+      }
+    });
+    
+  } catch (error) {
+    html += `\n❌ Error: ${error.message}\n`;
+  }
+  
+  html += '</pre>';
+  output.innerHTML = html;
+}
+
+// Run analysis
+analyze();
+</script>
+</body>
+</html>
