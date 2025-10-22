@@ -1475,6 +1475,12 @@ async function loadCounts(){
 async function loadSerpDaily(){
   try{
     const rows = await fetchCsv(SERPS_DAILY_CSV);
+    console.log('📊 SERP CSV loaded, raw rows:', rows.length);
+    if (rows.length > 0) {
+      console.log('First row sample:', rows[0]);
+      console.log('Column names:', Object.keys(rows[0]));
+    }
+    
     serpsDaily = rows.map(r=>({
       date:(r.date||'').trim(),
       company:(r.company||'').trim(),
@@ -1482,7 +1488,38 @@ async function loadSerpDaily(){
       neg_serp:+r.negative_serp||+r.neg_serp||0,
       ctrl:+r.controlled||+r.control||0
     })).filter(r=>isISODate(r.date) && r.company);
-  }catch(e){ serpsDaily = []; }
+    
+    console.log('✅ SERP data processed:', serpsDaily.length, 'valid records');
+    
+    // Show date range
+    if (serpsDaily.length > 0) {
+      const dates = serpsDaily.map(r => r.date).sort();
+      console.log('Date range:', dates[0], 'to', dates[dates.length-1]);
+      
+      // Count unique companies
+      const companies = new Set(serpsDaily.map(r => r.company));
+      console.log('Unique companies:', companies.size);
+      
+      // Show a sample company's dates
+      const sampleCompany = Array.from(companies)[0];
+      const sampleDates = serpsDaily.filter(r => r.company === sampleCompany).map(r => r.date).sort();
+      console.log(`Sample (${sampleCompany}) has data for ${sampleDates.length} dates:`, sampleDates.slice(0, 3), '...', sampleDates.slice(-3));
+      
+      // Check for companies with few dates
+      const companyCounts = {};
+      serpsDaily.forEach(r => {
+        companyCounts[r.company] = (companyCounts[r.company] || 0) + 1;
+      });
+      const fewData = Object.entries(companyCounts).filter(([co, count]) => count < 5);
+      if (fewData.length > 0) {
+        console.warn(`⚠️  ${fewData.length} companies have < 5 dates of SERP data:`, fewData.slice(0, 5));
+      }
+    }
+    
+  }catch(e){ 
+    console.error('❌ SERP CSV error:', e);
+    serpsDaily = []; 
+  }
 }
 
 /********************** Risk **********************/
