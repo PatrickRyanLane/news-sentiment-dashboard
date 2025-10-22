@@ -1926,7 +1926,7 @@ function getDateSeries(){
   return {dates,newsPos,newsNeu,newsNeg,serpNegPct,serpCtrlPct};
 }
 
-/ Also update the stock data lookup to use fuzzy matching
+// Also update the stock data lookup to use fuzzy matching
 function getStockDataForCompany(companyName) {
   if (!companyName || !globalStockData) return null;
   
