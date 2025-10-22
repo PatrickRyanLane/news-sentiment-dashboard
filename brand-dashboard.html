@@ -1776,15 +1776,107 @@ function renderTable(){
   document.getElementById('pageTotal').textContent = String(Math.max(1, Math.ceil(filteredRows.length/PAGE_SIZE)));
 }
 
+//**************** Company Name Fuzzy Matching Solution ******************/
+// This replaces the exact matching in getDateSeries() function
+
+// Common company suffixes to strip for matching
+const COMPANY_SUFFIXES = [
+  ' Company',
+  ' Corporation',
+  ' Corp',
+  ' Corp.',
+  ' Inc',
+  ' Inc.',
+  ' Incorporated',
+  ' LLC',
+  ' L.L.C.',
+  ' Ltd',
+  ' Ltd.',
+  ' Limited',
+  ' Co',
+  ' Co.',
+  ' Group',
+  ' Holdings',
+  ' Technologies',
+  ' Enterprises',
+  ' Partners',
+  ' & Co',
+  ' & Company',
+  ' plc',
+  ' PLC',
+  ' AG',
+  ' SA',
+  ' NV'
+];
+
+// Normalize a company name for matching
+function normalizeCompanyName(name) {
+  if (!name) return '';
+  
+  // Start with the original name
+  let normalized = String(name).trim();
+  
+  // Convert to lowercase for case-insensitive matching
+  normalized = normalized.toLowerCase();
+  
+  // Remove common suffixes
+  COMPANY_SUFFIXES.forEach(suffix => {
+    const suffixLower = suffix.toLowerCase();
+    if (normalized.endsWith(suffixLower)) {
+      normalized = normalized.substring(0, normalized.length - suffixLower.length).trim();
+    }
+  });
+  
+  // Remove special characters but keep spaces and alphanumeric
+  normalized = normalized.replace(/[^\w\s]/g, '').trim();
+  
+  // Collapse multiple spaces to single space
+  normalized = normalized.replace(/\s+/g, ' ');
+  
+  return normalized;
+}
+
+// Check if two company names are a fuzzy match
+function isCompanyMatch(name1, name2) {
+  if (!name1 || !name2) return false;
+  
+  // Exact match first (fastest)
+  if (name1 === name2) return true;
+  
+  // Normalize both names
+  const norm1 = normalizeCompanyName(name1);
+  const norm2 = normalizeCompanyName(name2);
+  
+  // Check normalized match
+  if (norm1 === norm2) return true;
+  
+  // Check if one contains the other (for cases like "3M" vs "3M Company")
+  // But only if the shorter one is at the beginning
+  const short = norm1.length < norm2.length ? norm1 : norm2;
+  const long = norm1.length < norm2.length ? norm2 : norm1;
+  
+  // The shorter name should be at the start of the longer name
+  // This handles "3M" matching "3M Company" but not "M Company"
+  if (long.startsWith(short) && short.length >= 2) {
+    return true;
+  }
+  
+  return false;
+}
+
 /********************** Charts **********************/
+// Enhanced getDateSeries function with fuzzy matching
 function getDateSeries(){
   const byDate = new Map();
   allCountsRows.forEach(r=>{
     const key=r.date;
     if (!byDate.has(key)) byDate.set(key,{pos:0,neu:0,neg:0});
     const b=byDate.get(key);
-    if (!selectedCompany || r.company===selectedCompany){
-      b.pos += +r.pos||0; b.neu += +r.neu||0; b.neg += +r.neg||0;
+    // FUZZY MATCHING HERE
+    if (!selectedCompany || isCompanyMatch(r.company, selectedCompany)){
+      b.pos += +r.pos||0; 
+      b.neu += +r.neu||0; 
+      b.neg += +r.neg||0;
     }
   });
 
@@ -1792,11 +1884,31 @@ function getDateSeries(){
   serpsDaily.forEach(r=>{
     const key=r.date;
     if (!serpByDate.has(key)) serpByDate.set(key,{total:0,neg:0,ctrl:0});
-    if (!selectedCompany || r.company===selectedCompany){
+    // FUZZY MATCHING HERE
+    if (!selectedCompany || isCompanyMatch(r.company, selectedCompany)){
       const b=serpByDate.get(key);
-      b.total += +r.total||0; b.neg += +r.neg_serp||0; b.ctrl += +r.ctrl||0;
+      b.total += +r.total||0; 
+      b.neg += +r.neg_serp||0; 
+      b.ctrl += +r.ctrl||0;
     }
   });
+
+  // Add debug logging to confirm matches
+  if (selectedCompany) {
+    const articleMatches = allCountsRows.filter(r => isCompanyMatch(r.company, selectedCompany));
+    const serpMatches = serpsDaily.filter(r => isCompanyMatch(r.company, selectedCompany));
+    console.log(`🎯 Fuzzy matching for "${selectedCompany}":`);
+    console.log(`  - Found ${new Set(articleMatches.map(r => r.date)).size} unique dates in articles`);
+    console.log(`  - Found ${new Set(serpMatches.map(r => r.date)).size} unique dates in SERPs`);
+    
+    // Show which variations were matched
+    const matchedVariations = new Set();
+    articleMatches.forEach(r => matchedVariations.add(r.company));
+    serpMatches.forEach(r => matchedVariations.add(r.company));
+    if (matchedVariations.size > 1) {
+      console.log(`  - Matched variations: ${[...matchedVariations].join(', ')}`);
+    }
+  }
 
   const dates=[...new Set([...byDate.keys(),...serpByDate.keys()])].filter(isISODate).sort();
   const newsPos=[],newsNeu=[],newsNeg=[],serpNegPct=[],serpCtrlPct=[];
@@ -1812,6 +1924,63 @@ function getDateSeries(){
     serpCtrlPct.push(s.total? s.ctrl/s.total*100 : 0);
   });
   return {dates,newsPos,newsNeu,newsNeg,serpNegPct,serpCtrlPct};
+}
+
+/ Also update the stock data lookup to use fuzzy matching
+function getStockDataForCompany(companyName) {
+  if (!companyName || !globalStockData) return null;
+  
+  // Try exact match first
+  if (globalStockData[companyName]) {
+    return globalStockData[companyName];
+  }
+  
+  // Try fuzzy matching
+  for (const [stockCompany, stockData] of Object.entries(globalStockData)) {
+    if (isCompanyMatch(stockCompany, companyName)) {
+      return stockData;
+    }
+  }
+  
+  return null;
+}
+
+// Similarly for trends data
+function getTrendsDataForCompany(companyName) {
+  if (!companyName || !globalTrendsData) return null;
+  
+  // Try exact match first
+  if (globalTrendsData[companyName]) {
+    return globalTrendsData[companyName];
+  }
+  
+  // Try fuzzy matching
+  for (const [trendsCompany, trendsData] of Object.entries(globalTrendsData)) {
+    if (isCompanyMatch(trendsCompany, companyName)) {
+      return trendsData;
+    }
+  }
+  
+  return null;
+}
+
+// Also update the negative summary lookup
+function getNegativeSummaryForCompany(companyName) {
+  if (!companyName || !negativeSummaryMap) return [];
+  
+  // Try exact match first
+  if (negativeSummaryMap.has(companyName)) {
+    return negativeSummaryMap.get(companyName);
+  }
+  
+  // Try fuzzy matching
+  for (const [mapCompany, data] of negativeSummaryMap.entries()) {
+    if (isCompanyMatch(mapCompany, companyName)) {
+      return data;
+    }
+  }
+  
+  return [];
 }
 
 function renderCharts(){
