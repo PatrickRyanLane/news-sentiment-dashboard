@@ -101,61 +101,6 @@ tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 
   .pill{font-size:11px}
 }
 
-/* Tooltips */
-.tooltip-header {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted #a2ebf3;
-  cursor: help;
-}
-
-.tooltip-header .tooltip-text {
-  visibility: hidden;
-  width: 240px;
-  background-color: #1f2121;
-  color: #ebf2f2;
-  text-align: left;
-  border: 1px solid #2a3b5e;
-  border-radius: 8px;
-  padding: 10px 12px;
-  position: absolute;
-  z-index: 1000;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -120px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  font-size: 12px;
-  line-height: 1.5;
-  font-weight: normal;
-  white-space: normal;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-.tooltip-header .tooltip-text::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #1f2121 transparent transparent transparent;
-}
-
-.tooltip-header:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
-}
-
-@media (max-width: 768px) {
-  .tooltip-header .tooltip-text {
-    width: 200px;
-    margin-left: -100px;
-    font-size: 11px;
-  }
-}
-
 /* Sticky first column (Company + checkbox) */
 thead th:first-child, tbody td:first-child{
   position:sticky;left:0;z-index:2;box-shadow:2px 0 0 0 rgba(255,255,255,.06);
@@ -643,7 +588,7 @@ body:has(#stockChartModal.open) {
           <tr>
             <th>Company</th>
             <th>Stock<br>Price</th>
-            <th data-key="daily_change"><div class="tooltip-header">Overnight % Change ▲▼<span class="tooltip-text">Percentage change from yesterday's close to today's market open (overnight gap)</span></div></th>
+            <th data-key="daily_change"><div class="tooltip-header">Overnight Change ▲▼<span class="tooltip-text">Percentage change from yesterday's close to today's market open (overnight gap)</span></div></th>
             <th>30-Day<br>Trend</th>
             <th data-key="neg_news">Negative<br>News % ▲▼</th>
             <th data-key="neg_serp">Negative<br>SERP % ▲▼</th>
@@ -1475,12 +1420,6 @@ async function loadCounts(){
 async function loadSerpDaily(){
   try{
     const rows = await fetchCsv(SERPS_DAILY_CSV);
-    console.log('📊 SERP CSV loaded, raw rows:', rows.length);
-    if (rows.length > 0) {
-      console.log('First row sample:', rows[0]);
-      console.log('Column names:', Object.keys(rows[0]));
-    }
-    
     serpsDaily = rows.map(r=>({
       date:(r.date||'').trim(),
       company:(r.company||'').trim(),
@@ -1488,38 +1427,7 @@ async function loadSerpDaily(){
       neg_serp:+r.negative_serp||+r.neg_serp||0,
       ctrl:+r.controlled||+r.control||0
     })).filter(r=>isISODate(r.date) && r.company);
-    
-    console.log('✅ SERP data processed:', serpsDaily.length, 'valid records');
-    
-    // Show date range
-    if (serpsDaily.length > 0) {
-      const dates = serpsDaily.map(r => r.date).sort();
-      console.log('Date range:', dates[0], 'to', dates[dates.length-1]);
-      
-      // Count unique companies
-      const companies = new Set(serpsDaily.map(r => r.company));
-      console.log('Unique companies:', companies.size);
-      
-      // Show a sample company's dates
-      const sampleCompany = Array.from(companies)[0];
-      const sampleDates = serpsDaily.filter(r => r.company === sampleCompany).map(r => r.date).sort();
-      console.log(`Sample (${sampleCompany}) has data for ${sampleDates.length} dates:`, sampleDates.slice(0, 3), '...', sampleDates.slice(-3));
-      
-      // Check for companies with few dates
-      const companyCounts = {};
-      serpsDaily.forEach(r => {
-        companyCounts[r.company] = (companyCounts[r.company] || 0) + 1;
-      });
-      const fewData = Object.entries(companyCounts).filter(([co, count]) => count < 5);
-      if (fewData.length > 0) {
-        console.warn(`⚠️  ${fewData.length} companies have < 5 dates of SERP data:`, fewData.slice(0, 5));
-      }
-    }
-    
-  }catch(e){ 
-    console.error('❌ SERP CSV error:', e);
-    serpsDaily = []; 
-  }
+  }catch(e){ serpsDaily = []; }
 }
 
 /********************** Risk **********************/
@@ -1776,107 +1684,15 @@ function renderTable(){
   document.getElementById('pageTotal').textContent = String(Math.max(1, Math.ceil(filteredRows.length/PAGE_SIZE)));
 }
 
-//**************** Company Name Fuzzy Matching Solution ******************/
-// This replaces the exact matching in getDateSeries() function
-
-// Common company suffixes to strip for matching
-const COMPANY_SUFFIXES = [
-  ' Company',
-  ' Corporation',
-  ' Corp',
-  ' Corp.',
-  ' Inc',
-  ' Inc.',
-  ' Incorporated',
-  ' LLC',
-  ' L.L.C.',
-  ' Ltd',
-  ' Ltd.',
-  ' Limited',
-  ' Co',
-  ' Co.',
-  ' Group',
-  ' Holdings',
-  ' Technologies',
-  ' Enterprises',
-  ' Partners',
-  ' & Co',
-  ' & Company',
-  ' plc',
-  ' PLC',
-  ' AG',
-  ' SA',
-  ' NV'
-];
-
-// Normalize a company name for matching
-function normalizeCompanyName(name) {
-  if (!name) return '';
-  
-  // Start with the original name
-  let normalized = String(name).trim();
-  
-  // Convert to lowercase for case-insensitive matching
-  normalized = normalized.toLowerCase();
-  
-  // Remove common suffixes
-  COMPANY_SUFFIXES.forEach(suffix => {
-    const suffixLower = suffix.toLowerCase();
-    if (normalized.endsWith(suffixLower)) {
-      normalized = normalized.substring(0, normalized.length - suffixLower.length).trim();
-    }
-  });
-  
-  // Remove special characters but keep spaces and alphanumeric
-  normalized = normalized.replace(/[^\w\s]/g, '').trim();
-  
-  // Collapse multiple spaces to single space
-  normalized = normalized.replace(/\s+/g, ' ');
-  
-  return normalized;
-}
-
-// Check if two company names are a fuzzy match
-function isCompanyMatch(name1, name2) {
-  if (!name1 || !name2) return false;
-  
-  // Exact match first (fastest)
-  if (name1 === name2) return true;
-  
-  // Normalize both names
-  const norm1 = normalizeCompanyName(name1);
-  const norm2 = normalizeCompanyName(name2);
-  
-  // Check normalized match
-  if (norm1 === norm2) return true;
-  
-  // Check if one contains the other (for cases like "3M" vs "3M Company")
-  // But only if the shorter one is at the beginning
-  const short = norm1.length < norm2.length ? norm1 : norm2;
-  const long = norm1.length < norm2.length ? norm2 : norm1;
-  
-  // The shorter name should be at the start of the longer name
-  // This handles "3M" matching "3M Company" but not "M Company"
-  if (long.startsWith(short) && short.length >= 2) {
-    return true;
-  }
-  
-  return false;
-}
-
 /********************** Charts **********************/
-// Enhanced getDateSeries function with fuzzy matching
 function getDateSeries(){
   const byDate = new Map();
   allCountsRows.forEach(r=>{
     const key=r.date;
     if (!byDate.has(key)) byDate.set(key,{pos:0,neu:0,neg:0});
     const b=byDate.get(key);
-    // FUZZY MATCHING HERE
-    if (!selectedCompany || isCompanyMatch(r.company, selectedCompany)){
-      b.pos += +r.pos||0; 
-      b.neu += +r.neu||0; 
-      b.neg += +r.neg||0;
+    if (!selectedCompany || r.company===selectedCompany){
+      b.pos += +r.pos||0; b.neu += +r.neu||0; b.neg += +r.neg||0;
     }
   });
 
@@ -1884,31 +1700,11 @@ function getDateSeries(){
   serpsDaily.forEach(r=>{
     const key=r.date;
     if (!serpByDate.has(key)) serpByDate.set(key,{total:0,neg:0,ctrl:0});
-    // FUZZY MATCHING HERE
-    if (!selectedCompany || isCompanyMatch(r.company, selectedCompany)){
+    if (!selectedCompany || r.company===selectedCompany){
       const b=serpByDate.get(key);
-      b.total += +r.total||0; 
-      b.neg += +r.neg_serp||0; 
-      b.ctrl += +r.ctrl||0;
+      b.total += +r.total||0; b.neg += +r.neg_serp||0; b.ctrl += +r.ctrl||0;
     }
   });
-
-  // Add debug logging to confirm matches
-  if (selectedCompany) {
-    const articleMatches = allCountsRows.filter(r => isCompanyMatch(r.company, selectedCompany));
-    const serpMatches = serpsDaily.filter(r => isCompanyMatch(r.company, selectedCompany));
-    console.log(`🎯 Fuzzy matching for "${selectedCompany}":`);
-    console.log(`  - Found ${new Set(articleMatches.map(r => r.date)).size} unique dates in articles`);
-    console.log(`  - Found ${new Set(serpMatches.map(r => r.date)).size} unique dates in SERPs`);
-    
-    // Show which variations were matched
-    const matchedVariations = new Set();
-    articleMatches.forEach(r => matchedVariations.add(r.company));
-    serpMatches.forEach(r => matchedVariations.add(r.company));
-    if (matchedVariations.size > 1) {
-      console.log(`  - Matched variations: ${[...matchedVariations].join(', ')}`);
-    }
-  }
 
   const dates=[...new Set([...byDate.keys(),...serpByDate.keys()])].filter(isISODate).sort();
   const newsPos=[],newsNeu=[],newsNeg=[],serpNegPct=[],serpCtrlPct=[];
@@ -1924,63 +1720,6 @@ function getDateSeries(){
     serpCtrlPct.push(s.total? s.ctrl/s.total*100 : 0);
   });
   return {dates,newsPos,newsNeu,newsNeg,serpNegPct,serpCtrlPct};
-}
-
-// Also update the stock data lookup to use fuzzy matching
-function getStockDataForCompany(companyName) {
-  if (!companyName || !globalStockData) return null;
-  
-  // Try exact match first
-  if (globalStockData[companyName]) {
-    return globalStockData[companyName];
-  }
-  
-  // Try fuzzy matching
-  for (const [stockCompany, stockData] of Object.entries(globalStockData)) {
-    if (isCompanyMatch(stockCompany, companyName)) {
-      return stockData;
-    }
-  }
-  
-  return null;
-}
-
-// Similarly for trends data
-function getTrendsDataForCompany(companyName) {
-  if (!companyName || !globalTrendsData) return null;
-  
-  // Try exact match first
-  if (globalTrendsData[companyName]) {
-    return globalTrendsData[companyName];
-  }
-  
-  // Try fuzzy matching
-  for (const [trendsCompany, trendsData] of Object.entries(globalTrendsData)) {
-    if (isCompanyMatch(trendsCompany, companyName)) {
-      return trendsData;
-    }
-  }
-  
-  return null;
-}
-
-// Also update the negative summary lookup
-function getNegativeSummaryForCompany(companyName) {
-  if (!companyName || !negativeSummaryMap) return [];
-  
-  // Try exact match first
-  if (negativeSummaryMap.has(companyName)) {
-    return negativeSummaryMap.get(companyName);
-  }
-  
-  // Try fuzzy matching
-  for (const [mapCompany, data] of negativeSummaryMap.entries()) {
-    if (isCompanyMatch(mapCompany, companyName)) {
-      return data;
-    }
-  }
-  
-  return [];
 }
 
 function renderCharts(){
