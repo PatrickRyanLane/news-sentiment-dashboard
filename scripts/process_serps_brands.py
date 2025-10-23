@@ -7,7 +7,7 @@ Process daily BRAND SERP data:
 - Classify CONTROL using three rules:
     (1) Always-controlled platforms (and their subdomains):
         facebook.com, instagram.com, twitter.com, x.com, linkedin.com, play.google.com, apps.apple.com
-    (2) Any domain (or its subdomains) present in rosters/main-roster.csv (Website column)
+    (2) Any domain (or its subdomains) present in rosters/main-roster.csv (Websites column)
         Multiple URLs can be separated by pipe (|) character
     (3) Domain contains the normalized brand token
 
@@ -117,6 +117,7 @@ def load_roster_domains(path: str = MAIN_ROSTER_PATH) -> Set[str]:
     """
     Load controlled domains from roster.
     Supports pipe-separated URLs in a single cell: 'domain1.com|domain2.com|domain3.com'
+    Also handles single domains without pipes.
     """
     domains: Set[str] = set()
 
@@ -129,7 +130,7 @@ def load_roster_domains(path: str = MAIN_ROSTER_PATH) -> Set[str]:
         cols = {c.strip().lower(): c for c in df.columns}
         
         website_col = None
-        for key in ["website", "domain", "url", "site", "homepage"]:
+        for key in ["website", "websites", "domain", "url", "site", "homepage"]:
             if key in cols:
                 website_col = cols[key]
                 break
@@ -138,21 +139,36 @@ def load_roster_domains(path: str = MAIN_ROSTER_PATH) -> Set[str]:
             print(f"[WARN] No website/domain column found in {path}")
             return domains
         
-        for val in df[website_col].dropna().astype(str):
-            val = val.strip()
-            if val and val != "nan":
-                # Split on pipe character to support multiple URLs per company
-                urls = val.split("|")
+        print(f"[INFO] Loading controlled domains from {path} ({website_col} column)...")
+        
+        for idx, val in enumerate(df[website_col]):
+            # Handle NaN values properly
+            if pd.isna(val):
+                continue
+            
+            val = str(val).strip()
+            if not val or val.lower() == "nan":
+                continue
+            
+            # Split on pipe character to support multiple URLs per company
+            # This works for both "apple.com" (single) and "apple.com|support.apple.com" (multiple)
+            urls = val.split("|")
+            
+            for url in urls:
+                url = url.strip()
+                if not url or url.lower() == "nan":
+                    continue
                 
-                for url in urls:
-                    url = url.strip()
-                    if not url:
-                        continue
-                    if not url.startswith(("http://", "https://")):
-                        url = f"http://{url}"
-                    host = _hostname(url)
-                    if host and "." in host:
-                        domains.add(host)
+                # Add http/https prefix if missing for URL parsing
+                if not url.startswith(("http://", "https://")):
+                    url = f"http://{url}"
+                
+                host = _hostname(url)
+                if host and "." in host:
+                    domains.add(host)
+                    print(f"  ✓ Added domain: {host}")
+        
+        print(f"[OK] Loaded {len(domains)} controlled domains")
                         
     except Exception as e:
         print(f"[WARN] failed reading roster at {path}: {e}")
@@ -175,10 +191,18 @@ def classify_control(company: str, url: str, roster_domains: Set[str]) -> bool:
         if host == rd or host.endswith("." + rd):
             return True
 
+    # Rule 3: Domain contains the brand token (proper subdomain matching)
     brand_token = _norm_token(company)
     if brand_token:
-        host_token = _norm_domain_for_name_match(host)
-        if brand_token in host_token:
+        # Split hostname into parts and normalize each part
+        # For "news.apple.com": parts are ["news", "apple", "com"]
+        # For "apple.com": parts are ["apple", "com"]
+        host_parts = host.split('.')
+        normalized_parts = [_norm_token(part) for part in host_parts if part]
+        
+        # Check if brand_token matches any part of the domain (except TLD)
+        # This prevents false positives like "pineapple.com" matching "apple"
+        if brand_token in normalized_parts[:-1]:  # Exclude the TLD (last part)
             return True
 
     return False

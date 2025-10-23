@@ -12,7 +12,7 @@ Raw S3 CSV per day:
         (e.g., "Tim Cook Apple"), not the canonical company.
 
 Local maps:
-  rosters/main-roster.csv (CEO, Company, CEO Alias, Website) -> primary source
+  rosters/main-roster.csv (CEO, Company, CEO Alias, Websites) -> primary source
 
 Outputs
 -------
@@ -145,7 +145,7 @@ def load_roster_data():
     ceo_col = col("ceo")
     company_col = col("company")
     alias_col = col("ceo alias", "alias")
-    website_col = col("website", "domain", "url")
+    website_col = col("website", "websites" "domain", "url")
 
     if not (ceo_col and company_col):
         raise ValueError("Main roster must have CEO and Company columns")
@@ -171,26 +171,37 @@ def load_roster_data():
 
     controlled_domains = set()
     if website_col:
-        for val in df[website_col].dropna().astype(str):
-            val = val.strip()
-            if val and val != "nan":
-                # Split on pipe character to support multiple URLs per company
-                urls = val.split("|")
-                
-                for url in urls:
-                    url = url.strip()
-                    if not url:
-                        continue
-                    try:
-                        if not url.startswith(("http://", "https://")):
-                            url = f"https://{url}"
-                        parsed = urlparse(url)
-                        host = (parsed.netloc or parsed.path or "").lower().strip()
-                        host = host.replace("www.", "")
-                        if host and "." in host:
-                            controlled_domains.add(host)
-                    except Exception:
-                        pass
+        print(f"[INFO] Loading controlled domains from roster ({website_col} column)...")
+        for idx, val in enumerate(df[website_col]):
+            # Handle NaN values properly
+            if pd.isna(val):
+                continue
+            
+            val = str(val).strip()
+            if not val or val.lower() == "nan":
+                continue
+            
+            # Split on pipe character to support multiple URLs per company
+            # Works for both "apple.com" (single) and "apple.com|support.apple.com" (multiple)
+            urls = val.split("|")
+            
+            for url in urls:
+                url = url.strip()
+                if not url or url.lower() == "nan":
+                    continue
+                try:
+                    if not url.startswith(("http://", "https://")):
+                        url = f"https://{url}"
+                    parsed = urlparse(url)
+                    host = (parsed.netloc or parsed.path or "").lower().strip()
+                    host = host.replace("www.", "")
+                    if host and "." in host:
+                        controlled_domains.add(host)
+                        print(f"  ✓ Added domain: {host}")
+                except Exception as e:
+                    print(f"  ⚠️  Failed to parse {url}: {e}")
+        
+        print(f"[OK] Loaded {len(controlled_domains)} controlled domains")
 
     return alias_map, ceo_to_company, controlled_domains
 
@@ -242,9 +253,19 @@ def classify_control(url: str, position, company: str, controlled_domains):
     if domain in controlled_domains:
         return True
 
+    # Rule 3: Domain contains the company token (proper subdomain matching)
     comp_simple = simplify_company(company)
-    if comp_simple and comp_simple.replace(" ", "") in domain.replace(".", ""):
-        return True
+    if comp_simple:
+        # Split hostname into parts and normalize each part
+        # For "news.apple.com": parts are ["news", "apple", "com"]
+        domain_parts = domain.split('.')
+        normalized_parts = [_norm_token(part) for part in domain_parts if part]
+        comp_token = _norm_token(comp_simple)
+        
+        # Check if company token matches any part of the domain (except TLD)
+        # This prevents false positives like substring matching
+        if comp_token in normalized_parts[:-1]:  # Exclude the TLD (last part)
+            return True
 
     if any(s in domain for s in CONTROLLED_SOCIAL_DOMAINS):
         return True
