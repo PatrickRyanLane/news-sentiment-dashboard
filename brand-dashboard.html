@@ -711,7 +711,6 @@ const SERP_PROCESSED_PATH = d => `data/processed_serps/${d}-brand-serps-table.cs
 const SERP_ROWS_PATH      = d => `data/processed_serps/${d}-brand-serps-modal.csv`;
 
 /********************** Runtime **********************/
-let rosterWebsites = new Map(); // NEW: store websites by company
 let allCountsRows = [];
 let serpsDaily    = [];
 let filteredRows  = [];
@@ -731,7 +730,6 @@ const _serpAggCache  = new Map();
 
 const DATE_WINDOW_SIZE = 30;
 let dateWindowStart = null;
-
 
 /********************** Utils **********************/
 const isISODate = s => /^\d{4}-\d{2}-\d{2}$/.test(String(s||'').trim());
@@ -1487,24 +1485,6 @@ async function loadSerpDaily(){
   }catch(e){ serpsDaily = []; }
 }
 
-async function loadRoster(){
-  try {
-    const rows = await fetchCsv('rosters/main-roster.csv');
-    rosterWebsites = new Map();
-    rows.forEach(r => {
-      const company = String(r.company || r.Company || '').trim();
-      const websites = String(r.websites || r.Websites || '').trim();
-      if (company && websites) {
-        rosterWebsites.set(company, websites);
-      }
-    });
-    console.log(`✅ Loaded websites for ${rosterWebsites.size} companies`);
-  } catch (e) {
-    console.warn('⚠️  Could not load roster websites:', e);
-    rosterWebsites = new Map();
-  }
-}
-
 /********************** Risk **********************/
 function computeRisk(negPct, ctrlPct){
   if (negPct == null || isNaN(negPct)) return 'N/A';
@@ -1560,7 +1540,6 @@ async function getSerpAggForDate(d){
 /********************** UI bootstrap ***********************/
 async function init(){
   await Promise.all([
-    loadRoster(),
     loadCounts(), 
     loadSerpDaily(), 
     loadStockData().then(data => globalStockData = data),
@@ -1938,14 +1917,6 @@ async function showHeadlines({company}){
   openModal(`Headlines — ${esc(company)}`, `<div class="serp-cards">${cards}</div>`);
 }
 
-function getControlledDomains(company) {
-  const websitesStr = rosterWebsites.get(company) || '';
-  return websitesStr
-    .split('|')
-    .map(d => d.trim().toLowerCase())
-    .filter(d => d && d !== '0' && d !== 'false');
-}
-
 async function showSerp({company}){
   const d=document.getElementById('dateSelect').value;
   let rows=[]; try{ rows=await fetchCsv(SERP_ROWS_PATH(d)); }
@@ -1959,10 +1930,11 @@ async function showSerp({company}){
 
   const total=matches.length;
   const negCount=matches.filter(r=>String(r.sentiment||'').toLowerCase()==='negative').length;
-  const controlledDomains = getControlledDomains(row.company);
-  const ctrlCount = matches.filter(r => {
-    let domain = '';
-    try { domain = new URL(String(r.url||'').trim()).hostname.replace(/^www\./, '').toLowerCase(); } catch {}
+  const ctrlCount=matches.filter(r=>{
+    const controlledStr=String(r.controlled||'').trim();
+    const controlledDomains=controlledStr.split('|').map(d=>d.trim().toLowerCase()).filter(d=>d&&d!=='0'&&d!=='false');
+    let domain='';
+    try{ domain=new URL(String(r.url||'').trim()).hostname.replace(/^www\./,'').toLowerCase(); }catch{}
     return controlledDomains.includes(domain);
   }).length;
   const negPct= total ? (negCount/total) : 0;

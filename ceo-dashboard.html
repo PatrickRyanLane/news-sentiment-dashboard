@@ -740,7 +740,6 @@ const ARTICLES_DAILY_PATH = d => `data/processed_articles/${d}-ceo-articles-tabl
 const SERP_PROCESSED_PATH = d => `data/processed_serps/${d}-ceo-serps-table.csv`;
 const HEADLINES_PATH_CEO = d => `data/processed_articles/${d}-ceo-articles-modal.csv`;
 
-let rosterWebsites = new Map(); // NEW: store websites by company
 let rosterMap = new Map();
 let companyToCeo = new Map();
 let allCountsRows = [];
@@ -1485,17 +1484,12 @@ async function loadRoster(){
   const rows = await fetchCsvAny(ROSTER_CANDIDATES);
   rosterMap = new Map();
   companyToCeo = new Map();
-  rosterWebsites = new Map(); // NEW
   rows.forEach(r => {
     const ceo = (r.ceo || r.CEO || '').trim();
     const company = (r.company || r.Company || '').trim();
-    const websites = String(r.websites || r.Websites || '').trim(); // NEW
     if (ceo && company){
       rosterMap.set(ceo, company);
       companyToCeo.set(company, ceo);
-      if (websites) { // NEW
-        rosterWebsites.set(company, websites);
-      }
     }
   });
 }
@@ -2102,14 +2096,6 @@ async function showHeadlines({ ceo }) {
   openModal(`Headlines — ${esc(ceo)}`, `<div class="serp-cards">${cards}</div>`);
 }
 
-function getControlledDomains(company) {
-  const websitesStr = rosterWebsites.get(company) || '';
-  return websitesStr
-    .split('|')
-    .map(d => d.trim().toLowerCase())
-    .filter(d => d && d !== '0' && d !== 'false');
-}
-
 async function showSerp(row){
   const d = document.getElementById('dateSelect').value;
   const path = SERP_ROWS_PATH(d);
@@ -2133,12 +2119,13 @@ async function showSerp(row){
 
   const total = matches.length;
   const negCount = matches.filter(r => String(r.sentiment||'').toLowerCase()==='negative').length;
-const controlledDomains = getControlledDomains(row.company);
-const ctrlCount = matches.filter(r => {
-  let domain = '';
-  try { domain = new URL(String(r.url||'').trim()).hostname.replace(/^www\./, '').toLowerCase(); } catch {}
-  return controlledDomains.includes(domain);
-}).length;
+  const ctrlCount = matches.filter(r => {
+    const controlledStr=String(r.controlled||'').trim();
+    const controlledDomains=controlledStr.split('|').map(d=>d.trim().toLowerCase()).filter(d=>d&&d!=='0'&&d!=='false');
+    let domain='';
+    try{ domain=new URL(String(r.url||'').trim()).hostname.replace(/^www\./,'').toLowerCase(); }catch{}
+    return controlledDomains.includes(domain);
+  }).length;
   const negPct = total? (negCount/total) : 0;
   const ctrlPct = total? (ctrlCount/total) : 0;
   const risk = computeRisk(negPct, ctrlPct);
