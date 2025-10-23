@@ -69,7 +69,7 @@ CONTROLLED_SOCIAL_DOMAINS = {
     "facebook.com", "linkedin.com", "instagram.com", "twitter.com", "x.com"
 }
 CONTROLLED_PATH_KEYWORDS = {
-    "/leadership/", "/about/", "/governance/", "/team/", "/investors/", "/board-of-directors"
+    "/leadership/", "/about/", "/governance/", "/team/", "/investors/", "/board-of-directors", "/members/"
 }
 UNCONTROLLED_DOMAINS = {
     "wikipedia.org", "youtube.com", "youtu.be", "tiktok.com"
