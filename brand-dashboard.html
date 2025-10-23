@@ -1930,7 +1930,13 @@ async function showSerp({company}){
 
   const total=matches.length;
   const negCount=matches.filter(r=>String(r.sentiment||'').toLowerCase()==='negative').length;
-  const ctrlCount=matches.filter(r=>(/^controlled|true|1$/i).test(String(r.controlled||''))).length;
+  const ctrlCount=matches.filter(r=>{
+    const controlledStr=String(r.controlled||'').trim();
+    const controlledDomains=controlledStr.split('|').map(d=>d.trim().toLowerCase()).filter(d=>d&&d!=='0'&&d!=='false');
+    let domain='';
+    try{ domain=new URL(String(r.url||'').trim()).hostname.replace(/^www\./,'').toLowerCase(); }catch{}
+    return controlledDomains.includes(domain);
+  }).length;
   const negPct= total ? (negCount/total) : 0;
   const ctrlPct= total ? (ctrlCount/total) : 0;
   const risk=computeRisk(negPct,ctrlPct);
@@ -1942,7 +1948,9 @@ async function showSerp({company}){
     const title=esc(r.title||domain||'(no title)');
     const snippet=esc(r.snippet||'');
     const s=String(r.sentiment||'neutral').toLowerCase();
-    const ctrl=(/^controlled|true|1$/i).test(String(r.controlled||''))?'controlled':'uncontrolled';
+    const controlledStr=String(r.controlled||'').trim();
+    const controlledDomains=controlledStr.split('|').map(d=>d.trim().toLowerCase()).filter(d=>d&&d!=='0'&&d!=='false');
+    const ctrl=controlledDomains.includes(domain)?'controlled':'uncontrolled';
     const link=url?`<a class="link" href="${esc(url)}" target="_blank" rel="noopener">${title}</a>`:`<span class="muted">${title}</span>`;
     return `<div class="serp-card">
       ${domain?`<div class="serp-domain">${esc(domain)}</div>`:''}
