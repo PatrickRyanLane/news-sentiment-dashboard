@@ -55,7 +55,7 @@ h1{font-size:28px;margin:6px 0 18px}
   padding: 10px 12px;
   position: absolute;
   z-index: 1000;
-  bottom: 125%;
+  top: 125%;
   left: 50%;
   margin-left: -120px;
   opacity: 0;
@@ -70,12 +70,12 @@ h1{font-size:28px;margin:6px 0 18px}
 .tooltip-header .tooltip-text::after {
   content: "";
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: #1f2121 transparent transparent transparent;
+  border-color: transparent transparent #1f2121 transparent;
 }
 
 .tooltip-header:hover .tooltip-text {
@@ -138,7 +138,7 @@ button:hover{filter:brightness(1.08)}
 .table-card{background:var(--card);border:1px solid var(--stroke);border-radius:12px;padding:10px}
 .table-hint{margin:0 0 8px;color:var(--muted)}
 table{width:100%;border-collapse:separate;border-spacing:0 6px;table-layout:auto}
-thead th{font-size:11px;color:var(--muted);text-align:center;padding:6px 6px;vertical-align:top;line-height:1.2;white-space:nowrap}
+thead th{font-size:11px;color:var(--muted);text-align:center;padding:6px 6px;vertical-align:middle;line-height:1.2;white-space:nowrap}
 thead th:first-child{white-space:normal;min-width:140px}
 tbody td{padding:8px 6px;background:#1f2121;border-top:1px solid #0f1831;border-bottom:1px solid #0f1831;text-align:center;white-space:nowrap}
 tbody td:first-child{text-align:left;white-space:normal}
@@ -679,7 +679,7 @@ body:has(#stockChartModal.open) {
             </th>
             <th data-key="daily_change">
               <div class="tooltip-header">
-                Overnight Change ▲▼
+                Overnight<br>Change % ▲▼
                 <span class="tooltip-text">Percentage change from yesterday's close to today's market open (overnight gap)</span>
               </div>
             </th>            
@@ -691,19 +691,19 @@ body:has(#stockChartModal.open) {
             </th>
             <th data-key="neg_news">
               <div class="tooltip-header">
-                Negative News % ▲▼
+                Negative<br>News % ▲▼
                 <span class="tooltip-text">Percentage of articles mentioning this CEO that carry negative sentiment. Tracks CEO-specific reputation risk</span>
               </div>
             </th>
             <th data-key="neg_serp">
               <div class="tooltip-header">
-                Negative SERP % ▲▼
+                Negative<br>SERP % ▲▼
                 <span class="tooltip-text">Percentage of Page 1 Google search results for this CEO's name with negative sentiment. Important for executive reputation</span>
               </div>
             </th>
             <th data-key="ctrl_pct">
               <div class="tooltip-header">
-                SERP Control % ▲▼
+                SERP<br>Control % ▲▼
                 <span class="tooltip-text">Percentage of first-page results the CEO or their company can control (LinkedIn, official bio, company press). Higher = better narrative control</span>
               </div>
             </th>
