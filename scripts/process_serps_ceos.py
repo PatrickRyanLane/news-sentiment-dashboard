@@ -156,7 +156,7 @@ def load_roster_data():
     ceo_col = col("ceo")
     company_col = col("company")
     alias_col = col("ceo alias", "alias")
-    website_col = col("website", "Websites" "domain", "url")
+    website_col = col("website", "Websites", "domain", "url")
 
     if not (ceo_col and company_col):
         raise ValueError("Main roster must have CEO and Company columns")
