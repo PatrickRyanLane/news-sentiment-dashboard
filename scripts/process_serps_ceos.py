@@ -106,6 +106,17 @@ def simplify_company(s: str) -> str:
     toks = [t for t in toks if t not in LEGAL_SUFFIXES]
     return " ".join(toks)
 
+def _norm_token(s: str) -> str:
+    """Normalize a token to alphanumeric characters only (lowercase).
+    
+    Used for matching company/brand names within domain parts.
+    Examples:
+      "Apple" -> "apple"
+      "Apple Inc." -> "appleinc"
+      "123-Brand" -> "123brand"
+    """
+    return "".join(ch for ch in (s or "").lower() if ch.isalnum())
+
 def read_csv_safely(text_or_path):
     try:
         if isinstance(text_or_path, str) and "\n" in text_or_path:
@@ -247,11 +258,19 @@ def classify_control(url: str, position, company: str, controlled_domains):
     except Exception:
         domain, path = "", ""
 
-    if any(d in domain for d in UNCONTROLLED_DOMAINS):
+    # Rule 0: Explicitly uncontrolled domains (skip everything else)
+    if any(d == domain or domain.endswith("." + d) for d in UNCONTROLLED_DOMAINS):
         return False
 
-    if domain in controlled_domains:
-        return True
+    # Rule 1: Always-controlled social platforms (and their subdomains)
+    for social_domain in CONTROLLED_SOCIAL_DOMAINS:
+        if domain == social_domain or domain.endswith("." + social_domain):
+            return True
+
+    # Rule 2: Domains from roster (exact match or subdomains)
+    for roster_domain in controlled_domains:
+        if domain == roster_domain or domain.endswith("." + roster_domain):
+            return True
 
     # Rule 3: Domain contains the company token (proper subdomain matching)
     comp_simple = simplify_company(company)
@@ -267,9 +286,7 @@ def classify_control(url: str, position, company: str, controlled_domains):
         if comp_token in normalized_parts[:-1]:  # Exclude the TLD (last part)
             return True
 
-    if any(s in domain for s in CONTROLLED_SOCIAL_DOMAINS):
-        return True
-
+    # Rule 4: Controlled path keywords (e.g., /leadership/, /about/)
     if any(k in path for k in CONTROLLED_PATH_KEYWORDS):
         return True
 
