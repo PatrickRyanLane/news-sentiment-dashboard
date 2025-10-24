@@ -64,7 +64,7 @@ button:hover{filter:brightness(1.08)}
 .table-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px}
 
 table{width:100%;border-collapse:separate;border-spacing:0 6px;table-layout:auto}
-thead th{font-size:11px;color:var(--muted);text-align:center;padding:6px 6px;vertical-align:top;line-height:1.2;white-space:nowrap}
+thead th{font-size:11px;color:var(--muted);text-align:center;padding:6px 6px;vertical-align:middle;line-height:1.2;white-space:nowrap}
 thead th:first-child{white-space:normal;min-width:140px}
 tbody td{padding:8px 6px;background:var(--black);border-top:1px solid #0f1831;border-bottom:1px solid #0f1831;text-align:center;white-space:nowrap}
 tbody td:first-child{text-align:left;white-space:normal}
@@ -99,6 +99,61 @@ tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 
   .table-hint{font-size:12px}
   thead th,tbody td{padding:6px 4px}
   .pill{font-size:11px}
+}
+
+/* Tooltips */
+.tooltip-header {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted #a2ebf3;
+  cursor: help;
+}
+
+.tooltip-header .tooltip-text {
+  visibility: hidden;
+  width: 240px;
+  background-color: #1f2121;
+  color: #ebf2f2;
+  text-align: left;
+  border: 1px solid #2a3b5e;
+  border-radius: 8px;
+  padding: 10px 12px;
+  position: absolute;
+  z-index: 1000;
+  top: 125%;
+  left: 50%;
+  margin-left: -120px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: normal;
+  white-space: normal;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.tooltip-header .tooltip-text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #1f2121 transparent;
+}
+
+.tooltip-header:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .tooltip-header .tooltip-text {
+    width: 200px;
+    margin-left: -100px;
+    font-size: 11px;
+  }
 }
 
 /* Sticky first column (Company + checkbox) */
@@ -587,13 +642,48 @@ body:has(#stockChartModal.open) {
         <thead>
           <tr>
             <th>Company</th>
-            <th>Stock<br>Price</th>
-            <th data-key="daily_change">Daily Change ▲▼</th>
-            <th>30-Day<br>Trend</th>
-            <th data-key="neg_news">Negative<br>News % ▲▼</th>
-            <th data-key="neg_serp">Negative<br>SERP % ▲▼</th>
-            <th data-key="ctrl_pct">SERP<br>Control % ▲▼</th>
-            <th data-key="risk">Risk<br>▲▼</th>
+            <th data-key="stock_price">
+              <div class="tooltip-header">
+                Stock Price
+                <span class="tooltip-text">Current stock price from today's market open (or latest available)</span>
+              </div>
+            </th>
+            <th data-key="daily_change">
+              <div class="tooltip-header">
+                Overnight<br>Change % ▲▼
+                <span class="tooltip-text">Percentage change from yesterday's close to today's market open (overnight gap)</span>
+              </div>
+            </th>
+            <th data-key="trend">
+              <div class="tooltip-header">
+                30-Day Trend
+                <span class="tooltip-text">Visual sparkline of stock price over 30 days. Click to view detailed chart with negative news articles overlaid as markers</span>
+              </div>
+            </th>
+            <th data-key="neg_news">
+              <div class="tooltip-header">
+                Negative<br>News % ▲▼
+                <span class="tooltip-text">Percentage of articles mentioning this company that have negative sentiment. Higher = greater negative coverage</span>
+              </div>
+            </th>
+            <th data-key="neg_serp">
+              <div class="tooltip-header">
+                Negative<br>SERP % ▲▼
+                <span class="tooltip-text">Percentage of results on Google's first page with negative sentiment about this company. Indicates public perception visibility</span>
+              </div>
+            </th>
+            <th data-key="ctrl_pct">
+              <div class="tooltip-header">
+                SERP<br>Control % ▲▼
+                <span class="tooltip-text">Percentage of Page 1 Google results owned/controlled by the company (official site, press releases, social). Higher = better reputation management</span>
+              </div>
+            </th>
+            <th data-key="risk">
+              <div class="tooltip-header">
+                Risk<br>▲▼
+                <span class="tooltip-text">Composite risk score based on Negative SERP % and Control %. High risk = significant negative search visibility with limited control. Low risk = minimal negative presence or strong narrative control.</span>
+              </div>
+            </th>
             <th>Headlines</th>
             <th>SERP</th>
           </tr>
