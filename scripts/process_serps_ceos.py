@@ -69,7 +69,7 @@ CONTROLLED_SOCIAL_DOMAINS = {
     "facebook.com", "linkedin.com", "instagram.com", "twitter.com", "x.com"
 }
 CONTROLLED_PATH_KEYWORDS = {
-    "/leadership/", "/about/", "/governance/", "/team/", "/investors/", "/board-of-directors"
+    "/leadership/", "/about/", "/governance/", "/team/", "/investors/", "/board-of-directors", "/members/", "/member/"
 }
 UNCONTROLLED_DOMAINS = {
     "wikipedia.org", "youtube.com", "youtu.be", "tiktok.com"
@@ -156,7 +156,7 @@ def load_roster_data():
     ceo_col = col("ceo")
     company_col = col("company")
     alias_col = col("ceo alias", "alias")
-    website_col = col("website", "websites" "domain", "url")
+    website_col = col("website", "Websites" "domain", "url")
 
     if not (ceo_col and company_col):
         raise ValueError("Main roster must have CEO and Company columns")
