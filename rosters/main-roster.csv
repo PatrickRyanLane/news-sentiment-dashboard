@@ -54,7 +54,7 @@ Thomas Long,Energy Transfer,Thomas Long Energy Transfer,energytransfer.com|energ
 Christopher Calio,RTX,Christopher Calio RTX,rtx.com,RTX,Aerospace & Defense
 Susan Morris,Albertsons,Susan Morris Albertsons,albertsons.com|albertsonscompanies.com|albertsonsmarket.com,ACI,Food & Drug Stores
 Kevin Hourican,Sysco,Kevin Hourican Sysco,sysco.com|syscoireland.com,SYY,Wholesalers
-Tricia Griffith,Progressive Insurance,Tricia Griffith Progressive Insurance,progressive.com|progressivecommercial.com,PGR,Financials
+Tricia Griffith,Progressive Insurance,Tricia Griffith Progressive Insurance,progressive.com|progressivecommercial.com|foragentsonly.com,PGR,Financials
 Stephen Squeri,American Express,Stephen Squeri American Express,americanexpress.com,AXP,Financials
 James Taiclet,Lockheed Martin,James Taiclet Lockheed Martin,lockheedmartin.com,LMT,Aerospace & Defense
 Michel Khalaf,MetLife Inc,Michel Khalaf MetLife,metlife.com|metlifecareers.com,MET,Financials
@@ -79,7 +79,7 @@ AJ Jim Teague,Enterprise Products Partners,AJ Jim Teague Enterprise Products Par
 Christopher Winfrey,Charter Communications,Christopher Winfrey Charter Communications,corporate.charter.com,CHTR,Telecommunications
 George Holm,Performance Food,George Holm Performance Food,performancefoodservice.com|pfgc.com|pfgcustomized.com,PFGC,Wholesalers
 Robert Isom,American Airlines,Robert Isom American Airlines,aa.com|americanairlines.ie,AAL,Transportation
-Richard Fairbank,Capital One,Richard Fairbank Capital One,capitalone.com|capitalonecareers.com|capitalonetravel.com|facebook.com|instagram.com|play.google.com,COF,Financials
+Richard Fairbank,Capital One,Richard Fairbank Capital One,capitalone.com|capitalonecareers.com|capitalonetravel.com,COF,Financials
 Chuck Robbins,Cisco Systems,Chuck Robbins Cisco Systems,cisco.com,CSCO,Technology
 Enrique Lores,HP,Enrique Lores HP,account.hp.com|h30434.www3.hp.com|hp.com|hpsmart.com,HPQ,Technology
 Donnie King,Tyson Foods,Donnie King Tyson Foods,tyson.com|tysonfoods.com|tysonfoods.wd5.myworkdayjobs.com,TSN,"Food, Beverages & Tobacco"
@@ -156,7 +156,7 @@ Bob Jordan,Southwest Airlines,Bob Jordan Southwest Airlines,careers.southwestair
 Peter Zaffino,AIG,Peter Zaffino AIG,aig.com|aig.wd1.myworkdayjobs.com,AIG,Financials
 Gary Dickerson,Applied Materials,Gary Dickerson Applied Materials,appliedmaterials.com,AMAT,Technology
 Vicki Hollub,Occidental Petroleum,Vicki Hollub Occidental Petroleum,oxy.com,OXY,Energy
-Michael Manley,AutoNation,Michael Manley AutoNation,autonation.com|autonationfordkaty.com|autonationtoyotawinterpark.com|autonationusa.com|finance.yahoo.com,AN,Retailing
+Michael Manley,AutoNation,Michael Manley AutoNation,autonation.com|autonationfordkaty.com|autonationtoyotawinterpark.com|autonationusa.com|,AN,Retailing
 Christopher Womack,Southern Company,Christopher Womack Southern Company,southerncompany.com|southerncompany.jobs|southerncompanygas.com,SO,Energy
 Christopher Swift,The Hartford,Christopher Swift The Hartford,hartford.edu|hartfordhealthcare.org|thehartford.com,HIG,Financials
 Marc Rowan,Apollo Global Management,Marc Rowan Apollo Global Management,apollo.com,APO,Financials
@@ -181,7 +181,7 @@ Glenn Fogel,Booking Holdings,Glenn Fogel Booking Holdings,booking.com|bookinghol
 Ezra Yacob,EOG Resources,Ezra Yacob EOG Resources,eogresources.com,EOG,Energy
 Earl Austin,Quanta Services,Earl Austin Quanta Services,quantaservices.com,PWR,Engineering & Construction
 Michael Shepherd,Discover Financial,Michael Shepherd Discover Financial,discover.com|investorrelations.discover.com|jobs.discover.com,DFS,Financials
-Joseph Dominguez,Constellation Energy,Joseph Dominguez Constellation Energy,constellation.com|constellationenergy.com|finance.yahoo.com|jobs.constellationenergy.com,CEG,Energy
+Joseph Dominguez,Constellation Energy,Joseph Dominguez Constellation Energy,constellation.com|constellationenergy.com|jobs.constellationenergy.com,CEG,Energy
 William Stengel II,Genuine Parts,William Stengel II Genuine Parts,parts.gmparts.com,GPC,Wholesalers
 Christian Ulbrich,Jones Lang LaSalle,Christian Ulbrich Jones Lang LaSalle,jll.com|lasalle.com,JLL,Financials
 Raymond E Scott,Lear Corporation,Raymond E Scott Lear Corporation,lear.com,LEA,Motor Vehicles & Parts
@@ -220,7 +220,7 @@ Dan Amos,Aflac,Dan Amos Aflac,aflac.com|aflacchildhoodcancer.org|aflacgroupinsur
 Mark Stewart,Goodyear Tire & Rubber,Mark Stewart Goodyear Tire & Rubber,goodyear.com|goodyearchemical.com,GT,Motor Vehicles & Parts
 Kevin Hogan,Corebridge Financial,Kevin Hogan Corebridge Financial,corebridgefinancial.com|myfloridacfo.com,CRBG,Financials
 Thomas Palmer,Newmont,Thomas Palmer Newmont,newmont.com,NEM,Energy
-Andrew Silvernail,International Paper,Andrew Silvernail International Paper,en.wikipedia.org|internationalpaper.com|internationalpaper2022rd.q4web.com,IP,Materials
+Andrew Silvernail,International Paper,Andrew Silvernail International Paper,internationalpaper.com|internationalpaper2022rd.q4web.com,IP,Materials
 Philip Daniele III,AutoZone,Philip Daniele III AutoZone,autozone.com|autozonepro.com,AZO,Retailing
 Ellen Cooper,Lincoln National,Ellen Cooper Lincoln National,lincolnfinancial.com|mylincolnportal.com,LNC,Financials
 Ryan Marshall,PulteGroup,Ryan Marshall PulteGroup,pultegroupinc.com,PHM,Engineering & Construction
@@ -269,18 +269,18 @@ Marc Miller,Universal Health Services,Marc Miller Universal Health Services,jobs
 Darryl Button,Pacific Life,Darryl Button Pacific Life,pacificlife.com|pacificlife.wd1.myworkdayjobs.com,,Financials
 Hamid Akhavan,EchoStar,Hamid Akhavan EchoStar,echostar.com|echostarmobile.com,SATS,Telecommunications
 Christophe Beck,Ecolab,Christophe Beck Ecolab,ecolab.com,ECL,Chemicals
-Jack Fusco,Cheniere Energy,Jack Fusco Cheniere Energy,cheniere.com|facebook.com|finance.yahoo.com,LNG,Energy
+Jack Fusco,Cheniere Energy,Jack Fusco Cheniere Energy,cheniere.com,LNG,Energy
 John Wren,Omnicom Group,John Wren Omnicom Group,omnicomgroup.com,OMC,Business Services
 Haviv Ilan,Texas Instruments,Haviv Ilan Texas Instruments,ti.com,TXN,Technology
 David Burritt,United States Steel,David Burritt United States Steel,ussteel.com,X,Materials
 Stéphane de La Faverie,Estée Lauder,Stéphane de La Faverie Estée Lauder,elcompanies.com|esteelauder.com,EL,Household Products
-Raul Nicholas Vargas Ochoa,Farmers Insurance Exchange,Raul Nicholas Vargas Ochoa Farmers Insurance Exchange,eagentsaml.farmersinsurance.com|farmers.com|interactive.web.insurance.ca.gov,,Financials
+Raul Nicholas Vargas Ochoa,Farmers Insurance Exchange,Raul Nicholas Vargas Ochoa Farmers Insurance Exchange,eagentsaml.farmersinsurance.com|farmers.com,,Financials
 Kirk Perry,Kenvue,Kirk Perry Kenvue,kenvue.com,KVUE,Household Products
 Ari Bousbib,IQVIA,Ari Bousbib IQVIA,iqvia.com|iqvia.wd1.myworkdayjobs.com,IQV,Health Care
 Donald Allan,Stanley Black & Decker,Donald Allan Stanley Black & Decker,blackanddecker.com|stanleyblackanddecker.com,SWK,Household Products
 Timothy Cofer,Keurig Dr Pepper,Timothy Cofer Keurig Dr Pepper,keurigdrpepper.com,KDP,"Food, Beverages & Tobacco"
 Matthew Flannery,United Rentals,Matthew Flannery United Rentals,sso.ur.com|unitedrentals.com,URI,Business Services
-Timothy Cawley,Consolidated Edison,Timothy Cawley Consolidated Edison,conedison.com|finance.yahoo.com,ED,Energy
+Timothy Cawley,Consolidated Edison,Timothy Cawley Consolidated Edison,conedison.com|,ED,Energy
 Adam Norwitt,Amphenol,Adam Norwitt Amphenol,amphenol-cs.com|amphenol-fop.com|amphenol-industrial.com|amphenol.com,APH,Technology
 Brent Shafer,Baxter International,Brent Shafer Baxter International,baxter.com,BAX,Health Care
 Kimberly Dang,Kinder Morgan,Kimberly Dang Kinder Morgan,kindermorgan.com,KMI,Energy
@@ -364,7 +364,7 @@ Scott Boatwright,Chipotle Mexican Grill,Scott Boatwright Chipotle Mexican Grill,
 Joey Wat,Yum China,Joey Wat Yum China,ir.yumchina.com,YUMC,"Hotels, Restaurants & Leisure"
 Robert Goldstein,Las Vegas Sands,Robert Goldstein Las Vegas Sands,sands.com,LVS,"Hotels, Restaurants & Leisure"
 Kecia Steelman,Ulta Beauty,Kecia Steelman Ulta Beauty,ulta.com,ULTA,Retailing
-Thomas Reeg,Caesars Entertainment,Thomas Reeg Caesars Entertainment,caesars.com|finance.yahoo.com,CZR,"Hotels, Restaurants & Leisure"
+Thomas Reeg,Caesars Entertainment,Thomas Reeg Caesars Entertainment,caesars.com|,CZR,"Hotels, Restaurants & Leisure"
 Jon Rousseau,BrightSpring Health Services,Jon Rousseau BrightSpring Health Services,brightspringhealth.com|careers-brightspring.icims.com,BGST,Health Care
 William Krueger,The Andersons Inc,William Krueger The Andersons Inc,andersonsgrain.com|andersonsinc.com|andersonslawn.com,ANDE,"Food, Beverages & Tobacco"
 Michele Buck,Hershey,Michele Buck Hershey,hersheyfarm.com|hersheyland.com|hersheypa.com|hersheypark.com|shop.hersheys.com|thehersheycompany.com|thehotelhershey.com|visithersheyharrisburg.org,HSY,"Food, Beverages & Tobacco"
@@ -383,7 +383,7 @@ Jeffrey Lorberbaum,Mohawk Industries,Jeffrey Lorberbaum Mohawk Industries,mohawk
 Gregory Brown,Motorola Solutions,Gregory Brown Motorola Solutions,motorola.com|motorolasolutions.com|motorolasolutions.wd5.myworkdayjobs.com,MSI,Technology
 John Pfeifer,Oshkosh Corporation,John Pfeifer Oshkosh Corporation,oshkoshairport.com|oshkoshcorp.com|oshkoshdefense.com,OSK,Industrials
 Tony Xu,DoorDash,Tony Xu DoorDash,careersatdoordash.com|doordash.com,DASH,Technology
-Edward Pesicka,Owens & Minor,Edward Pesicka Owens & Minor,finance.yahoo.com|instagram.com|linkedin.com|ommarketplace.com|owens-minor.com,OMI,Health Care
+Edward Pesicka,Owens & Minor,Edward Pesicka Owens & Minor,ommarketplace.com|owens-minor.com,OMI,Health Care
 Eugene Bredow,NVR Inc,Eugene Bredow NVR Inc,nvrcareers.com|nvri.gcs-web.com|nvrinc.com,NVR,Engineering & Construction
 Philippe Krakowsky,Interpublic Group,Philippe Krakowsky Interpublic Group,interpublic.com,IPG,Business Services
 Horacio Rozanski,Booz Allen Hamilton,Horacio Rozanski Booz Allen Hamilton,boozallen.com,BAH,Technology
@@ -415,7 +415,7 @@ Mick Beekhuizen,Campbell Soup,Mick Beekhuizen Campbell Soup,campbells.com|thecam
 Christopher Caldwell,Concentrix,Christopher Caldwell Concentrix,concentrix.com,CNXC,Technology
 Todd Schneider,Cintas,Todd Schneider Cintas,cintas.com|cintasfoundation.org|shop.mycintas.com,CTAS,Business Services
 Tony Sarsam,SpartanNash,Tony Sarsam SpartanNash,spartannash.com,SPTN,Wholesalers
-John Venhuizen,Ace Hardware,John Venhuizen Ace Hardware,acehardware.com|eldershardware.com|facebook.com|westlakehardware.com,ACE,Retailing
+John Venhuizen,Ace Hardware,John Venhuizen Ace Hardware,acehardware.com|eldershardware.com|westlakehardware.com,ACE,Retailing
 Vincent Roche,Analog Devices,Vincent Roche Analog Devices,analog.com|analogdevices.wd1.myworkdayjobs.com,ADI,Technology
 Mark Costa,Eastman Chemical,Mark Costa Eastman Chemical,eastman.com|investors.eastman.com|jobs.eastman.com,EMN,Chemicals
 Milan Galik,Interactive Brokers,Milan Galik Interactive Brokers,interactivebrokers.com|interactivebrokers.eu,IBKR,Financials
@@ -492,7 +492,7 @@ Anthony Smurfit,Smurfit Westrock,Anthony Smurfit Smurfit Westrock,smurfitkappa.c
 Richard P Dealy,Pioneer Natural Resources,Richard P Dealy Pioneer Natural Resources,pxd.com,PXD,Energy
 Derek Chang,Liberty Media,Derek Chang Liberty Media,libertymedia.com|watch.liberty.edu,LSXMA,Media
 Timothy J Donahue,Crown Holdings,Timothy J Donahue Crown Holdings,crowncork.com,CCK,Materials
-R Bruce McDonald,Dana Incorporated,R Bruce McDonald Dana Incorporated,dana.com|danaaftermarket.com|danaincorporated.gcs-web.com|en.wikipedia.org|linkedin.com,DAN,Motor Vehicles & Parts
+R Bruce McDonald,Dana Incorporated,R Bruce McDonald Dana Incorporated,dana.com|danaaftermarket.com|danaincorporated.gcs-web.com,DAN,Motor Vehicles & Parts
 J Kent Masters,Albemarle Corporation,J Kent Masters Albemarle Corporation,albemarle.com|investors.albemarle.com,ALB,Chemicals
 Malcolm C Roberts,FM Global,Malcolm C Roberts FM Global,careersatfm.com|fm.com|fmapprovals.com|fmgloballogistics.com|newsroom.fmglobal.com,,Financials
 Mike Speetzen,Polaris Inc,Mike Speetzen Polaris Inc,polaris.com,PII,Transportation
@@ -517,7 +517,7 @@ Steve Henry,Domtar,Steve Henry Domtar,domtar.com|domtarpackagingkingsport.com,,M
 Chuck Treadway,CommScope,Chuck Treadway CommScope,commscope.com|commscopetraining.com,COMM,Technology
 Steven J Moskowitz,Crown Castle,Steven J Moskowitz Crown Castle,crowncastle.com,CCI,Financials
 Emmanuel Ligner,Avantor,Emmanuel Ligner Avantor,avantorsciences.com,AVTR,Technology
-Carrie Wheeler,Opendoor Technologies,Carrie Wheeler Opendoor Technologies,opendoor.com,OPEN,Technology
+Kaz Nejatian,Opendoor Technologies,Kaz Nejatian Opendoor Technologies,opendoor.com,OPEN,Technology
 Russell Becker,APi Group,Russell Becker APi Group,apicorp.com|apigroupinc.com|ir.apigroupcorp.com,APG,Engineering & Construction
 Toby Rice,EQT,Toby Rice EQT,eqt.com|eqtgroup.com|eqtuning.com|ir.eqt.com,EQT,Energy
 Jesse Arenivas,EnLink Midstream,Jesse Arenivas EnLink Midstream,enlink.com,ENLC,Energy
@@ -530,7 +530,7 @@ Stephane Bancel,Moderna,Stephane Bancel Moderna,modernacovid19global.com|moderna
 Nate R Jorgensen,Boise Cascade,Nate R Jorgensen Boise Cascade,bc.com,BCC,Wholesalers
 Padraig McDonnell,Agilent Technologies,Padraig McDonnell Agilent Technologies,agilent.com|agilent.wd5.myworkdayjobs.com,A,Technology
 Kenneth T Lane,Olin,Kenneth T Lane Olin,olin.com|olin.edu|olin.washu.edu|olinchloralkali.com|theolinstudio.com,OLN,Chemicals
-Randall C Stuewe,Darling Ingredients,Randall C Stuewe Darling Ingredients,darlingii.applicantpro.com|darlingii.com|linkedin.com|reddit.com,DAR,"Food, Beverages & Tobacco"
+Randall C Stuewe,Darling Ingredients,Randall C Stuewe Darling Ingredients,darlingii.applicantpro.com|darlingii.com,DAR,"Food, Beverages & Tobacco"
 R Howard Coker,Sonoco Products,R Howard Coker Sonoco Products,sonoco.com,SON,Materials
 Lee M Tillman,Marathon Oil,Lee M Tillman Marathon Oil,marathonfuel.com|marathonpetroleum.com,MRO,Energy
 Mark Hoplamazian,Hyatt Hotels,Mark Hoplamazian Hyatt Hotels,hyatt.com,H,"Hotels, Restaurants & Leisure"
@@ -548,7 +548,7 @@ Jeffrey Mezger,KB Home,Jeffrey Mezger KB Home,kbhome.com,KBH,Engineering & Const
 David M Foulkes,Brunswick Corporation,David M Foulkes Brunswick Corporation,brunswick.com,BC,Transportation
 M Keith Waddell,Robert Half,M Keith Waddell Robert Half,roberthalf.com|roberthalf.net,RHI,Business Services
 Jay Snowden,PENN Entertainment,Jay Snowden PENN Entertainment,pennentertainment.com|pennnationalgaming.gcs-web.com,PENN,"Hotels, Restaurants & Leisure"
-George Kurian,NetApp,George Kurian NetApp,finance.yahoo.com|netapp.com,NTAP,Technology
+George Kurian,NetApp,George Kurian NetApp,|netapp.com,NTAP,Technology
 Kevin Ali,Organon,Kevin Ali Organon,organon.com,OGN,Health Care
 Joel D Anderson,Petco Health and Wellness,Joel D Anderson Petco Health and Wellness,corporate.petco.com|petco.com,WOOF,Retailing
 Louis V Pinkham,Regal Rexnord,Louis V Pinkham Regal Rexnord,regalrexnord.com|rexnord.com,RRX,Industrials
@@ -574,14 +574,14 @@ John C Roche,Hanover Insurance Group,John C Roche Hanover Insurance Group,hanove
 Adam J Greenlee,Silgan,Adam J Greenlee Silgan,silgan.com|silgancls.com|silgancontainers.com|silgancontainers.wd1.myworkdayjobs.com|silgandispensing.com|silganholdings.com|silganplastics.com,SLGN,Materials
 Jayne Hrdlicka,Endeavor Group,Jayne Hrdlicka Endeavor Group,endeavor-re.com|endeavor.org|endeavorco.com|theendeavor.group,,Media
 Robert Fauber,Moodys Corporation,Robert Fauber Moodys Corporation,careers.moodys.com|ir.moodys.com|moodys.com,MCO,Business Services
-Thomas E Jorden,Coterra Energy,Thomas E Jorden Coterra Energy,coterra.com|finance.yahoo.com,CTRA,Energy
+Thomas E Jorden,Coterra Energy,Thomas E Jorden Coterra Energy,coterra.com|,CTRA,Energy
 Eugene A Hall,Gartner,Eugene A Hall Gartner,gartner.com,IT,Technology
 Kevin Plank,Under Armour,Kevin Plank Under Armour,about.underarmour.com|underarmour.com|underarmourteamuniforms.com,UAA,Apparel
 James W Lanning,Ingles Markets,James W Lanning Ingles Markets,ingles-markets.com|inglescareers.com,IMKTA,Food & Drug Stores
 Matthew T Farrell,Church & Dwight,Matthew T Farrell Church & Dwight,churchdwight.co.uk|churchdwight.com,CHD,Household Products
 Kevin M Freeman,Old Dominion Freight Line,Kevin M Freeman Old Dominion Freight Line,odfl.com|odfl.wd1.myworkdayjobs.com,ODFL,Transportation
 Joe Shoen,U-Haul,Joe Shoen U-Haul,uhaul.com|uhauldealer.com,UHAL,Transportation
-Jayshree Ullal,Arista Networks,Jayshree Ullal Arista Networks,arista.com|finance.yahoo.com,ANET,Technology
+Jayshree Ullal,Arista Networks,Jayshree Ullal Arista Networks,arista.com|,ANET,Technology
 Sassine Ghazi,Synopsys,Sassine Ghazi Synopsys,synopsys.com,SNPS,Technology
 Jochen Zeitz,Harley-Davidson,Jochen Zeitz Harley-Davidson,harley-davidson.com|laidlawsharley.com|myhdfs.com,HOG,Transportation
 Nick Jeffery,Frontier Communications,Nick Jeffery Frontier Communications,frontier-careers.com|frontier.com|frontierbundles.com|frontierinternetservice.com,FYBR,Telecommunications
@@ -621,7 +621,7 @@ David M O'Malley,Penn Mutual Life Insurance,David M O'Malley Penn Mutual Life In
 Frank A Lonegro,Landstar System,Frank A Lonegro Landstar System,landstar.com|landstaronline.com,LSTR,Transportation
 James F Risoleo,Host Hotels & Resorts,James F Risoleo Host Hotels & Resorts,hosthotels.com|hosthotels.gcs-web.com,HST,Financials
 Ken Xie,Fortinet,Ken Xie Fortinet,fndn.fortinet.net|fortinet.com|fortinetfederal.com,FTNT,Technology
-Doug Shulman,OneMain,Doug Shulman OneMain,asktrim.com|finance.yahoo.com|onemain.youronlineaccount.com|onemainfinancial.com,OMF,Financials
+Doug Shulman,OneMain,Doug Shulman OneMain,asktrim.com|onemain.youronlineaccount.com|onemainfinancial.com,OMF,Financials
 Ryan Cohen,GameStop,Ryan Cohen GameStop,gamestop.com,GME,Retailing
 Mark W Begor,Equifax,Mark W Begor Equifax,equifax.com|equifaxsecurity2017.com,EFX,Business Services
 Jay L Schottenstein,American Eagle Outfitters,Jay L Schottenstein American Eagle Outfitters,aeo-inc.com,AEO,Retailing
@@ -643,8 +643,8 @@ John B Gibson,Paychex,John B Gibson Paychex,paychex.com,PAYX,Business Services
 Chris Cocks,Hasbro,Chris Cocks Hasbro,globalphilanthropy.hasbro.com|hasbropulse.com|jobs.hasbro.com|shop.hasbro.com,HAS,Household Products
 Pete McPartland,Sentry Insurance Group,Pete McPartland Sentry Insurance Group,sentry.com,,Financials
 Michael Arougheti,Ares Management,Michael Arougheti Ares Management,arescapitalcorp.com|aresmgmt.com|aresmgmt.wd1.myworkdayjobs.com,ARES,Financials
-Alok Maskara,Lennox International,Alok Maskara Lennox International,lennox.com|lennoxglobal.com|lennoxpros.com|linkedin.com,LII,Industrials
-James C Grech,Peabody Energy,James C Grech Peabody Energy,en.wikipedia.org|peabodyenergy.com,BTU,Energy
+Alok Maskara,Lennox International,Alok Maskara Lennox International,lennox.com|lennoxglobal.com|lennoxpros.com,LII,Industrials
+James C Grech,Peabody Energy,James C Grech Peabody Energy,peabodyenergy.com,BTU,Energy
 Joseph P Lacher Jr,Kemper Corporation,Joseph P Lacher Jr Kemper Corporation,ekemper.com|kemper.com,KMPR,Financials
 Perry A Sook,Nexstar Media Group,Perry A Sook Nexstar Media Group,nexstar.tv,NXST,Media
 Wade Davis,TelevisaUnivision,Wade Davis TelevisaUnivision,corporate.televisaunivision.com|investors.televisaunivision.com,,Media
@@ -677,7 +677,7 @@ Paul E Burdiss,Zions Bancorp,Paul E Burdiss Zions Bancorp,careers.zionsbancorp.c
 William J Christensen,JELD-WEN Holding,William J Christensen JELD-WEN Holding,corporate.jeld-wen.com|jeld-wen.com,JELD,Materials
 Evan Spiegel,Snap Inc,Evan Spiegel Snap Inc,snap.com|snapchat.com|snapinc.net,SNAP,Technology
 Bill Burns,Zebra Technologies,Bill Burns Zebra Technologies,zebra.com,ZBRA,Industrials
-Steven Sell,Agilon Health,Steven Sell Agilon Health,agilonhealth.com|finance.yahoo.com,AGL,Health Care
+Steven Sell,Agilon Health,Steven Sell Agilon Health,agilonhealth.com,AGL,Health Care
 Richard M Olson,Toro Company,Richard M Olson Toro Company,thetorocompany.com|toro.com,TTC,Industrials
 Eric S Yuan,Zoom Video Communications,Eric S Yuan Zoom Video Communications,zoom.com|zoom.us,ZM,Technology
 Dan L Batrack,Tetra Tech,Dan L Batrack Tetra Tech,tetratech.com|tetratech.referrals.selectminds.com,TTEK,Engineering & Construction
@@ -721,7 +721,7 @@ Phillip D Yeager,Hub Group,Phillip D Yeager Hub Group,hubgroup.com,HUBG,Transpor
 Steven B Hedlund,Lincoln Electric,Steven B Hedlund Lincoln Electric,les.com|lincolnelectric.com|lincolnelectric.coop,LECO,Industrials
 Timothy C Oliver,NCR Atleos,Timothy C Oliver NCR Atleos,ncr.com|ncratleos.com,NATL,Business Services
 Bruce Fleming,Calumet Inc,Bruce Fleming Calumet Inc,calumet.com,CLMT,Energy
-Daniel S. Peyovich,Dycom Industries,Daniel S. Peyovich Dycom Industries,dycomind.com|linkedin.com,DY,Engineering & Construction
+Daniel S. Peyovich,Dycom Industries,Daniel S. Peyovich Dycom Industries,dycomind.com,DY,Engineering & Construction
 Avner M Applbaum,Valmont Industries,Avner M Applbaum Valmont Industries,valmont.com|valmont.jobs.net|valmontutility.com,VMI,Materials
 Kimberly A Fields,ATI Inc,Kimberly A Fields ATI Inc,ati.org|atiinc.com|atimaterials.com,ATI,Materials
 Khozema Z Shipchandler,Twilio,Khozema Z Shipchandler Twilio,twilio.com|twilio.org,TWLO,Technology
@@ -757,7 +757,7 @@ Lorie L Tekorius,The Greenbrier Companies,Lorie L Tekorius The Greenbrier Compan
 John R Ciulla,Webster Financial,John R Ciulla Webster Financial,webster.edu|websterbank.com|websterfirst.com,WBS,Financials
 Sean D Keohane,Cabot Corporation,Sean D Keohane Cabot Corporation,cabotcorp.com|investor.cabot-corp.com,CBT,Chemicals
 Drew M Wilkerson,RXO Inc,Drew M Wilkerson RXO Inc,rxo.com,RXO,Transportation
-Daniel E Brown,Chord Energy,Daniel E Brown Chord Energy,chordenergy.com|finance.yahoo.com,CHRD,Energy
+Daniel E Brown,Chord Energy,Daniel E Brown Chord Energy,chordenergy.com|,CHRD,Energy
 Javier D Ferrer Fernandez,Popular Inc,Javier D Ferrer Fernandez Popular Inc,investor.popular.com|popular.com|popularbank.com,BPOP,Financials
 Olivier Rabiller,Garrett Motion Inc,Olivier Rabiller Garrett Motion Inc,garrettmotion.com,GTX,Motor Vehicles & Parts
 Ronald N Tutor,Tutor Perini Corporation,Ronald N Tutor Tutor Perini Corporation,tutorperini.com|tutorperinibuilding.com,TPC,Engineering & Construction
@@ -801,7 +801,7 @@ Kevin R Sayer,DexCom,Kevin R Sayer DexCom,dexcom.com|dexcom.custhelp.com,DXCM,He
 John T C Lee,MKS Instruments,John T C Lee MKS Instruments,mks.com,MKSI,Technology
 Edward B Pitoniak,VICI Properties,Edward B Pitoniak VICI Properties,viciproperties.com|vicipropertiesinc.com,VICI,Financials
 Albert White III,Cooper Cos,Albert White III Cooper Cos,coopercos.com,COO,Health Care
-Barry L Biffle,Frontier Airlines,Barry L Biffle Frontier Airlines,facebook.com|flyfrontier.com,ULCC,Transportation
+Barry L Biffle,Frontier Airlines,Barry L Biffle Frontier Airlines,flyfrontier.com,ULCC,Transportation
 Robert A Bruggeworth,Qorvo,Robert A Bruggeworth Qorvo,qorvo.com,QRVO,Technology
 Winnie Park,Five Below,Winnie Park Five Below,fivebelow.com,FIVE,Retailing
 Steven Oakland,TreeHouse Foods,Steven Oakland TreeHouse Foods,treehousefoods.com|treehousefoods2023rb.q4web.com,THS,"Food, Beverages & Tobacco"
@@ -811,9 +811,9 @@ Bertrand Loy,Entegris,Bertrand Loy Entegris,entegris.com|entegris.wd1.myworkdayj
 William E Waltz,Atkore,William E Waltz Atkore,atkore.com,ATKR,Industrials
 Celeste B Mastin,HB Fuller,Celeste B Mastin HB Fuller,hbfuller.com|hbfullerproducts.com|newsroom.hbfuller.com,FUL,Chemicals
 Kyle T Larkin,Granite Construction,Kyle T Larkin Granite Construction,graniteconstruction.com,GVA,Engineering & Construction
-Michael J Happe,Winnebago Industries,Michael J Happe Winnebago Industries,en.wikipedia.org|winnebago.com|winnebagoind.com,WGO,Motor Vehicles & Parts
+Michael J Happe,Winnebago Industries,Michael J Happe Winnebago Industries,winnebago.com|winnebagoind.com,WGO,Motor Vehicles & Parts
 Steven H Gunby,FTI Consulting,Steven H Gunby FTI Consulting,fticonsult.referrals.selectminds.com|fticonsulting.com,FCN,Business Services
-Stephan B Tanda,AptarGroup,Stephan B Tanda AptarGroup,instagram.com,ATR,Materials
+Stephan B Tanda,AptarGroup,Stephan B Tanda AptarGroup,aptar.com,ATR,Materials
 Timothy P Boyle,Columbia Sportswear,Timothy P Boyle Columbia Sportswear,columbia.com|columbiasportswear.co.za|columbiasportswearcompany.com,COLM,Apparel
 Anthony J Wood,Roku,Anthony J Wood Roku,roku.com,ROKU,Media
 M Christopher Doyle,Civitas Resources,M Christopher Doyle Civitas Resources,civitascommunityrelations.com|civitasresources.com,CIVI,Energy
@@ -895,10 +895,10 @@ Eric M Green,West Pharmaceutical Services,Eric M Green West Pharmaceutical Servi
 Doug Palladini,Carters Inc,Doug Palladini Carters Inc,carters.com,CRI,Apparel
 G Mike Mikan,NeueHealth,G Mike Mikan NeueHealth,job-boards.greenhouse.io|neuehealth.com,NEUE,Health Care
 Russell Chip Childs,SkyWest,Russell Chip Childs SkyWest,skywest.com,SKYW,Transportation
-Christopher H Hunter,Acadia Healthcare,Christopher H Hunter Acadia Healthcare,acadiacareers.com|acadiahealthcare.com|finance.yahoo.com,ACHC,Health Care
+Christopher H Hunter,Acadia Healthcare,Christopher H Hunter Acadia Healthcare,acadiacareers.com|acadiahealthcare.com|,ACHC,Health Care
 Prahlad Singh,Revvity,Prahlad Singh Revvity,revvity.com|revvitysignals.com,RVTY,Health Care
 Maria M Pope,Portland General Electric,Maria M Pope Portland General Electric,pge.com|portlandgeneral.com,POR,Energy
-Charles Chip Blankenship,Woodward Inc,Charles Chip Blankenship Woodward Inc,en.wikipedia.org|woodward.com|woodwardinc.com,WWD,Aerospace & Defense
+Charles Chip Blankenship,Woodward Inc,Charles Chip Blankenship Woodward Inc,woodward.com|woodwardinc.com,WWD,Aerospace & Defense
 Mike Steib,TEGNA,Mike Steib TEGNA,tegna.com,TGNA,Media
 Kurt J Ekert,Sabre Corporation,Kurt J Ekert Sabre Corporation,sabre.com,SABR,Retailing
 Matt Wilson,Light & Wonder,Matt Wilson Light & Wonder,lnw.com,LNW,"Hotels, Restaurants & Leisure"
