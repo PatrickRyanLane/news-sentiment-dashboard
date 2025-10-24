@@ -113,21 +113,31 @@ def _norm_domain_for_name_match(host: str) -> str:
 # -----------------------
 # Roster loading
 # -----------------------
-def load_roster_domains(path: str = MAIN_ROSTER_PATH) -> Set[str]:
+def load_roster_domains(path: str = MAIN_ROSTER_PATH) -> Dict[str, Set[str]]:
     """
-    Load controlled domains from roster.
+    Load controlled domains from roster, keyed by company name.
     Supports pipe-separated URLs in a single cell: 'domain1.com|domain2.com|domain3.com'
     Also handles single domains without pipes.
+    
+    Returns: Dict[company_name, Set[domain_names]]
+    This ensures each company only has its own domains marked as controlled.
     """
-    domains: Set[str] = set()
+    company_domains: Dict[str, Set[str]] = {}
 
     if not os.path.exists(path):
         print(f"[WARN] roster not found at {path}; proceeding with empty controlled set")
-        return domains
+        return company_domains
 
     try:
         df = pd.read_csv(path, encoding="utf-8-sig")
         cols = {c.strip().lower(): c for c in df.columns}
+        
+        # Find company and website columns
+        company_col = None
+        for key in ["company"]:
+            if key in cols:
+                company_col = cols[key]
+                break
         
         website_col = None
         for key in ["website", "websites", "domain", "url", "site", "homepage"]:
@@ -135,20 +145,28 @@ def load_roster_domains(path: str = MAIN_ROSTER_PATH) -> Set[str]:
                 website_col = cols[key]
                 break
         
-        if not website_col:
-            print(f"[WARN] No website/domain column found in {path}")
-            return domains
+        if not company_col or not website_col:
+            print(f"[WARN] Missing company or website column in {path}")
+            return company_domains
         
-        print(f"[INFO] Loading controlled domains from {path} ({website_col} column)...")
+        print(f"[INFO] Loading controlled domains from {path} (company: {company_col}, websites: {website_col})...")
         
-        for idx, val in enumerate(df[website_col]):
-            # Handle NaN values properly
+        for idx, row in df.iterrows():
+            company = str(row[company_col]).strip()
+            if not company or company.lower() == "nan":
+                continue
+            
+            val = row[website_col]
             if pd.isna(val):
                 continue
             
             val = str(val).strip()
             if not val or val.lower() == "nan":
                 continue
+            
+            # Initialize set for this company if not exists
+            if company not in company_domains:
+                company_domains[company] = set()
             
             # Split on pipe character to support multiple URLs per company
             # This works for both "apple.com" (single) and "apple.com|support.apple.com" (multiple)
@@ -165,29 +183,39 @@ def load_roster_domains(path: str = MAIN_ROSTER_PATH) -> Set[str]:
                 
                 host = _hostname(url)
                 if host and "." in host:
-                    domains.add(host)
-                    print(f"  ✓ Added domain: {host}")
+                    company_domains[company].add(host)
+                    print(f"  ✓ {company}: {host}")
         
-        print(f"[OK] Loaded {len(domains)} controlled domains")
+        total_domains = sum(len(domains) for domains in company_domains.values())
+        print(f"[OK] Loaded {len(company_domains)} companies with {total_domains} total controlled domains")
                         
     except Exception as e:
         print(f"[WARN] failed reading roster at {path}: {e}")
 
-    return domains
+    return company_domains
 
 # -----------------------
 # Control classification
 # -----------------------
-def classify_control(company: str, url: str, roster_domains: Set[str]) -> bool:
+def classify_control(company: str, url: str, company_domains: Dict[str, Set[str]]) -> bool:
+    """
+    Classify if a URL is controlled by a company using three rules:
+    (1) Always-controlled platforms (social media, etc.)
+    (2) Domains specific to this company from the roster
+    (3) Domain contains the company's brand token
+    """
     host = _hostname(url)
     if not host:
         return False
 
+    # Rule 1: Always-controlled social platforms
     for good in ALWAYS_CONTROLLED_DOMAINS:
         if host == good or host.endswith("." + good):
             return True
 
-    for rd in roster_domains:
+    # Rule 2: Company-specific roster domains (ONLY this company's domains)
+    company_specific_domains = company_domains.get(company, set())
+    for rd in company_specific_domains:
         if host == rd or host.endswith("." + rd):
             return True
 
@@ -228,7 +256,7 @@ def process_for_date(target_date: str) -> None:
     print(f"[INFO] Processing brand SERPs for {target_date} …")
     ensure_dirs()
 
-    roster_domains = load_roster_domains()
+    company_domains = load_roster_domains()
 
     url = S3_URL_TEMPLATE.format(date=target_date)
     raw = fetch_csv_from_s3(url)
@@ -259,7 +287,7 @@ def process_for_date(target_date: str) -> None:
         except Exception:
             position = 0
 
-        controlled = classify_control(company, url, roster_domains)
+        controlled = classify_control(company, url, company_domains)
 
         _, label = vader_label_on_title(analyzer, title)
         if FORCE_POSITIVE_IF_CONTROLLED and controlled:

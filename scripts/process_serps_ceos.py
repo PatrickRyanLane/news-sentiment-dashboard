@@ -180,10 +180,15 @@ def load_roster_data():
     for ceo, comp in ceo_to_company.items():
         alias_map.setdefault(norm(f"{ceo} {comp}"), (ceo, comp))
 
-    controlled_domains = set()
+    controlled_domains = {}  # Changed to dict: company -> Set[domains]
     if website_col:
         print(f"[INFO] Loading controlled domains from roster ({website_col} column)...")
-        for idx, val in enumerate(df[website_col]):
+        for idx, row in df.iterrows():
+            company = str(row[company_col]).strip() if company_col else ""
+            if not company or company.lower() == "nan":
+                continue
+            
+            val = row[website_col]
             # Handle NaN values properly
             if pd.isna(val):
                 continue
@@ -191,6 +196,10 @@ def load_roster_data():
             val = str(val).strip()
             if not val or val.lower() == "nan":
                 continue
+            
+            # Initialize set for this company if not exists
+            if company not in controlled_domains:
+                controlled_domains[company] = set()
             
             # Split on pipe character to support multiple URLs per company
             # Works for both "apple.com" (single) and "apple.com|support.apple.com" (multiple)
@@ -207,12 +216,13 @@ def load_roster_data():
                     host = (parsed.netloc or parsed.path or "").lower().strip()
                     host = host.replace("www.", "")
                     if host and "." in host:
-                        controlled_domains.add(host)
-                        print(f"  ✓ Added domain: {host}")
+                        controlled_domains[company].add(host)
+                        print(f"  ✓ {company}: {host}")
                 except Exception as e:
                     print(f"  ⚠️  Failed to parse {url}: {e}")
         
-        print(f"[OK] Loaded {len(controlled_domains)} controlled domains")
+        total_domains = sum(len(domains) for domains in controlled_domains.values())
+        print(f"[OK] Loaded {len(controlled_domains)} companies with {total_domains} total controlled domains")
 
     return alias_map, ceo_to_company, controlled_domains
 
@@ -250,7 +260,15 @@ def resolve_ceo_company(query_alias: str, alias_map, ceo_to_company):
                 best_score = score
     return best if best else ("", "")
 
-def classify_control(url: str, position, company: str, controlled_domains):
+def classify_control(url: str, position, company: str, company_domains):
+    """
+    Classify if a URL is controlled by a company using multiple rules:
+    (0) Rule 0: Explicitly uncontrolled domains (return False immediately)
+    (1) Rule 1: Always-controlled social platforms
+    (2) Rule 2: Company-specific domains from roster (ONLY this company's domains)
+    (3) Rule 3: Domain contains the company token
+    (4) Rule 4: Controlled path keywords
+    """
     try:
         parsed = urlparse(url or "")
         domain = (parsed.netloc or "").lower().replace("www.", "")
@@ -267,8 +285,9 @@ def classify_control(url: str, position, company: str, controlled_domains):
         if domain == social_domain or domain.endswith("." + social_domain):
             return True
 
-    # Rule 2: Domains from roster (exact match or subdomains)
-    for roster_domain in controlled_domains:
+    # Rule 2: Company-specific domains from roster (ONLY this company's domains)
+    company_specific_domains = company_domains.get(company, set())
+    for roster_domain in company_specific_domains:
         if domain == roster_domain or domain.endswith("." + roster_domain):
             return True
 
@@ -306,7 +325,7 @@ def vader_label(analyzer, row):
 
 # ---------------------------- Core ----------------------------
 
-def process_one_date(date_str: str, alias_map, ceo_to_company, controlled_domains):
+def process_one_date(date_str: str, alias_map, ceo_to_company, company_domains):
     day = dt.date.fromisoformat(date_str)
     if day < FIRST_AVAILABLE_DATE:
         print(f"[skip] {date_str} < first available ({FIRST_AVAILABLE_DATE})")
@@ -331,7 +350,7 @@ def process_one_date(date_str: str, alias_map, ceo_to_company, controlled_domain
     analyzer = SentimentIntensityAnalyzer()
 
     mapped["sentiment"] = mapped.apply(lambda r: vader_label(analyzer, r), axis=1)
-    mapped["controlled"] = mapped.apply(lambda r: classify_control(r["url"], r["position"], r["company"], controlled_domains), axis=1)
+    mapped["controlled"] = mapped.apply(lambda r: classify_control(r["url"], r["position"], r["company"], company_domains), axis=1)
 
     mapped.loc[mapped["controlled"] == True, "sentiment"] = "positive"
 
@@ -385,14 +404,14 @@ def process_one_date(date_str: str, alias_map, ceo_to_company, controlled_domain
 
     return day_path
 
-def backfill(start: str, end: str, alias_map, ceo_to_company, controlled_domains):
+def backfill(start: str, end: str, alias_map, ceo_to_company, company_domains):
     d0 = dt.date.fromisoformat(start)
     d1 = dt.date.fromisoformat(end)
     if d0 > d1:
         d0, d1 = d1, d0
     d = d0
     while d <= d1:
-        process_one_date(d.isoformat(), alias_map, ceo_to_company, controlled_domains)
+        process_one_date(d.isoformat(), alias_map, ceo_to_company, company_domains)
         d += dt.timedelta(days=1)
 
 def main():
@@ -402,16 +421,16 @@ def main():
                     help="Process an inclusive date range (YYYY-MM-DD YYYY-MM-DD).")
     args = ap.parse_args()
 
-    alias_map, ceo_to_company, controlled_domains = load_roster_data()
+    alias_map, ceo_to_company, company_domains = load_roster_data()
 
     if args.date:
-        process_one_date(args.date, alias_map, ceo_to_company, controlled_domains)
+        process_one_date(args.date, alias_map, ceo_to_company, company_domains)
     elif args.backfill:
-        backfill(args.backfill[0], args.backfill[1], alias_map, ceo_to_company, controlled_domains)
+        backfill(args.backfill[0], args.backfill[1], alias_map, ceo_to_company, company_domains)
     else:
         today = dt.date.today()
         for cand in (today, today - dt.timedelta(days=1)):
-            if process_one_date(cand.isoformat(), alias_map, ceo_to_company, controlled_domains):
+            if process_one_date(cand.isoformat(), alias_map, ceo_to_company, company_domains):
                 break
 
 if __name__ == "__main__":
