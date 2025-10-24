@@ -148,11 +148,36 @@ tbody tr td:last-child{border-right:1px solid #0f1831;border-radius:0 10px 10px 
           <tr>
             <th style="width:56px">Select</th>
             <th data-key="sector">Sector</th>
-            <th data-key="avg_daily_change">Avg<br>Daily<br>Change ▲▼</th>
-            <th data-key="avg_stock_change">Avg<br>7-Day<br>Change ▲▼</th>
-            <th data-key="neg_news">Negative<br>News % ▲▼</th>
-            <th data-key="neg_serp">Negative<br>SERP % ▲▼</th>
-            <th data-key="ctrl_pct">SERP<br>Control % ▲▼</th>
+            <th data-key="avg_daily_change">
+              <div class="tooltip-header">
+                Avg Overnight Change ▲▼
+                <span class="tooltip-text">Average overnight gap (yesterday's close to today's open) across all sector companies. Reflects after-hours market reactions to news and events</span>
+              </div>
+            </th>
+            <th data-key="avg_stock_change">
+              <div class="tooltip-header">
+                Avg 7-Day Change ▲▼
+                <span class="tooltip-text">Average 7-day stock price % change for all companies in this sector. Reveals longer-term sector momentum</span>
+              </div>
+            </th>
+            <th data-key="neg_news">
+              <div class="tooltip-header">
+                Negative News % ▲▼
+                <span class="tooltip-text">Combined negative article sentiment across all companies in this sector. Aggregates sector-wide reputational pressure</span>
+              </div>
+            </th>
+            <th data-key="neg_serp">
+              <div class="tooltip-header">
+                Negative SERP % ▲▼
+                <span class="tooltip-text">Combined negative search results across all sector companies on Google Page 1. Indicates sector-wide search perception</span>
+              </div>
+            </th>
+            <th data-key="ctrl_pct">
+              <div class="tooltip-header">
+                SERP Control % ▲▼
+                <span class="tooltip-text">Combined search result control by all sector companies. Shows industry's collective narrative control over search results</span>
+              </div>
+            </th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>

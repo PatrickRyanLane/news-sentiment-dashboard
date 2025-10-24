@@ -642,13 +642,48 @@ body:has(#stockChartModal.open) {
         <thead>
           <tr>
             <th>Company</th>
-            <th>Stock<br>Price</th>
-            <th data-key="daily_change"><div class="tooltip-header">Overnight % Change ▲▼<span class="tooltip-text">Percentage change from yesterday's close to today's market open (overnight gap)</span></div></th>
-            <th>30-Day<br>Trend</th>
-            <th data-key="neg_news">Negative<br>News % ▲▼</th>
-            <th data-key="neg_serp">Negative<br>SERP % ▲▼</th>
-            <th data-key="ctrl_pct">SERP<br>Control % ▲▼</th>
-            <th data-key="risk">Risk<br>▲▼</th>
+            <th data-key="stock_price">
+              <div class="tooltip-header">
+                Stock Price
+                <span class="tooltip-text">Current stock price from today's market open (or latest available)</span>
+              </div>
+            </th>
+            <th data-key="daily_change">
+              <div class="tooltip-header">
+                Overnight Change ▲▼
+                <span class="tooltip-text">Percentage change from yesterday's close to today's market open (overnight gap)</span>
+              </div>
+            </th>
+            <th data-key="trend">
+              <div class="tooltip-header">
+                30-Day Trend
+                <span class="tooltip-text">Visual sparkline of stock price over 30 days. Click to view detailed chart with negative news articles overlaid as markers</span>
+              </div>
+            </th>
+            <th data-key="neg_news">
+              <div class="tooltip-header">
+                Negative News % ▲▼
+                <span class="tooltip-text">Percentage of articles mentioning this company that have negative sentiment. Higher = greater negative coverage</span>
+              </div>
+            </th>
+            <th data-key="neg_serp">
+              <div class="tooltip-header">
+                Negative SERP % ▲▼
+                <span class="tooltip-text">Percentage of results on Google's first page with negative sentiment about this company. Indicates public perception visibility</span>
+              </div>
+            </th>
+            <th data-key="ctrl_pct">
+              <div class="tooltip-header">
+                SERP Control % ▲▼
+                <span class="tooltip-text">Percentage of Page 1 Google results owned/controlled by the company (official site, press releases, social). Higher = better reputation management</span>
+              </div>
+            </th>
+            <th data-key="risk">
+              <div class="tooltip-header">
+                Risk<br>▲▼
+                <span class="tooltip-text">Composite risk score based on Negative SERP % and Control %. High risk = significant negative search visibility with limited control. Low risk = minimal negative presence or strong narrative control.</span>
+              </div>
+            </th>
             <th>Headlines</th>
             <th>SERP</th>
           </tr>
