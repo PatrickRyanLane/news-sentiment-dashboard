@@ -69,7 +69,7 @@ CONTROLLED_SOCIAL_DOMAINS = {
     "facebook.com", "linkedin.com", "instagram.com", "twitter.com", "x.com"
 }
 CONTROLLED_PATH_KEYWORDS = {
-    "/leadership/", "/about/", "/governance/", "/team/", "/investors/", "/board-of-directors", "/members/", "/member/"
+    "/leadership/", "/about/", "/governance/", "/team/", "/investors/", "/board-of-directors", "/members/", "/member/" 
 }
 UNCONTROLLED_DOMAINS = {
     "wikipedia.org", "youtube.com", "youtu.be", "tiktok.com"
@@ -97,12 +97,17 @@ ALWAYS_NEGATIVE_TERMS = [
     r"\bremoved\b",
     r"\baware\b",
     r"\bloss\b",
+    r"\bunion\s+buster\b",
 ]
 ALWAYS_NEGATIVE_RE = re.compile("|".join(ALWAYS_NEGATIVE_TERMS), re.IGNORECASE)
 
 def _should_force_negative_title(title: str) -> bool:
     return bool(ALWAYS_NEGATIVE_RE.search(title or ""))
 
+# ----------------------- Force Negative Titles Helper ---------------
+def _should_neutralize_title(title: str) -> bool:
+    """Return True if the title contains terms that should neutralize sentiment."""
+    return bool(NEUTRALIZE_TITLE_RE.search(str(title or "")))
 
 # ------------------------ Small helpers -----------------------
 
