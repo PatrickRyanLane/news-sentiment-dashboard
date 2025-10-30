@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import csv
 import io
+import re
 import os
 from datetime import datetime
 from typing import Dict, Tuple, Set
