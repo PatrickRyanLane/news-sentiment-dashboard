@@ -303,6 +303,21 @@ def process_for_date(target_date: str) -> None:
 
         controlled = classify_control(company, url, company_domains)
 
+        # --- NEW: force reddit.com (and subdomains) to negative ---
+        host = _hostname(url)
+        if host == "reddit.com" or host.endswith(".reddit.com"):
+            label = "negative"
+        else:
+            # existing title-based sentiment with neutralization
+            if _should_neutralize_title(title):
+                label = "neutral"
+            else:
+                _, label = vader_label_on_title(analyzer, title)
+        
+        # Keep existing behavior: force positive when controlled
+        if FORCE_POSITIVE_IF_CONTROLLED and controlled:
+            label = "positive"
+
         _, label = vader_label_on_title(analyzer, title)
         # --- compute title sentiment with neutralization for brand terms ---
         if _should_neutralize_title(title):
