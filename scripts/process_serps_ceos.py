@@ -85,6 +85,26 @@ NEUTRALIZE_TITLE_TERMS = [
 ]
 NEUTRALIZE_TITLE_RE = re.compile("|".join(NEUTRALIZE_TITLE_TERMS), flags=re.IGNORECASE)
 
+ALWAYS_NEGATIVE_TERMS = [
+    r"\bpay\b",
+    r"\bpaid\b",
+    r"\bcompensation\b",
+    r"\bmandate\b",
+    r"\bstep\s+down\b",
+    r"\bmade\b",
+    r"\bstill\b",
+    r"\bturnaround\b",
+    r"\bface\b",
+    r"\bremoved\b",
+    r"\baware\b",
+    r"\bloss\b",
+]
+ALWAYS_NEGATIVE_RE = re.compile("|".join(ALWAYS_NEGATIVE_TERMS), re.IGNORECASE)
+
+def _should_force_negative_title(title: str) -> bool:
+    return bool(ALWAYS_NEGATIVE_RE.search(title or ""))
+
+
 # ------------------------ Small helpers -----------------------
 
 def strip_neutral_terms_from_title(title: str) -> str:
@@ -349,7 +369,16 @@ def process_one_date(date_str: str, alias_map, ceo_to_company, company_domains):
 
     analyzer = SentimentIntensityAnalyzer()
 
-    mapped["sentiment"] = mapped.apply(lambda r: vader_label(analyzer, r), axis=1)
+    def _sentiment_with_rules(r):
+      t = str(r.get("title", "") or "")
+      if _should_force_negative_title(t):
+          return "negative"
+      if _should_neutralize_title(t):
+          return "neutral"
+      return vader_label(analyzer, r)
+
+    mapped["sentiment"] = mapped.apply(_sentiment_with_rules, axis=1)
+
     mapped["controlled"] = mapped.apply(lambda r: classify_control(r["url"], r["position"], r["company"], company_domains), axis=1)
 
     mapped.loc[mapped["controlled"] == True, "sentiment"] = "positive"
