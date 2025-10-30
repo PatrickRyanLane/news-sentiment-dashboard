@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import csv
 import io
+import re
 import os
 from datetime import datetime
 from typing import Dict, Tuple, Set
@@ -60,6 +61,19 @@ ALWAYS_CONTROLLED_DOMAINS: Set[str] = {
     "apps.apple.com",
 }
 
+# Words/phrases to ignore for title-based sentiment classification
+# (Customize this list for BRANDS—examples shown)
+NEUTRALIZE_TITLE_TERMS = [
+    r"\bkilled\b",            # e.g., "killed" in title
+    r"\bmlm\b",          # e.g., "mlm" in title
+    r"\bmad\s+money\b",    # CNBC show causes false negatives
+    # Add your brand-specific terms here
+]
+NEUTRALIZE_TITLE_RE = re.compile("|".join(NEUTRALIZE_TITLE_TERMS), flags=re.IGNORECASE)
+
+def _should_neutralize_title(title: str) -> bool:
+    return bool(NEUTRALIZE_TITLE_RE.search(title or ""))
+    
 # -----------------------
 # Argument parsing / dates
 # -----------------------
@@ -290,6 +304,14 @@ def process_for_date(target_date: str) -> None:
         controlled = classify_control(company, url, company_domains)
 
         _, label = vader_label_on_title(analyzer, title)
+        # --- compute title sentiment with neutralization for brand terms ---
+        if _should_neutralize_title(title):
+            # Short-circuit: treat as neutral to avoid false negatives on brand terms in titles
+            label = "neutral"
+        else:
+            _, label = vader_label_on_title(analyzer, title)
+        
+        # Force positive if controlled (same behavior as before)
         if FORCE_POSITIVE_IF_CONTROLLED and controlled:
             label = "positive"
 
