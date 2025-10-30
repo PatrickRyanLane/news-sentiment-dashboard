@@ -91,7 +91,6 @@ ALWAYS_NEGATIVE_TERMS = [
     r"\bcompensation\b",
     r"\bmandate\b",
     r"\bstep\s+down\b",
-    r"\bmade\b",
     r"\bstill\b",
     r"\bturnaround\b",
     r"\bface\b",
