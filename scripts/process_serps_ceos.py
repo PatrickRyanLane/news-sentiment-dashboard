@@ -373,13 +373,26 @@ def process_one_date(date_str: str, alias_map, ceo_to_company, company_domains):
 
     analyzer = SentimentIntensityAnalyzer()
 
+    from urllib.parse import urlparse  # already imported at the top
+
     def _sentiment_with_rules(r):
-      t = str(r.get("title", "") or "")
-      if _should_force_negative_title(t):
-          return "negative"
-      if _should_neutralize_title(t):
-          return "neutral"
-      return vader_label(analyzer, r)
+        t = str(r.get("title", "") or "")
+        u = str(r.get("url", "") or "").strip().lower()
+    
+        # --- NEW RULE: force reddit.com to negative ---
+        try:
+            domain = urlparse(u).netloc.lower().replace("www.", "")
+            if domain == "reddit.com" or domain.endswith(".reddit.com"):
+                return "negative"
+        except Exception:
+            pass
+    
+        # Existing rules
+        if _should_force_negative_title(t):
+            return "negative"
+        if _should_neutralize_title(t):
+            return "neutral"
+        return vader_label(analyzer, r)
 
     mapped["sentiment"] = mapped.apply(_sentiment_with_rules, axis=1)
 
