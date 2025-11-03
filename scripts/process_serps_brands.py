@@ -78,8 +78,8 @@ LEGAL_TROUBLE_TERMS = [
     r"\bsettlement(s)?\b",
     r"\bfine(d)?\b",
     r"\bclass[- ]action\b",
-    r"\bftc\b", r"\bsec\b", r"\bdoj\b",
-    r"\bantitrust\b",
+    r"\bftc\b", r"\bsec\b", r"\bdoj\b", r"\bcfpb\b"
+    r"\bantitrust\b", r"\bban(s|ed)?\b"
     r"\brecall\b",
     r"\blayoffs\b",
     r"\bprobe(s|d)?\b", r"\binvestigation(s)?\b",
