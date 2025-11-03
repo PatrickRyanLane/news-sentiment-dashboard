@@ -71,6 +71,25 @@ NEUTRALIZE_TITLE_TERMS = [
 ]
 NEUTRALIZE_TITLE_RE = re.compile("|".join(NEUTRALIZE_TITLE_TERMS), flags=re.IGNORECASE)
 
+# Force-negative if the title mentions legal trouble
+LEGAL_TROUBLE_TERMS = [
+    r"\blawsuit(s)?\b",
+    r"\bsued\b",
+    r"\bsettlement(s)?\b",
+    r"\bfine(d)?\b",
+    r"\bclass[- ]action\b",
+    r"\bftc\b", r"\bsec\b", r"\bdoj\b",
+    r"\bantitrust\b",
+    r"\bprobe(s|d)?\b", r"\binvestigation(s)?\b",
+    r"\bsanction(s|ed)?\b",
+    r"\bpenalt(y|ies)\b",
+    r"\bfraud\b", r"\bembezzl(e|ement)\b",
+]
+LEGAL_TROUBLE_RE = re.compile("|".join(LEGAL_TROUBLE_TERMS), flags=re.IGNORECASE)
+
+def _title_mentions_legal_trouble(title: str) -> bool:
+    return bool(LEGAL_TROUBLE_RE.search(title or ""))
+
 def _should_neutralize_title(title: str) -> bool:
     return bool(NEUTRALIZE_TITLE_RE.search(title or ""))
     
@@ -303,32 +322,25 @@ def process_for_date(target_date: str) -> None:
 
         controlled = classify_control(company, url, company_domains)
 
-        # --- NEW: force reddit.com (and subdomains) to negative ---
+        # --- sentiment rules (deterministic order) ---
         host = _hostname(url)
-        if host == "reddit.com" or host.endswith(".reddit.com"):
+
+        # 1) Force negative for reddit.com (and subdomains)
+        if host == "reddit.com" or (host and host.endswith(".reddit.com")):
+            label = "negative"
+        # 2) Force negative for legal-trouble titles (lawsuit, sued, settlement, fines, etc.)
+        elif _title_mentions_legal_trouble(title):
             label = "negative"
         else:
-            # existing title-based sentiment with neutralization
+            # 3) Neutralize certain brand terms in the title
             if _should_neutralize_title(title):
                 label = "neutral"
             else:
                 _, label = vader_label_on_title(analyzer, title)
-        
-        # Keep existing behavior: force positive when controlled
-        if FORCE_POSITIVE_IF_CONTROLLED and controlled:
-            label = "positive"
 
-        _, label = vader_label_on_title(analyzer, title)
-        # --- compute title sentiment with neutralization for brand terms ---
-        if _should_neutralize_title(title):
-            # Short-circuit: treat as neutral to avoid false negatives on brand terms in titles
-            label = "neutral"
-        else:
-            _, label = vader_label_on_title(analyzer, title)
-        
-        # Force positive if controlled (same behavior as before)
-        if FORCE_POSITIVE_IF_CONTROLLED and controlled:
-            label = "positive"
+            # 4) Force positive if controlled — but ONLY if we didn't already force negative above
+            if FORCE_POSITIVE_IF_CONTROLLED and controlled:
+                label = "positive"
 
         processed_rows.append({
             "date": target_date,
