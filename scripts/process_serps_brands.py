@@ -80,6 +80,7 @@ LEGAL_TROUBLE_TERMS = [
     r"\bclass[- ]action\b",
     r"\bftc\b", r"\bsec\b", r"\bdoj\b",
     r"\bantitrust\b",
+    r"\brecall\b",
     r"\bprobe(s|d)?\b", r"\binvestigation(s)?\b",
     r"\bsanction(s|ed)?\b",
     r"\bpenalt(y|ies)\b",
