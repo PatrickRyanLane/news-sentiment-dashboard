@@ -1,0 +1,5 @@
+company,reason
+JB Hunt Transport Services,No data
+ServiceNow,"HTTPSConnectionPool(host='www.google.com', port=443): Read timed out. (read timeout=10)"
+Owens Corning,Rate limit (429)
+Advance Auto Parts,Rate limit (429)
